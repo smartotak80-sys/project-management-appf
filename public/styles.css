@@ -446,3 +446,24 @@ body.is-admin .admin-only-nav { display: block !important; }
 .app-video-link:hover { color: #fff; text-shadow: 0 0 10px var(--accent); }
 
 .app-actions { display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid #222; padding-top: 15px; }
+/* --- COMPACT LIST (For Admin Users) --- */
+.compact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.compact-list .u-row {
+    background: #111;
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #222;
+    transition: all 0.2s;
+}
+.compact-list .u-row:hover {
+    background: #151619;
+    border-color: var(--accent);
+    transform: translateX(3px);
+}

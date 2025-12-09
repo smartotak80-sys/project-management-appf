@@ -58,11 +58,43 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.hero,.section,.card,.member').forEach(el=>obs.observe(el));
   }
 
-  // --- DASHBOARD ---
+  // --- DASHBOARD UI LOGIC ---
   const dashModal = document.getElementById('dashboardModal');
+  
+  // MOBILE SIDEBAR LOGIC
+  const mobileToggle = document.getElementById('dashMobileToggle');
+  const sidebar = document.getElementById('dashSidebar');
+  const overlay = document.getElementById('dashOverlay');
+
+  if(mobileToggle) {
+      mobileToggle.addEventListener('click', () => {
+          sidebar.classList.add('open');
+          overlay.classList.add('active');
+      });
+  }
+  if(overlay) {
+      overlay.addEventListener('click', () => {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('active');
+      });
+  }
+  // Auto-close sidebar on mobile when a link is clicked
+  document.querySelectorAll('.dash-nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+          if(window.innerWidth <= 900) {
+              sidebar.classList.remove('open');
+              overlay.classList.remove('active');
+          }
+      });
+  });
+
   window.switchDashTab = (tab) => {
       document.querySelectorAll('.dash-view').forEach(e => e.classList.remove('active'));
       document.querySelectorAll('.dash-nav button').forEach(e => e.classList.remove('active'));
+      // Find the button that calls this tab to mark active (approximation)
+      const btn = Array.from(document.querySelectorAll('.dash-nav button')).find(b => b.getAttribute('onclick')?.includes(tab));
+      if(btn) btn.classList.add('active');
+      
       document.getElementById(`tab-${tab}`)?.classList.add('active');
       
       if(tab === 'apply') checkMyApplication();
@@ -75,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(tab === 'my-member') loadMyMemberTab();
   };
 
-  function openDashboard() {
+  window.openDashboard = () => {
       if(!currentUser) return;
       dashModal.classList.add('show');
       document.getElementById('dashUsername').textContent = currentUser.username;
@@ -92,8 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('.staff-only-nav').style.display = isStaff ? 'block' : 'none';
       document.querySelector('.admin-only-nav').style.display = isAdmin ? 'block' : 'none';
       
-      // Filter Staff buttons specific visibility
-      // Support sees Tickets. Mod sees Apps & Tickets. Admin sees all.
       const btnApps = document.getElementById('navAppsBtn');
       if(btnApps) btnApps.style.display = isModOrAdmin ? 'flex' : 'none';
 
@@ -107,15 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!users) return;
       list.innerHTML = users.map(u => `
         <div class="u-row">
-            <div><strong>${u.username}</strong> <small>(${u.email})</small></div>
+            <div><strong>${u.username}</strong> <small style="color:#666">(${u.email})</small></div>
             <div style="display:flex; align-items:center; gap:10px;">
-                <select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; padding:5px; height:auto; width:auto; background:#222;">
+                <select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; padding:5px 10px; height:auto; width:auto;">
                     <option value="member" ${u.role==='member'?'selected':''}>Member</option>
                     <option value="support" ${u.role==='support'?'selected':''}>Support</option>
                     <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
                     <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
                 </select>
-                <button class="btn btn-outline" style="padding:5px; border-color:#d33; color:#d33;" onclick="window.banUser('${u.username}')">DEL</button>
+                <button class="btn btn-outline" style="padding:5px; border-color:#d33; color:#d33;" onclick="window.banUser('${u.username}')"><i class="fa-solid fa-trash"></i></button>
             </div>
         </div>`).join('');
   }
@@ -124,6 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(`Role for ${u} changed to ${role}`);
       addLog(`Admin changed role of ${u} to ${role}`);
   };
+  window.banUser = async (u) => customConfirm(`Видалити користувача ${u}?`, async(r)=>{ 
+      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Deleted'); loadUsersAdmin(); }
+  });
 
   // --- APPLICATIONS (User) ---
   document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
@@ -139,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if(res && res.success) { showToast('Заявку надіслано!'); document.getElementById('dashAppForm').reset(); checkMyApplication(); }
   });
   async function checkMyApplication() {
-      // Simple check: fetch all apps and find mine (simplified for this demo)
       const apps = await apiFetch('/api/applications/my');
       const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
       const form = document.getElementById('dashAppForm');
@@ -162,16 +194,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const apps = await apiFetch('/api/applications');
       if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">Немає заявок.</p>'; return; }
       list.innerHTML = apps.map(a => `
-        <div style="background:#151619; padding:15px; border-radius:8px; border:1px solid #333; position:relative;">
-            <div style="position:absolute; top:10px; right:10px; font-weight:bold; color:${a.status==='pending'?'#e6b800':(a.status==='approved'?'#2ecc71':'#e74c3c')}">${a.status}</div>
-            <h4>${a.rlNameAge} <small>(${a.submittedBy})</small></h4>
-            <div style="font-size:13px; color:#aaa; margin-bottom:10px;">
-                History: ${a.history}<br>Online: ${a.onlineTime}<br>Video: <a href="${a.shootingVideo}" target="_blank">Link</a>
+        <div style="background:#151619; padding:20px; border-radius:12px; border:1px solid #333; position:relative;">
+            <div style="position:absolute; top:15px; right:15px; font-weight:bold; color:${a.status==='pending'?'#e6b800':(a.status==='approved'?'#2ecc71':'#e74c3c')}">${a.status.toUpperCase()}</div>
+            <h4>${a.rlNameAge} <small style="color:#666">(${a.submittedBy})</small></h4>
+            <div style="font-size:13px; color:#aaa; margin-bottom:15px;">
+                History: ${a.history}<br>Online: ${a.onlineTime}<br>Video: <a href="${a.shootingVideo}" target="_blank" style="color:var(--accent)">Watch Video</a>
             </div>
             ${a.status==='pending' ? `
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-primary" style="padding:5px 10px; font-size:12px;" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
-                <button class="btn btn-outline" style="padding:5px 10px; font-size:12px; color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
+                <button class="btn btn-primary" style="padding:5px 15px; font-size:12px;" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
+                <button class="btn btn-outline" style="padding:5px 15px; font-size:12px; color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
             </div>` : ''}
         </div>`).join('');
   }
@@ -207,9 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTicketList(container, tickets) {
       if(!tickets.length) { container.innerHTML = '<div style="color:#666; font-size:12px;">Пусто</div>'; return; }
       container.innerHTML = tickets.map(t => `
-        <div onclick="window.openTicket('${t.id}')" style="background:#222; padding:10px; border-radius:5px; cursor:pointer; border-left:3px solid ${t.status==='open'?'#2ecc71':'#666'};">
-            <div style="font-weight:bold; font-size:13px;">${t.title}</div>
-            <div style="font-size:10px; color:#888;">Від: ${t.author} | ${t.status}</div>
+        <div onclick="window.openTicket('${t.id}')" style="background:#222; padding:15px; border-radius:10px; cursor:pointer; border-left:4px solid ${t.status==='open'?'#2ecc71':'#666'}; margin-bottom:10px;">
+            <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${t.title}</div>
+            <div style="font-size:11px; color:#888;">Від: ${t.author} | Статус: ${t.status}</div>
         </div>`).join('');
   }
 
@@ -226,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const chat = document.getElementById('tmMessages');
       chat.innerHTML = t.messages.map(m => `
-        <div style="align-self:${m.sender===currentUser.username ? 'flex-end' : 'flex-start'}; background:${m.isStaff?'#2c1a1a':'#1a1a2e'}; padding:8px 12px; border-radius:8px; max-width:80%; font-size:13px; border:1px solid ${m.isStaff?'#e74c3c':'#333'};">
+        <div style="align-self:${m.sender===currentUser.username ? 'flex-end' : 'flex-start'}; background:${m.isStaff?'#3e2723':'#1a1a2e'}; padding:8px 12px; border-radius:8px; max-width:80%; font-size:13px; border:1px solid ${m.isStaff?'#e74c3c':'#333'};">
             <div style="font-size:10px; color:#aaa; margin-bottom:2px;">${m.sender}</div>
             ${m.text}
         </div>`).join('');
@@ -257,15 +289,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // --- REST OF THE LOGIC (Auth, Members, etc) ---
-  // (Standard rendering logic remains similar to previous version, ensuring continuity)
+  // --- AUTH & MISC ---
   
   function updateAuthUI() {
       if(currentUser) {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           document.getElementById('authBtnText').textContent = 'Кабінет';
-          document.getElementById('openAuthBtn').onclick = openDashboard;
+          document.getElementById('openAuthBtn').onclick = window.openDashboard;
       } else {
           document.body.classList.remove('is-logged-in','is-admin');
           document.getElementById('authBtnText').textContent = 'Вхід';
@@ -302,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
       list.innerHTML = m.map(x => `
         <div class="u-row">
             <div>${x.name} <small>(${x.role})</small></div>
-            <button class="btn btn-outline" style="color:#d33; border-color:#d33; padding:5px;" onclick="window.deleteMember('${x.id}')">DEL</button>
+            <button class="btn btn-outline" style="color:#d33; border-color:#d33; padding:5px 10px;" onclick="window.deleteMember('${x.id}')">DEL</button>
         </div>`).join('');
   }
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
@@ -320,14 +351,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const myMember = members.find(m => m.owner === currentUser.username);
       if(myMember) {
           document.getElementById('myMemberStatusPanel').style.display='block';
-          container.innerHTML = `<div style="background:#222; padding:20px; border-radius:10px;"><h3>${myMember.name}</h3>Role: ${myMember.role}</div>`;
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 style="margin:0 0 5px 0;">${myMember.name}</h3>
+                    <div style="font-size:12px; color:#888;">RANK: <span style="color:#fff">${myMember.role}</span></div>
+                </div>
+                <div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div>
+            </div>`;
           document.getElementById('saveStatusBtn').onclick=async()=>{
               let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value;
               await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})});
               showToast('Status updated'); loadInitialData(); loadMyMemberTab();
           };
       } else {
-          container.innerHTML = `<p style="color:#666;">Ще немає персонажа. Подайте заявку.</p>`;
+          container.innerHTML = `<p style="color:#aaa;">Ще немає персонажа. Подайте заявку.</p>`;
           document.getElementById('myMemberStatusPanel').style.display='none';
       }
   }
@@ -342,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`).join('');
       activateScrollAnimations();
   }
-  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card" style="margin-bottom:15px; padding:15px;"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); }
+  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card" style="margin-bottom:15px; padding:20px;"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); }
   function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); }
   window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
   window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };

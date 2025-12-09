@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(p) { 
           p.style.opacity = '0'; 
           setTimeout(() => p.style.display='none', 500); 
-          activateScrollAnimations(); // Запуск анімацій після зникнення прелоадера
+          activateScrollAnimations();
       }
   }, 2000);
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const h={'Content-Type':'application/json', ...(opts.headers||{})};
           const r = await fetch(url, {...opts, headers:h});
           const d = await r.json();
-          if(!r.ok) { showToast(d.message||"Error", 'error'); return null; }
+          if(!r.ok) { showToast(d.message||"Помилка", 'error'); return null; }
           return d;
       } catch(e) { console.error(e); return null; }
   }
@@ -58,9 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if(yearEl) yearEl.textContent = new Date().getFullYear();
   }
 
-  // --- НОВА СИСТЕМА АНІМАЦІЙ ---
+  // --- АНІМАЦІЇ ---
   function activateScrollAnimations() {
-      // Спостерігач появи елементів
       const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
               if (entry.isIntersecting) {
@@ -71,11 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }, { threshold: 0.1 });
 
-      // Додаємо клас animate-hidden всім елементам, які треба анімувати
       const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card');
       elements.forEach((el) => {
           el.classList.add('animate-hidden');
-          // Якщо елемент частина грід-сітки, додаємо затримку (stagger effect)
           if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
               const idx = Array.from(el.parentElement.children).indexOf(el);
               el.style.transitionDelay = `${idx * 100}ms`;
@@ -84,14 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // --- SPOTLIGHT / TILT EFFECT (Слідування за мишою) ---
   document.addEventListener('mousemove', (e) => {
       document.querySelectorAll('.card, .member, .btn').forEach(card => {
           const rect = card.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
-          
-          // Тільки якщо миша поруч, щоб не навантажувати CPU
           if (x > -50 && x < rect.width + 50 && y > -50 && y < rect.height + 50) {
             card.style.setProperty('--x', `${x}px`);
             card.style.setProperty('--y', `${y}px`);
@@ -99,41 +93,31 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
-  // --- DASHBOARD UI LOGIC ---
+  // --- DASHBOARD UI ---
   const dashModal = document.getElementById('dashboardModal');
   const mobileToggle = document.getElementById('dashMobileToggle');
   const sidebar = document.getElementById('dashSidebar');
   const overlay = document.getElementById('dashOverlay');
 
   if(mobileToggle) {
-      mobileToggle.addEventListener('click', () => {
-          sidebar.classList.add('open');
-          overlay.classList.add('active');
-      });
+      mobileToggle.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
   }
   if(overlay) {
-      overlay.addEventListener('click', () => {
-          sidebar.classList.remove('open');
-          overlay.classList.remove('active');
-      });
+      overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
   }
   document.querySelectorAll('.dash-nav button').forEach(btn => {
       btn.addEventListener('click', () => {
-          if(window.innerWidth <= 900) {
-              sidebar.classList.remove('open');
-              overlay.classList.remove('active');
-          }
+          if(window.innerWidth <= 900) { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
       });
   });
 
   window.switchDashTab = (tab) => {
       if(['users', 'admin-members', 'logs', 'accounts-data'].includes(tab)) {
           if(!currentUser || currentUser.role !== 'admin') {
-              showToast('ACCESS DENIED: ADMIN LEVEL REQUIRED', 'error');
+              showToast('ДОСТУП ЗАБОРОНЕНО: ПОТРІБНІ ПРАВА АДМІНА', 'error');
               return;
           }
       }
-
       document.querySelectorAll('.dash-view').forEach(e => e.classList.remove('active'));
       document.querySelectorAll('.dash-nav button').forEach(e => e.classList.remove('active'));
       
@@ -222,24 +206,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="font-size:16px; font-weight:bold; color:#fff;">
                             ${u.username} ${isSystemAdmin ? '<i class="fa-solid fa-server" style="color:#555;"></i>' : ''}
                         </span>
-                        <span style="font-size:10px; color:#555;">Role: ${u.role}</span>
+                        <span style="font-size:10px; color:#555;">Роль: ${u.role}</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
                         ${isSystemAdmin ? 
-                            '<span style="font-size:11px; color:#666;">SYSTEM</span>' 
+                            '<span style="font-size:11px; color:#666;">СИСТЕМА</span>' 
                             : 
                             `<select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; width:auto; padding:5px; background:#222; border:1px solid #444;">
-                                <option value="member" ${u.role==='member'?'selected':''}>Member</option>
-                                <option value="support" ${u.role==='support'?'selected':''}>Support</option>
-                                <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
-                                <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                                <option value="member" ${u.role==='member'?'selected':''}>Учасник</option>
+                                <option value="support" ${u.role==='support'?'selected':''}>Підтримка</option>
+                                <option value="moderator" ${u.role==='moderator'?'selected':''}>Модератор</option>
+                                <option value="admin" ${u.role==='admin'?'selected':''}>Адмін</option>
                             </select>
                             <button class="btn btn-outline btn-icon" style="color:#ff4757; border-color:rgba(255,71,87,0.3);" onclick="window.banUser('${u.username}')"><i class="fa-solid fa-trash"></i></button>`
                         }
                     </div>
                 </div>`;
           }).join('');
-          activateScrollAnimations(); // Оновлюємо анімацію для нових елементів
+          activateScrollAnimations();
       } catch (err) { console.error(err); }
   }
   
@@ -247,11 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!currentUser || currentUser.role !== 'admin') return;
       await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) });
       showToast(`Роль для ${u} змінено на ${role}`);
-      addLog(`Admin changed role of ${u} to ${role}`);
+      addLog(`Адмін змінив роль ${u} на ${role}`);
       loadUsersAdmin(); 
   };
-  window.banUser = async (u) => customConfirm(`DELETE USER ${u}?`, async(r)=>{ 
-      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('User Deleted'); loadUsersAdmin(); }
+  window.banUser = async (u) => customConfirm(`ВИДАЛИТИ КОРИСТУВАЧА ${u}?`, async(r)=>{ 
+      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Користувача видалено'); loadUsersAdmin(); }
   });
 
   // --- APPLICATIONS ---
@@ -265,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
           submittedBy: currentUser.username
       };
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
-      if(res && res.success) { showToast('APPLICATION SENT'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
+      if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
@@ -277,15 +261,15 @@ document.addEventListener('DOMContentLoaded', () => {
           form.style.display = 'none';
           statusBox.style.display = 'block';
           
-          let statusText = 'PENDING REVIEW...';
+          let statusText = 'ОЧІКУВАННЯ ПЕРЕВІРКИ...';
           let color = 'var(--accent)';
-          if(myApp.status === 'approved') { statusText = 'APPROVED. WELCOME.'; color = '#2ecc71'; }
-          if(myApp.status === 'rejected') { statusText = 'REJECTED.'; color = '#ff4757'; }
+          if(myApp.status === 'approved') { statusText = 'СХВАЛЕНО. ЛАСКАВО ПРОСИМО.'; color = '#2ecc71'; }
+          if(myApp.status === 'rejected') { statusText = 'ВІДХИЛЕНО.'; color = '#ff4757'; }
           
           statusBox.innerHTML = `
-            <h3 style="margin-top:0">STATUS: <span style="color:${color}">${myApp.status.toUpperCase()}</span></h3>
+            <h3 style="margin-top:0">СТАТУС: <span style="color:${color}">${myApp.status.toUpperCase()}</span></h3>
             <p>${statusText}</p>
-            ${myApp.adminComment ? `<div style="margin-top:10px; font-size:12px; color:#aaa;">STAFF NOTE: ${myApp.adminComment}</div>` : ''}
+            ${myApp.adminComment ? `<div style="margin-top:10px; font-size:12px; color:#aaa;">ВІД АДМІНІСТРАЦІЇ: ${myApp.adminComment}</div>` : ''}
           `;
           statusBox.style.borderColor = color;
       } else {
@@ -297,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       const apps = await apiFetch('/api/applications');
-      if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">NO APPLICATIONS</p>'; return; }
+      if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">НЕМАЄ ЗАЯВОК</p>'; return; }
       
       list.innerHTML = apps.map(a => `
         <div class="app-card animate-hidden">
@@ -306,19 +290,19 @@ document.addEventListener('DOMContentLoaded', () => {
                    <h3 style="margin:0;">${a.rlNameAge}</h3>
                    <div style="font-size:12px; color:#666;"><i class="fa-solid fa-user"></i> ${a.submittedBy}</div>
                </div>
-               <div class="status-badge ${a.status}">${a.status}</div>
+               <div class="status-badge ${a.status}">${a.status === 'pending' ? 'ОЧІКУВАННЯ' : (a.status === 'approved' ? 'СХВАЛЕНО' : 'ВІДХИЛЕНО')}</div>
            </div>
            <div class="app-grid">
-               <div class="app-item"><label>ONLINE</label><div>${a.onlineTime}</div></div>
-               <div class="app-item"><label>VIDEO</label><div><a href="${a.shootingVideo}" target="_blank" class="app-video-link">WATCH</a></div></div>
-               <div class="app-item full"><label>HISTORY</label><div>${a.history}</div></div>
+               <div class="app-item"><label>ОНЛАЙН</label><div>${a.onlineTime}</div></div>
+               <div class="app-item"><label>ВІДЕО</label><div><a href="${a.shootingVideo}" target="_blank" class="app-video-link">ПЕРЕГЛЯД</a></div></div>
+               <div class="app-item full"><label>ІСТОРІЯ</label><div>${a.history}</div></div>
            </div>
            ${a.status==='pending' ? `
            <div class="app-controls">
-                <input type="text" id="reason-${a.id}" placeholder="Note...">
+                <input type="text" id="reason-${a.id}" placeholder="Коментар...">
                 <div class="app-btns">
-                    <button class="btn btn-primary" onclick="window.updateAppStatus('${a.id}','approved')">APPROVE</button>
-                    <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.updateAppStatus('${a.id}','rejected')">REJECT</button>
+                    <button class="btn btn-primary" onclick="window.updateAppStatus('${a.id}','approved')">СХВАЛИТИ</button>
+                    <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.updateAppStatus('${a.id}','rejected')">ВІДХИЛИТИ</button>
                 </div>
            </div>` : ''}
         </div>`).join('');
@@ -327,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.updateAppStatus = async (id, status) => {
       const input = document.getElementById(`reason-${id}`);
       await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: input ? input.value : ''})});
-      showToast('UPDATED'); loadApplicationsStaff();
+      showToast('ОНОВЛЕНО'); loadApplicationsStaff();
   };
 
   // --- TICKETS ---
@@ -335,19 +319,19 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const body = { author: currentUser.username, title: document.getElementById('ticketTitle').value, messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }] };
       const res = await apiFetch('/api/tickets', {method:'POST', body:JSON.stringify(body)});
-      if(res && res.success) { showToast('TICKET CREATED'); document.getElementById('createTicketForm').reset(); loadMyTickets(); }
+      if(res && res.success) { showToast('ТІКЕТ СТВОРЕНО'); document.getElementById('createTicketForm').reset(); loadMyTickets(); }
   });
 
   async function loadMyTickets() {
       const list = document.getElementById('myTicketsList');
       const all = await apiFetch('/api/tickets');
       const my = all ? all.filter(t => t.author === currentUser.username) : [];
-      list.innerHTML = my.length ? my.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><span>${t.status}</span></div>`).join('') : '<div class="empty">No tickets</div>';
+      list.innerHTML = my.length ? my.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><span>${t.status}</span></div>`).join('') : '<div class="empty">Немає тікетів</div>';
   }
   async function loadAllTickets() {
       const list = document.getElementById('allTicketsList');
       const all = await apiFetch('/api/tickets');
-      list.innerHTML = all && all.length ? all.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><small>${t.author}</small><span>${t.status}</span></div>`).join('') : '<div class="empty">No tickets</div>';
+      list.innerHTML = all && all.length ? all.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><small>${t.author}</small><span>${t.status}</span></div>`).join('') : '<div class="empty">Немає тікетів</div>';
   }
 
   let currentTicketId = null;
@@ -357,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const t = all.find(x => x.id === id);
       if(!t) return;
       document.getElementById('ticketModal').classList.add('show');
-      document.getElementById('tmTitle').textContent = `TICKET: ${t.title}`;
+      document.getElementById('tmTitle').textContent = `ТІКЕТ: ${t.title}`;
       const chat = document.getElementById('tmMessages');
       chat.innerHTML = t.messages.map(m => `<div class="msg ${m.sender===currentUser.username?'me':'other'} ${m.isStaff?'staff':''}"><div class="sender">${m.sender}</div>${m.text}</div>`).join('');
       chat.scrollTop = chat.scrollHeight;
@@ -383,16 +367,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if(currentUser) {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
-          document.getElementById('authBtnText').textContent = 'SYSTEM';
+          document.getElementById('authBtnText').textContent = 'СИСТЕМА';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
           if(applyText) applyText.style.display = 'none';
-          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> OPEN PANEL'; applyBtn.onclick = window.openDashboard; }
+          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> ВІДКРИТИ ПАНЕЛЬ'; applyBtn.onclick = window.openDashboard; }
       } else {
           document.body.classList.remove('is-logged-in','is-admin');
-          document.getElementById('authBtnText').textContent = 'LOGIN';
+          document.getElementById('authBtnText').textContent = 'ВХІД';
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
-          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ACCESS TERMINAL'; applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); }
+          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ДОСТУП ДО ТЕРМІНАЛУ'; applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); }
       }
   }
 
@@ -407,14 +391,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('loginForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
-      if(res && res.success) { saveCurrentUser(res.user); showToast(`WELCOME ${res.user.username}`); setTimeout(()=>location.reload(), 500); } 
+      if(res && res.success) { saveCurrentUser(res.user); showToast(`ВІТАЄМО, ${res.user.username}`); setTimeout(()=>location.reload(), 500); } 
   });
   document.getElementById('registerForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const pass = document.getElementById('regPass').value;
-      if(pass !== document.getElementById('regPassConfirm').value) return showToast('PASSWORDS DO NOT MATCH', 'error');
+      if(pass !== document.getElementById('regPassConfirm').value) return showToast('ПАРОЛІ НЕ СПІВПАДАЮТЬ', 'error');
       const res = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username: document.getElementById('regUser').value, email: document.getElementById('regEmail').value, password: pass }) });
-      if(res && res.success) { showToast('CREATED. PLEASE LOGIN.'); document.getElementById('tabLogin').click(); }
+      if(res && res.success) { showToast('СТВОРЕНО. БУДЬ ЛАСКА, УВІЙДІТЬ.'); document.getElementById('tabLogin').click(); }
   });
 
   // --- ADMIN MEMBERS ---
@@ -430,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
       list.innerHTML = m.map(x => `
         <div class="u-row animate-hidden">
             <div>${x.name} <small>(${x.role})</small></div>
-            <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">DEL</button>
+            <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">ВИДАЛИТИ</button>
         </div>`).join('');
       activateScrollAnimations();
   }
@@ -440,22 +424,22 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const body = { name: document.getElementById('admName').value, role: document.getElementById('admRole').value, owner: document.getElementById('admOwner').value, links: {discord:document.getElementById('admDiscord').value, youtube:document.getElementById('admYoutube').value} };
       await apiFetch('/api/members', {method:'POST', body:JSON.stringify(body)});
-      showToast('Member added'); loadAdminMembers();
+      showToast('Учасника додано'); loadAdminMembers();
   });
-  window.deleteMember = async (id) => customConfirm('Delete Member?', async (r)=>{ if(r) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Deleted'); loadAdminMembers(); loadInitialData(); } });
+  window.deleteMember = async (id) => customConfirm('Видалити учасника?', async (r)=>{ if(r) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Видалено'); loadAdminMembers(); loadInitialData(); } });
 
   function loadMyMemberTab() {
       const container = document.getElementById('myMemberContainer');
       const myMember = members.find(m => m.owner === currentUser.username);
       if(myMember) {
           document.getElementById('myMemberStatusPanel').style.display='block';
-          container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0 0 5px 0;">${myMember.name}</h3><div style="font-size:12px; color:#888;">RANK: <span style="color:#fff">${myMember.role}</span></div></div><div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div></div>`;
+          container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0 0 5px 0;">${myMember.name}</h3><div style="font-size:12px; color:#888;">РАНГ: <span style="color:#fff">${myMember.role}</span></div></div><div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div></div>`;
           document.getElementById('saveStatusBtn').onclick=async()=>{
               let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value;
               await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})});
-              showToast('Status updated'); loadInitialData(); loadMyMemberTab();
+              showToast('Статус оновлено'); loadInitialData(); loadMyMemberTab();
           };
-      } else { container.innerHTML = `<p style="color:#aaa;">NO MEMBER ASSIGNED.</p>`; document.getElementById('myMemberStatusPanel').style.display='none'; }
+      } else { container.innerHTML = `<p style="color:#aaa;">ПЕРСОНАЖА НЕ ЗНАЙДЕНО.</p>`; document.getElementById('myMemberStatusPanel').style.display='none'; }
   }
 
   // --- PUBLIC MEMBERS ---

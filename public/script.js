@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- ROLE MANAGEMENT (Admin) ---
   // Оновлена функція з захистом від збоїв
+ // --- ВИПРАВЛЕНА ФУНКЦІЯ (Робить список видимим) ---
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
       if (!list) return;
@@ -162,6 +163,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
               return;
           }
+          
+          list.innerHTML = users.map(u => {
+              const isSystemAdmin = u._id === 'system_admin_id' || u.username === 'ADMIN 🦈';
+              // УВАГА: Додано class="u-row animate" і inline styles, щоб гарантувати видимість
+              return `
+                <div class="u-row animate" style="opacity: 1; transform: none;">
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-size:16px; font-weight:bold; color:#fff;">
+                            ${u.username} ${isSystemAdmin ? '<i class="fa-solid fa-server" style="color:#666; font-size:10px; margin-left:5px;" title="System User"></i>' : ''}
+                        </span>
+                        <span style="font-size:12px; color:#666;">${u.email}</span>
+                        <span style="font-size:10px; color:#444; margin-top:2px;">Role: ${u.role}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        ${isSystemAdmin ? 
+                            '<span style="font-size:11px; color:#666; background:#111; padding:5px 10px; border-radius:5px; border:1px solid #333;">SYSTEM</span>' 
+                            : 
+                            `<select onchange="window.changeUserRole('${u.username}', this.value)" 
+                                    style="margin:0; padding:8px 12px; height:auto; width:auto; font-size:12px; border:1px solid #333; background:#050505; color:#fff; border-radius:8px; cursor:pointer;">
+                                <option value="member" ${u.role==='member'?'selected':''}>Member</option>
+                                <option value="support" ${u.role==='support'?'selected':''}>Support</option>
+                                <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
+                                <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                            </select>
+                            <button class="btn btn-outline" style="padding:8px 12px; border-color:rgba(231,76,60,0.3); color:#e74c3c;" onclick="window.banUser('${u.username}')" title="Видалити">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>`
+                        }
+                    </div>
+                </div>`;
+          }).join('');
+      } catch (err) {
+          console.error(err);
+          list.innerHTML = `<div style="color:#e74c3c; padding:15px;">Помилка завантаження списку.</div>`;
+      }
+  }
           
           list.innerHTML = users.map(u => {
               // Перевірка чи це системний адмін (щоб не дати видалити)

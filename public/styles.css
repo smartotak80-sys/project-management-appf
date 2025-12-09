@@ -24,7 +24,7 @@ body {
   position: relative;
 }
 
-/* --- BACKGROUND --- */
+/* --- BACKGROUND ANIMATION --- */
 .bg-animation {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: -1; pointer-events: none; overflow: hidden;
@@ -161,7 +161,6 @@ main { flex: 1; }
 }
 .auth-tabs button.active { color: #fff; border-color: var(--accent); background: rgba(255,42,42,0.05); }
 
-/* Inputs in Modal */
 .auth-content input {
     background: #0f1012; border: 1px solid #222; 
     padding: 15px; border-radius: 6px; color: #fff; margin-bottom: 15px; width: 100%;
@@ -170,23 +169,88 @@ main { flex: 1; }
 
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-/* --- DASHBOARD V3.0 STYLES --- */
-.dashboard-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; }
+/* --- DASHBOARD V3.0 STYLES (ВИПРАВЛЕНО) --- */
+.dashboard-modal { 
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: #000; z-index: 2000; 
+}
 .dashboard-modal.show { display: block; animation: fadeIn 0.3s; }
-.dashboard-window { display: flex; width: 100%; height: 100%; background: #050505; overflow: hidden; }
-.dash-sidebar { width: 300px; background: rgba(8,8,10,0.95); border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; padding: 30px 20px; }
-.dash-content { flex: 1; padding: 50px; overflow-y: auto; }
-.dash-close-global { position: absolute; top: 20px; right: 20px; z-index: 2050; background: rgba(0,0,0,0.5); border: 1px solid #333; color: #fff; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.dash-close-global:hover { background: var(--accent); }
-.dash-nav button { width: 100%; text-align: left; background: transparent; border: none; padding: 12px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 10px; border-radius: 8px; margin-bottom: 5px; }
-.dash-nav button.active { background: rgba(255,42,42,0.1); color: var(--accent); border: 1px solid rgba(255,42,42,0.2); }
-.glass-panel { background: rgba(18,18,22,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+
+.dashboard-window { 
+    display: flex; width: 100%; height: 100%; 
+    background: #050505; 
+    /* Ось тут красивий фон, якого не було на фото */
+    background-image: radial-gradient(circle at 10% 20%, rgba(255, 42, 42, 0.05) 0%, transparent 20%);
+    overflow: hidden; 
+}
+
+/* Сайдбар */
+.dash-sidebar { 
+    width: 300px; background: rgba(8,8,10,0.95); 
+    border-right: 1px solid rgba(255,255,255,0.08); 
+    display: flex; flex-direction: column; padding: 30px 20px; 
+    backdrop-filter: blur(10px);
+}
+
+/* Контентна частина */
+.dash-content { flex: 1; padding: 50px; overflow-y: auto; position: relative; }
+
+/* Кнопка закриття */
+.dash-close-global { 
+    position: absolute; top: 20px; right: 20px; z-index: 2050; 
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); 
+    color: #fff; width: 40px; height: 40px; border-radius: 12px; 
+    cursor: pointer; display: flex; align-items: center; justify-content: center; 
+    transition: 0.3s;
+}
+.dash-close-global:hover { background: var(--accent); transform: rotate(90deg); }
+
+/* Навігація в адмінці */
+.dash-nav button { 
+    width: 100%; text-align: left; background: transparent; border: none; 
+    padding: 14px; color: #888; cursor: pointer; display: flex; 
+    align-items: center; gap: 12px; border-radius: 8px; margin-bottom: 5px; 
+    transition: 0.3s; font-weight: 600;
+}
+.dash-nav button:hover { background: rgba(255,255,255,0.05); color: #fff; padding-left: 18px; }
+.dash-nav button.active { 
+    background: rgba(255,42,42,0.1); color: var(--accent); 
+    border: 1px solid rgba(255,42,42,0.2); 
+    box-shadow: 0 0 15px rgba(255,42,42,0.05);
+}
+
+/* --- ВАЖЛИВО: ПРИХОВУВАННЯ ВКЛАДОК --- */
+/* Цього не вистачало на вашому фото, тому все було купою */
+.dash-view { display: none; opacity: 0; transform: translateY(20px); transition: 0.4s; }
+.dash-view.active { display: block; opacity: 1; transform: translateY(0); }
+/* ------------------------------------- */
+
+.dash-header { 
+    display: flex; justify-content: space-between; align-items: center; 
+    margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.dash-header h2 { font-size: 28px; margin: 0; }
+
+.glass-panel { 
+    background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.08); 
+    border-radius: 16px; padding: 30px; margin-bottom: 25px; backdrop-filter: blur(20px);
+}
+
 .data-table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
-.data-table th { text-align: left; padding: 10px; color: #666; font-size: 12px; }
-.data-table td { padding: 12px; background: rgba(255,255,255,0.02); color: #ccc; }
-.stat-card { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
-.stat-card.accent-border { border-left: 3px solid var(--accent); }
-.modern-form input, .modern-form textarea, .modern-form select { width: 100%; background: #0f1012; border: 1px solid #333; padding: 12px; border-radius: 6px; color: #fff; margin-bottom: 15px; }
+.data-table th { text-align: left; padding: 15px; color: #666; font-size: 11px; font-weight: bold; }
+.data-table td { padding: 15px; background: rgba(255,255,255,0.02); color: #ccc; border-top: 1px solid rgba(255,255,255,0.02); }
+.data-table tr:hover td { background: rgba(255,255,255,0.05); color: #fff; }
+
+.stat-card { 
+    background: rgba(255,255,255,0.02); padding: 25px; border-radius: 14px; 
+    display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); 
+}
+.stat-card.accent-border { border-left: 3px solid var(--accent); background: linear-gradient(90deg, rgba(255,42,42,0.05), transparent); }
+
+.modern-form input, .modern-form textarea, .modern-form select { 
+    width: 100%; background: #0f1012; border: 1px solid #333; 
+    padding: 15px; border-radius: 8px; color: #fff; margin-bottom: 15px; 
+}
 
 /* UTILS */
 .logged-in-only { display: none !important; }

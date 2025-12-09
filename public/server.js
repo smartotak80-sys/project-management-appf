@@ -4,49 +4,37 @@ const mongoose = require("mongoose");
 const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const os = require('os');
 
 const app = express();
+// Railway автоматично видає порт через змінну PORT. Якщо ні - 3000.
 const PORT = process.env.PORT || 3000;
 
-// Отримуємо посилання з .env (твоє посилання на Railway)
+// Railway передає посилання на базу через цю змінну
 const MONGO_URI = process.env.MONGODB_URI;
 
-// --- ФУНКЦІЯ ОТРИМАННЯ ЛОКАЛЬНОГО IP (Для гри з друзями через Radmin/LAN) ---
-function getLocalExternalIP() {
-    const interfaces = os.networkInterfaces();
-    for (const name of Object.keys(interfaces)) {
-        for (const iface of interfaces[name]) {
-            if ('IPv4' === iface.family && !iface.internal) {
-                return iface.address;
-            }
-        }
-    }
-    return 'localhost';
+console.log("------------------------------------------------");
+console.log("🦈 BARRACUDA FAMILY SYSTEM - RAILWAY EDITION");
+console.log("------------------------------------------------");
+
+if (!MONGO_URI) {
+    console.error("❌ ПОМИЛКА: Немає посилання на базу даних (MONGODB_URI)!");
+    console.error("👉 Зайди в Railway -> Variables і додай MONGODB_URI");
+} else {
+    mongoose.set('strictQuery', false);
+    mongoose.connect(MONGO_URI)
+        .then(() => console.log("✅ ХМАРНА БАЗА ДАНИХ ПІДКЛЮЧЕНА!"))
+        .catch(err => console.error("❌ ПОМИЛКА ПІДКЛЮЧЕННЯ ДО БД:", err.message));
 }
-
-console.log("------------------------------------------------");
-console.log("🦈 BARRACUDA FAMILY SYSTEM");
-console.log("☁️  Підключення до хмарної бази Railway...");
-console.log("------------------------------------------------");
-
-// Налаштування для стабільного підключення до хмари
-mongoose.set('strictQuery', false);
-
-mongoose.connect(MONGO_URI)
-    .then(() => {
-        console.log("✅ ХМАРНА БАЗА ДАНИХ ПІДКЛЮЧЕНА!");
-        console.log("   Тепер дані зберігаються в інтернеті.");
-    })
-    .catch(err => {
-        console.error("❌ ПОМИЛКА ПІДКЛЮЧЕННЯ:");
-        console.error(err.message);
-        console.log("👉 Перевір, чи правильне посилання в файлі .env");
-    });
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// ВАЖЛИВО: Railway шукає файли сайту. 
+// Переконайся, що index.html, script.js та styles.css лежать 
+// АБО поруч з server.js, АБО в папці 'public'.
+// Цей код спочатку шукає папку 'public', а якщо її немає - роздає з кореня.
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname)); 
 
 // --- СХЕМИ ---
 const UserSchema = new mongoose.Schema({
@@ -87,14 +75,14 @@ const TicketSchema = new mongoose.Schema({
 });
 const Ticket = mongoose.model('Ticket', TicketSchema);
 
-// --- API ROUTES ---
+// --- API ---
 
 // AUTH
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-        if (existingUser) return res.status(400).json({ success: false, message: 'Логін/Email зайняті' });
+        if (existingUser) return res.status(400).json({ success: false, message: 'Логін або Email зайняті' });
         await new User({ username, email, password, role: 'member' }).save();
         res.json({ success: true, message: 'ОК' });
     } catch (err) { res.status(500).json({ success: false, message: 'Помилка сервера' }); }
@@ -102,6 +90,7 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
+    // Адмін пароль беремо зі змінних Railway або стандартний
     const adminLogin = process.env.ADMIN_LOGIN || 'admin';
     const adminPass = process.env.ADMIN_PASS || 'admin';
 
@@ -120,7 +109,7 @@ app.put('/api/users/:username/role', async (req, res) => {
     catch(e) { res.status(500).json({ success: false }); }
 });
 
-// MEMBERS & CONTENT
+// ROUTES
 app.post('/api/members', async (req, res) => { try { await new Member(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 app.get('/api/members', async (req, res) => { const m = await Member.find().sort({ createdAt: -1 }); res.json(m.map(x => ({ ...x._doc, id: x._id }))); });
 app.put('/api/members/:id', async (req, res) => { await Member.findByIdAndUpdate(req.params.id, req.body); res.json({ success: true }); });
@@ -153,13 +142,17 @@ app.post('/api/tickets', async (req, res) => { try { await new Ticket(req.body).
 app.get('/api/tickets', async (req, res) => { const tickets = await Ticket.find().sort({ createdAt: -1 }); res.json(tickets.map(t => ({ ...t._doc, id: t._id }))); });
 app.put('/api/tickets/:id', async (req, res) => { try { const { message, status } = req.body; const update = {}; if (status) update.status = status; if (message) update.$push = { messages: message }; await Ticket.findByIdAndUpdate(req.params.id, update); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 
-// Фронтенд
-app.get("*", (req, res) => { res.sendFile(path.join(__dirname, "public", "index.html")); });
+// Обробка головної сторінки
+app.get("*", (req, res) => { 
+    // Спробуємо знайти index.html в public, якщо ні - в корені
+    const p1 = path.join(__dirname, "public", "index.html");
+    const p2 = path.join(__dirname, "index.html");
+    
+    res.sendFile(p1, (err) => {
+        if(err) res.sendFile(p2);
+    });
+});
 
 app.listen(PORT, '0.0.0.0', () => {
-    const ip = getLocalExternalIP();
-    console.log(`\n🚀 СЕРВЕР ЗАПУЩЕНО!`);
-    console.log(`💻 Вхід для тебе: http://localhost:${PORT}`);
-    console.log(`🌍 Вхід для друзів: http://${ip}:${PORT}`);
-    console.log(`\n✅ Підключено до Railway. Тепер не важливо, чи працює MongoDB на ПК.`);
+    console.log(`\n🚀 СЕРВЕР ЗАПУЩЕНО НА ПОРТУ ${PORT}!`);
 });

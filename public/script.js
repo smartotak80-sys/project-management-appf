@@ -58,21 +58,34 @@ document.addEventListener('DOMContentLoaded', () => {
       if(yearEl) yearEl.textContent = new Date().getFullYear();
   }
 
-  // --- АНІМАЦІЇ ---
+  // --- АНІМАЦІЇ (ВИПРАВЛЕНО) ---
   function activateScrollAnimations() {
       const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
               if (entry.isIntersecting) {
+                  // Стандартна анімація появи
                   entry.target.classList.add('animate-visible');
                   entry.target.classList.remove('animate-hidden');
+                  
+                  // Спеціально для тексту "ХТО МИ Є"
+                  if (entry.target.classList.contains('reveal-on-scroll')) {
+                      entry.target.classList.add('visible');
+                  }
+                  
                   observer.unobserve(entry.target);
               }
           });
       }, { threshold: 0.1 });
 
-      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card');
+      // Додано .reveal-on-scroll до списку елементів
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .reveal-on-scroll');
+      
       elements.forEach((el) => {
-          el.classList.add('animate-hidden');
+          // Якщо це не спец-блок reveal-on-scroll, додаємо стандартний прихований клас
+          if (!el.classList.contains('reveal-on-scroll')) {
+              el.classList.add('animate-hidden');
+          }
+          
           if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
               const idx = Array.from(el.parentElement.children).indexOf(el);
               el.style.transitionDelay = `${idx * 100}ms`;
@@ -360,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadMyTickets(); loadAllTickets();
   });
 
-  // --- AUTH UI UPDATE (ЗМІНЕНО ТУТ) ---
+  // --- AUTH UI UPDATE ---
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
@@ -368,16 +381,13 @@ document.addEventListener('DOMContentLoaded', () => {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           
-          // Змінено текст кнопки в шапці на "АКАУНТ"
           document.getElementById('authBtnText').textContent = 'АКАУНТ';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
           
           if(applyText) applyText.style.display = 'none';
           
-          // Змінено текст кнопки подачі заявки на "ПОДАТИ ЗАЯВКУ"
           if(applyBtn) { 
               applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> ПОДАТИ ЗАЯВКУ'; 
-              // При кліку тепер відкривається вкладка 'apply', а не профіль
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
       } else {

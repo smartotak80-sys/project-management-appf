@@ -38,8 +38,8 @@
             <li><a href="#events">Події</a></li>
             <li><a href="#gallery">Галерея</a></li>
             <li><a href="#apply" class="primary">Подати заявку</a></li>
-            <li class="auth-li">
-              <button id="openAuthBtn" class="btn btn-primary btn-small">
+            <li style="margin-left: 20px; padding-left: 20px; border-left: 1px solid rgba(255,255,255,0.1);">
+              <button id="openAuthBtn" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;">
                 <i class="fa-solid fa-user"></i> <span id="authBtnText">Вхід</span>
               </button>
             </li>
@@ -51,12 +51,12 @@
     <main>
       <section id="home" class="hero">
         <div class="container">
-          <div style="max-width: 650px;">
+          <div style="max-width: 600px;">
             <h1 class="glitch-text">Barracuda Family</h1>
-            <p class="lead">Елітна організація на сервері Stake RP. Дисципліна, стиль, домінування.</p>
+            <p class="lead">Ми — організована, дисциплінована родина в світі Stake RP. Рольова гра, операції, території та стиль — це про нас.</p>
             <div style="display:flex; gap:15px; flex-wrap: wrap;">
-              <a href="#apply" class="btn btn-primary btn-large">Приєднатися</a>
-              <a href="#members" class="btn btn-outline btn-large">Склад сім'ї</a>
+              <a href="#apply" class="btn btn-primary btn-large">Стати частиною сім'ї</a>
+              <a href="#members" class="btn btn-outline btn-large">Дивитися учасників</a>
             </div>
           </div>
         </div>
@@ -64,20 +64,21 @@
 
       <section id="about" class="section">
         <div class="container">
-          <h2>Хто ми є</h2>
+          <h2>Про Barracuda Family</h2>
+          <p class="muted">Згуртована команда гравців на сервері Stake RP.</p>
           <div class="cards">
-            <article class="card"><div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div><h3>Місія</h3><p>Створення якісного RP контенту та домінування в ігровому світі.</p></article>
-            <article class="card"><div class="card-icon"><i class="fa-solid fa-users"></i></div><h3>Братерство</h3><p>Ми — одна велика сім'я. Один за всіх і всі за одного.</p></article>
-            <article class="card"><div class="card-icon"><i class="fa-solid fa-trophy"></i></div><h3>Успіх</h3><p>Ми завжди досягаємо своїх цілей, незважаючи на перешкоди.</p></article>
+            <article class="card"><div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div><h3>Місія</h3><p>Розвивати цікаві та драматичні історії всередині сервера.</p></article>
+            <article class="card"><div class="card-icon"><i class="fa-solid fa-user-shield"></i></div><h3>Методи</h3><p>Координація дій, планування операцій та взаємна допомога.</p></article>
+            <article class="card"><div class="card-icon"><i class="fa-solid fa-chart-line"></i></div><h3>Розвиток</h3><p>Підтримка нових гравців та кар'єрний ріст.</p></article>
           </div>
         </div>
       </section>
 
       <section id="members" class="section">
         <div class="container">
-          <h2>Наші Учасники</h2>
+          <h2>Учасники</h2>
           <div class="members-controls">
-            <input id="memberSearch" placeholder="🔍 Пошук бійця...">
+            <input id="memberSearch" placeholder="Пошук за іменем або роллю...">
           </div>
           <div id="membersGrid" class="members-grid"></div>
         </div>
@@ -85,78 +86,50 @@
 
       <section id="events" class="section alt">
         <div class="container">
-          <h2>Новини</h2>
-          <div id="adminNewsControls" class="admin-controls-panel" style="display:none;">
-             <h3>Керування новинами</h3>
-             <div class="form-row">
-                 <input id="newsTitle" placeholder="Заголовок">
-                 <input id="newsDate" type="date">
-             </div>
-             <textarea id="newsSummary" placeholder="Текст новини..."></textarea>
-             <button id="addNewsBtn" class="btn btn-primary full-width"><i class="fa-solid fa-plus"></i> Опублікувати</button>
+          <h2>Новини та події</h2>
+          <div class="events-controls admin-only">
+            <input id="newsTitle" placeholder="Заголовок">
+            <input id="newsDate" type="date">
+            <textarea id="newsSummary" placeholder="Опис події..."></textarea>
+            <button id="addNewsBtn" class="btn btn-primary">Додати</button>
+            <button id="updateNewsBtn" class="btn btn-primary" style="display:none; background: #e6b800;">Зберегти</button>
+            <button id="cancelNewsEditBtn" class="btn btn-outline" style="display:none;">Скасувати</button>
           </div>
-          <div id="newsList" class="news-list"></div>
+          <div id="newsList"></div>
         </div>
       </section>
 
       <section id="gallery" class="section">
         <div class="container">
-          <h2>Медіа</h2>
-           <div id="adminGalleryControls" class="admin-controls-panel" style="display:none;">
-               <h3>Додати фото</h3>
-               <div class="form-row">
-                   <input id="galleryUrl" placeholder="URL картинки (imgur, discord...)">
-                   <button id="addGalleryBtn" class="btn btn-primary">Додати</button>
-               </div>
-           </div>
+          <h2>Галерея</h2>
+          <div class="gallery-controls admin-only">
+            <input id="galleryUrl" placeholder="URL зображення">
+            <button id="addGalleryBtn" class="btn btn-primary">Додати фото</button>
+          </div>
           <div id="galleryGrid" class="gallery-grid"></div>
         </div>
       </section>
 
       <section id="apply" class="section alt">
-        <div class="container apply-container">
-          <h2 class="text-center">Вступ до Barracuda</h2>
-          
-          <div id="applyGuestBlock" class="apply-guest-box">
-              <i class="fa-solid fa-lock" style="font-size: 40px; color: var(--accent); margin-bottom: 20px;"></i>
-              <p>Для подачі заявки на вступ необхідно авторизуватися в системі.</p>
-              <button onclick="document.getElementById('openAuthBtn').click()" class="btn btn-red-glow">
+        <div class="container" style="text-align: center;">
+          <h2 style="border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 5px;">ЯК ПОДАТИ ЗАЯВКУ?</h2>
+          <p style="color:#bbb; margin-bottom:40px; font-size:18px; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Ми дбаємо про безпеку та порядок. Щоб подати заявку на вступ, ви повинні увійти до особистого кабінету.
+          </p>
+          <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+              <button onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large" style="min-width: 250px;">
                   <i class="fa-solid fa-right-to-bracket"></i> Увійти в кабінет
               </button>
-              <div class="discord-link">
-                  або <a href="https://discord.gg/CxYnyKeb" target="_blank">перейти в Discord</a>
-              </div>
+              <a href="https://discord.gg/CxYnyKeb" target="_blank" class="btn btn-outline btn-large" style="min-width: 250px;">
+                  <i class="fa-brands fa-discord"></i> Наш Discord
+              </a>
           </div>
-
-          <div id="applyUserBlock" style="display:none;">
-              
-              <div id="appStatusBox" class="status-card" style="display:none;">
-                  <div class="status-icon"><i class="fa-solid fa-clock"></i></div>
-                  <h3>Ваша заявка на розгляді</h3>
-                  <div class="status-value" id="publicAppStatus">PENDING</div>
-                  <p>Слідкуйте за статусом в особистому кабінеті або Discord.</p>
-              </div>
-
-              <div id="publicAppFormContainer">
-                  <p class="text-center muted" style="margin-bottom:30px;">Заповніть анкету. Будьте чесними.</p>
-                  <form id="publicApplyForm" class="modern-form" style="max-width: 600px; margin: 0 auto;">
-                      <div class="form-grid">
-                        <input type="text" id="pAppRlNameAge" required placeholder="Ваше ім'я та вік (OOC)">
-                        <input type="text" id="pAppOnline" required placeholder="Ваш онлайн та пояс">
-                      </div>
-                      <textarea id="pAppHistory" required rows="4" placeholder="Де грали раніше? Історія фракцій/сімей"></textarea>
-                      <input type="text" id="pAppVideo" required placeholder="Посилання на відкат стрільби (YouTube)">
-                      <button type="submit" class="btn btn-primary full-width btn-large">Надіслати анкету <i class="fa-solid fa-paper-plane"></i></button>
-                  </form>
-              </div>
-          </div>
-
         </div>
       </section>
     </main>
     
-    <footer>
-      <div class="container"><p>© <span id="year"></span> Barracuda Family.</p></div>
+    <footer style="padding:40px 0; text-align:center; border-top:1px solid #222; margin-top:50px;">
+      <div class="container"><p style="color:#555;">© <span id="year"></span> Barakuda Family — Stake RP.</p></div>
     </footer>
   </div>
 
@@ -171,41 +144,43 @@
 
         <div class="dash-sidebar" id="dashSidebar">
             <div class="dash-brand">
-                <i class="fa-solid fa-shield-cat"></i> BARRACUDA <span class="sys-badge">SYS</span>
+                <i class="fa-solid fa-shield-cat"></i> BARRACUDA <span style="color:var(--accent)">SYS</span>
             </div>
             
             <div class="dash-user-card">
-                <div class="dash-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="dash-avatar"><i class="fa-solid fa-user-astronaut"></i></div>
                 <div class="dash-info">
-                    <span id="dashUsername">...</span>
-                    <small id="dashRole">...</small>
+                    <span id="dashUsername">User</span>
+                    <small id="dashRole">Member</small>
                 </div>
             </div>
 
             <nav class="dash-nav">
-                <div class="nav-label">MAIN</div>
-                <button class="active" onclick="switchDashTab('profile')"><i class="fa-solid fa-id-card"></i> Профіль</button>
+                <div class="nav-section-label">МЕНЮ</div>
+                <button class="active" onclick="switchDashTab('profile')"><i class="fa-regular fa-id-card"></i> Профіль</button>
                 <button onclick="switchDashTab('my-member')"><i class="fa-solid fa-user-tag"></i> Мій Персонаж</button>
+                <button onclick="switchDashTab('apply')"><i class="fa-solid fa-file-pen"></i> Заявка</button>
                 <button onclick="switchDashTab('support-user')"><i class="fa-solid fa-headset"></i> Підтримка</button>
                 
                 <div class="staff-only-nav" style="display:none;">
-                    <div class="nav-label">STAFF</div>
-                    <button id="navAppsBtn" onclick="switchDashTab('applications')"><i class="fa-solid fa-envelope-open-text"></i> Заявки <span id="appBadge" class="nav-badge" style="display:none">0</span></button>
+                    <div class="nav-section-label">STAFF</div>
+                    <button id="navAppsBtn" onclick="switchDashTab('applications')"><i class="fa-solid fa-envelope-open-text"></i> Заявки</button>
                     <button id="navTicketsBtn" onclick="switchDashTab('support-staff')"><i class="fa-solid fa-clipboard-list"></i> Тікети</button>
                 </div>
                 
                 <div class="admin-only-nav" style="display:none;">
-                    <div class="nav-label">ADMIN</div>
-                    <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-users"></i> Склад сім'ї</button>
+                    <div class="nav-section-label">ADMIN</div>
                     <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> Користувачі</button>
+                    <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-users"></i> Склад сім'ї</button>
                     <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> Логи</button>
                 </div>
             </nav>
 
             <div class="dash-footer">
-                <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-power-off"></i> Вийти</button>
+                <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Вийти</button>
             </div>
         </div>
+
         <div class="dash-sidebar-overlay" id="dashOverlay"></div>
 
         <div class="dash-content">
@@ -214,11 +189,17 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon"><i class="fa-solid fa-fingerprint"></i></div>
-                        <div class="stat-text"><label>Логін</label><div id="pLogin">---</div></div>
+                        <div class="stat-info">
+                            <label>Ваш Логін</label>
+                            <div id="pLogin">---</div>
+                        </div>
                     </div>
                     <div class="stat-card accent">
-                        <div class="stat-icon"><i class="fa-solid fa-crown"></i></div>
-                        <div class="stat-text"><label>Роль</label><div id="pRole">---</div></div>
+                        <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+                        <div class="stat-info">
+                            <label>Ваша Роль</label>
+                            <div id="pRole">---</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,33 +207,51 @@
             <div id="tab-my-member" class="dash-view">
                 <div class="dash-header"><h2>Мій Персонаж</h2></div>
                 <div id="myMemberContainer" class="glass-panel"></div>
-                <div id="myMemberStatusPanel" class="glass-panel" style="display:none; margin-top:20px;">
-                    <h4>Статус</h4>
+                <div id="myMemberStatusPanel" class="glass-panel" style="display:none; margin-top: 20px;">
+                    <h4 style="margin-top:0"><i class="fa-solid fa-toggle-on"></i> Статус</h4>
                     <div class="control-group">
                         <select id="memberStatusSelect">
                             <option value="Активний">🟢 Активний</option>
                             <option value="Патруль">🔵 Патруль</option>
                             <option value="Неактив">🔴 Неактив</option>
                         </select>
-                        <button id="saveStatusBtn" class="btn btn-primary">Зберегти</button>
+                        <button id="saveStatusBtn" class="btn btn-primary">Оновити</button>
                     </div>
                 </div>
+            </div>
+
+            <div id="tab-apply" class="dash-view">
+                <div class="dash-header"><h2>Вступ до сім'ї</h2></div>
+                <div id="applyStatusContainer" class="status-box" style="display:none; background: rgba(46, 204, 113, 0.1); padding: 20px; border-radius: 12px; border: 1px solid #2ecc71;">
+                    <h3 style="margin-top:0">Статус: <span id="myAppStatus" style="color: #2ecc71;">---</span></h3>
+                    <p style="margin-bottom:0">Очікуйте рішення адміністрації.</p>
+                </div>
+                <form id="dashAppForm" class="modern-form">
+                    <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Заповніть анкету чесно. (IC + OOC інформація)</p>
+                    <div class="form-grid">
+                        <input type="text" id="appRlNameAge" required placeholder="Ваше ім'я та вік (OOC)">
+                        <input type="text" id="appOnline" required placeholder="Ваш онлайн та пояс">
+                    </div>
+                    <textarea id="appHistory" required rows="3" placeholder="Історія фракцій/сімей"></textarea>
+                    <input type="text" id="appVideo" required placeholder="Посилання на відкат стрільби (YouTube)">
+                    <button type="submit" class="btn btn-primary full-width btn-large">Надіслати заявку</button>
+                </form>
             </div>
 
             <div id="tab-support-user" class="dash-view">
                 <div class="dash-header"><h2>Підтримка</h2></div>
                 <div class="split-view">
                     <div class="glass-panel">
-                        <h3>Створити тікет</h3>
+                        <h3 style="margin-top:0"><i class="fa-solid fa-plus-circle"></i> Новий тікет</h3>
                         <form id="createTicketForm" class="modern-form">
-                            <input type="text" id="ticketTitle" placeholder="Тема" required>
-                            <textarea id="ticketMessage" rows="4" placeholder="Повідомлення..." required></textarea>
-                            <button type="submit" class="btn btn-primary full-width">Надіслати</button>
+                            <input type="text" id="ticketTitle" placeholder="Тема питання" required>
+                            <textarea id="ticketMessage" rows="4" placeholder="Опишіть проблему..." required></textarea>
+                            <button type="submit" class="btn btn-primary full-width">Створити</button>
                         </form>
                     </div>
-                    <div class="glass-panel flex-grow">
-                        <h3>Ваші звернення</h3>
-                        <div id="myTicketsList" class="scroll-list"></div>
+                    <div class="glass-panel" style="flex:1;">
+                        <h3 style="margin-top:0"><i class="fa-solid fa-list"></i> Ваші тікети</h3>
+                        <div id="myTicketsList" class="scroll-list" style="max-height: 400px; overflow-y: auto;"></div>
                     </div>
                 </div>
             </div>
@@ -263,46 +262,46 @@
             </div>
 
             <div id="tab-support-staff" class="dash-view">
-                <div class="dash-header"><h2>Всі Тікети</h2></div>
+                <div class="dash-header"><h2>Всі Тікети (Support)</h2></div>
                 <div id="allTicketsList" class="grid-list"></div>
+            </div>
+
+            <div id="tab-users" class="dash-view">
+                <div class="dash-header"><h2>Керування Ролями</h2></div>
+                <div id="adminUsersList" class="compact-list"></div>
             </div>
 
             <div id="tab-admin-members" class="dash-view">
                 <div class="dash-header">
-                    <h2>Керування складом</h2>
-                    <button onclick="toggleAdminAddMember()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Додати учасника</button>
+                    <h2>Склад Сім'ї</h2>
+                    <button id="openAdminAddMember" class="btn btn-icon btn-primary"><i class="fa-solid fa-user-plus"></i></button>
                 </div>
                 
-                <div id="adminAddMemberContainer" class="glass-panel animate-slide-down" style="display:none; margin-bottom:20px; border-color:var(--accent);">
-                    <h3 style="margin-top:0; color:var(--accent);">Новий учасник</h3>
+                <div id="adminAddMemberContainer" class="glass-panel animate-slide-down" style="display:none; margin-bottom:20px;">
+                    <h3 style="margin-top:0">Додати / Редагувати</h3>
                     <form id="adminAddMemberForm" class="modern-form">
                         <input type="hidden" id="admId">
                         <div class="form-grid">
-                            <input type="text" id="admName" placeholder="IC Ім'я (напр. Alex Barracuda)" required>
+                            <input type="text" id="admName" placeholder="Ім'я (IC)" required>
                             <input type="text" id="admRole" placeholder="Ранг" required>
                         </div>
-                        <input type="text" id="admOwner" placeholder="Логін користувача (для прив'язки)" required>
+                        <input type="text" id="admOwner" placeholder="Логін власника (User Login)" required>
                         <div class="form-grid">
-                            <input type="text" id="admDiscord" placeholder="Discord Tag">
+                            <input type="text" id="admDiscord" placeholder="Discord ID/Tag">
                             <input type="text" id="admYoutube" placeholder="YouTube Link">
                         </div>
-                        <button type="submit" class="btn btn-primary full-width">ЗБЕРЕГТИ УЧАСНИКА</button>
+                        <button type="submit" class="btn btn-primary full-width">Зберегти</button>
                     </form>
                 </div>
 
-                <input id="adminMemberSearchInput" class="search-input" placeholder="Пошук по базі...">
+                <input id="adminMemberSearchInput" class="search-input" placeholder="Пошук учасника..." style="margin-bottom:15px;">
                 <div id="adminMembersList" class="compact-list"></div>
-            </div>
-
-            <div id="tab-users" class="dash-view">
-                <div class="dash-header"><h2>Користувачі сайту</h2></div>
-                <div id="adminUsersList" class="compact-list"></div>
             </div>
 
             <div id="tab-logs" class="dash-view">
                 <div class="dash-header">
-                    <h2>System Logs</h2>
-                    <button onclick="window.clearLogs()" class="btn btn-outline btn-small">Clear</button>
+                    <h2>Системні Логи</h2>
+                    <button onclick="window.clearLogs()" class="btn btn-outline btn-small" style="padding: 5px 10px; font-size:12px;">Очистити</button>
                 </div>
                 <div id="systemLogsList" class="terminal-view"></div>
             </div>
@@ -326,19 +325,19 @@
         <input type="text" id="regUser" placeholder="Логін" required>
         <input type="email" id="regEmail" placeholder="Email" required>
         <input type="password" id="regPass" placeholder="Пароль" required>
-        <input type="password" id="regPassConfirm" placeholder="Підтвердження" required>
-        <button type="submit" class="btn btn-primary full-width btn-large">Створити акаунт</button>
+        <input type="password" id="regPassConfirm" placeholder="Повторіть пароль" required>
+        <button type="submit" class="btn btn-primary full-width btn-large">Зареєструватися</button>
       </form>
     </div>
   </div>
 
   <div id="customConfirmModal" class="custom-modal">
     <div class="custom-modal-content" style="max-width:300px; text-align:center;">
-        <i class="fa-solid fa-triangle-exclamation" style="font-size:40px; color:#e74c3c; margin-bottom:15px;"></i>
-        <p id="confirmMessage" style="color:#fff; margin-bottom:20px; font-size:16px;">Ви впевнені?</p>
+        <span id="closeConfirmModal" class="close-modal">&times;</span>
+        <p id="confirmMessage" style="color:#fff; margin-bottom:20px;"></p>
         <div style="display:flex; gap:10px; justify-content:center;">
             <button id="confirmCancelBtn" class="btn btn-outline">Ні</button>
-            <button id="confirmOkBtn" class="btn btn-primary" style="background:#e74c3c; border:none;">Так, видалити</button>
+            <button id="confirmOkBtn" class="btn btn-primary">Так</button>
         </div>
     </div>
   </div>
@@ -349,9 +348,9 @@
           <h3 id="tmTitle" style="border-bottom:1px solid #333; padding-bottom:10px; margin-top:0;">Ticket</h3>
           <div id="tmMessages" style="flex:1; overflow-y:auto; background:#111; padding:15px; border-radius:8px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;"></div>
           <div style="display:flex; gap:10px;">
-              <input type="text" id="tmInput" placeholder="Написати повідомлення..." style="margin:0;">
-              <button id="tmSendBtn" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
-              <button id="tmCloseTicketBtn" class="btn btn-outline" style="color:#e74c3c; border-color:#e74c3c;">Закрити Тікет</button>
+              <input type="text" id="tmInput" placeholder="Відповісти..." style="margin:0;">
+              <button id="tmSendBtn" class="btn btn-primary">Надіслати</button>
+              <button id="tmCloseTicketBtn" class="btn btn-outline" style="color:#e74c3c; border-color:#e74c3c;">Закрити</button>
           </div>
       </div>
   </div>

@@ -573,3 +573,84 @@ body.is-admin .admin-only-nav { display: block !important; }
     margin-top: 35px; flex-wrap: wrap; width: 100%;
 }
 .action-buttons .btn { min-width: 220px; }
+
+
+/* --- НОВИЙ ДИЗАЙН "ХТО МИ Є" --- */
+
+.about-text-block.cyber-card {
+    position: relative;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(20, 20, 25, 0.9), rgba(10, 10, 12, 0.95));
+    border-left: 4px solid var(--accent); /* Червона лінія зліва */
+    border-right: 1px solid rgba(255, 42, 42, 0.1);
+    border-radius: 4px; /* Більш квадратні кути для суворості */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Щоб анімація не вилазила */
+    margin-bottom: 50px;
+}
+
+/* Стиль тексту */
+.about-text-block p {
+    color: #ccc;
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    text-align: justify; /* Вирівнювання по ширині */
+    font-family: var(--font-body);
+    position: relative;
+    z-index: 2;
+}
+
+.about-text-block p:last-child {
+    margin-bottom: 0;
+}
+
+/* Виділення слів (червоний неон) */
+.highlight-text {
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--accent-glow);
+    border-bottom: 1px dashed var(--accent);
+}
+
+/* --- АНІМАЦІЯ "СКАНУВАННЯ" --- */
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10px; /* Висота променя */
+    background: linear-gradient(to bottom, transparent, var(--accent));
+    opacity: 0.5;
+    filter: blur(5px);
+    z-index: 1;
+    animation: scanning 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Додатковий фон-сітка тільки для цього блоку */
+.cyber-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+@keyframes scanning {
+    0% { top: -10%; opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { top: 110%; opacity: 0; }
+}
+
+/* Ефект при наведенні мишкою */
+.cyber-card:hover {
+    border-left-color: #fff;
+    box-shadow: 0 0 20px rgba(255, 42, 42, 0.15);
+}

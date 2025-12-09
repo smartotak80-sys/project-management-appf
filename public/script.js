@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
       m.classList.add('show');
       const clean=(r)=>{ m.classList.remove('show'); ok.onclick=null; if(cb)cb(r); };
       ok.onclick=()=>clean(true); document.getElementById('confirmCancelBtn').onclick=()=>clean(false);
-      // document.getElementById('closeConfirmModal').onclick=()=>clean(false); // Can be removed if not needed
   }
 
   let currentUser = loadCurrentUser(); 
@@ -87,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.switchDashTab = (tab) => {
-      // Security Check
       if(['users', 'admin-members', 'logs', 'accounts-data'].includes(tab)) {
           if(!currentUser || currentUser.role !== 'admin') {
               showToast('ACCESS DENIED: ADMIN LEVEL REQUIRED', 'error');
@@ -111,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(tab === 'admin-members') loadAdminMembers();
       if(tab === 'logs') renderLogs();
       if(tab === 'my-member') loadMyMemberTab();
-      if(tab === 'accounts-data') loadAccountsData(); // NEW TAB
+      if(tab === 'accounts-data') loadAccountsData();
   };
 
   window.openDashboard = () => {
@@ -139,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       switchDashTab('profile');
   }
 
-  // --- NEW FEATURE: ACCOUNTS DATA ---
+  // --- ACCOUNTS DATA ---
   window.loadAccountsData = async () => {
       const tbody = document.getElementById('accountsDataTableBody');
       if(!tbody) return;
@@ -162,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `).join('');
   };
 
-  // --- ROLE MANAGEMENT (Admin) ---
+  // --- ADMIN USERS (Fix for visibility) ---
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
       if (!list) return;
@@ -210,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
       addLog(`Admin changed role of ${u} to ${role}`);
       loadUsersAdmin(); 
   };
-  
   window.banUser = async (u) => customConfirm(`DELETE USER ${u}?`, async(r)=>{ 
       if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('User Deleted'); loadUsersAdmin(); }
   });
@@ -377,11 +374,23 @@ document.addEventListener('DOMContentLoaded', () => {
       if(res && res.success) { showToast('CREATED. PLEASE LOGIN.'); document.getElementById('tabLogin').click(); }
   });
 
+  // --- ADMIN MEMBERS (Fix: Added empty check & Forced visibility) ---
   async function loadAdminMembers() {
       const list = document.getElementById('adminMembersList');
       const m = await apiFetch('/api/members');
-      list.innerHTML = m.map(x => `<div class="u-row animate" style="opacity:1; transform:none;"><div>${x.name} <small>(${x.role})</small></div><button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">DEL</button></div>`).join('');
+      
+      if(!m || m.length === 0) {
+          list.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Ще немає учасників сім\'ї. Додайте їх зверху ⬆️</div>';
+          return;
+      }
+
+      list.innerHTML = m.map(x => `
+        <div class="u-row animate" style="opacity:1; transform:none;">
+            <div>${x.name} <small>(${x.role})</small></div>
+            <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">DEL</button>
+        </div>`).join('');
   }
+  
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
   document.getElementById('adminAddMemberForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
@@ -405,11 +414,21 @@ document.addEventListener('DOMContentLoaded', () => {
       } else { container.innerHTML = `<p style="color:#aaa;">NO MEMBER ASSIGNED.</p>`; document.getElementById('myMemberStatusPanel').style.display='none'; }
   }
 
+  // --- PUBLIC MEMBERS (Fix: Forced visibility) ---
   function renderPublicMembers() {
       const g = document.getElementById('membersGrid');
-      g.innerHTML = members.map(m=>`<div class="member glass"><h3>${m.name}</h3><div class="role-badge">${m.role}</div>${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#aaa;">${m.links.discord}</div>`:''}</div>`).join('');
-      activateScrollAnimations();
+      if(!members || members.length === 0) {
+          g.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666;">Список учасників порожній.</div>';
+          return;
+      }
+      g.innerHTML = members.map(m=>`
+        <div class="member glass animate" style="opacity:1; transform:none;">
+            <h3>${m.name}</h3>
+            <div class="role-badge">${m.role}</div>
+            ${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#aaa;">${m.links.discord}</div>`:''}
+        </div>`).join('');
   }
+  
   function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card glass"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); }
   function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div class="glass" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); }
   window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };

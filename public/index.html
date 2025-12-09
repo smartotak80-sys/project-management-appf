@@ -1,325 +1,503 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Barracuda Family — Stake RP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Courier+New&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BARRACUDA FAMILY | GTA 5 RP</title>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --dark: #0a0a0a;
+            --gray: #1a1a1a;
+            --text: #ffffff;
+            --danger: #ff4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Анімації */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes glow { 0% { box-shadow: 0 0 5px var(--primary); } 50% { box-shadow: 0 0 20px var(--primary); } 100% { box-shadow: 0 0 5px var(--primary); } }
+
+        /* Навігація */
+        nav {
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 24px; font-weight: bold; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+        .nav-links button {
+            background: none; border: none; color: white; margin-left: 20px; cursor: pointer; font-size: 16px; transition: 0.3s;
+        }
+        .nav-links button:hover { color: var(--primary); }
+
+        /* Контейнер */
+        .container { max-width: 1200px; margin: 100px auto; padding: 20px; min-height: 80vh; }
+
+        /* Секції */
+        .section { display: none; animation: fadeIn 0.5s ease; }
+        .section.active { display: block; }
+
+        /* Герой блок */
+        .hero { text-align: center; padding: 50px 0; }
+        .hero h1 { font-size: 60px; color: var(--primary); text-shadow: 0 0 10px var(--primary); margin-bottom: 20px; }
+        .btn-main {
+            padding: 15px 40px; background: var(--primary); color: var(--dark); border: none;
+            font-size: 18px; font-weight: bold; cursor: pointer; clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+            transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+
+        /* Картки та форми */
+        .card { background: var(--gray); padding: 20px; margin-bottom: 20px; border-left: 4px solid var(--primary); }
+        .form-group { margin-bottom: 15px; }
+        input, textarea, select {
+            width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: white; margin-top: 5px;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
+
+        /* Таблиці */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--gray); }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: var(--primary); text-transform: uppercase; }
+        tr:hover { background: #222; }
+
+        /* Статуси */
+        .status-pending { color: orange; }
+        .status-accepted { color: var(--primary); }
+        .status-rejected { color: var(--danger); }
+
+        /* Кнопки дій */
+        .btn-sm { padding: 5px 10px; cursor: pointer; border: none; color: white; font-size: 12px; margin-right: 5px; }
+        .btn-green { background: green; }
+        .btn-red { background: var(--danger); }
+        .btn-blue { background: blue; }
+
+        /* Повідомлення про ліміт */
+        .alert { background: var(--danger); color: white; padding: 10px; margin-bottom: 10px; display: none; text-align: center; }
+    </style>
 </head>
 <body>
-  <div id="preloader">
-      <div class="loader-content">
-          <div class="loader-logo"></div>
-          <div class="loader-text">BARRACUDA FAMILY</div>
-          <div class="loader-bar"><div class="bar-fill"></div></div>
-      </div>
-  </div>
 
-  <div id="toastContainer"></div>
+    <nav>
+        <div class="logo">BARRACUDA FAMILY</div>
+        <div class="nav-links" id="navLinks">
+            <button onclick="showSection('home')">Головна</button>
+            <button onclick="showSection('news')">Новини</button>
+            <button onclick="showSection('members')">Склад</button>
+            <button onclick="showSection('apply')">Вступ</button>
+            <button id="adminBtn" style="display:none;" onclick="showSection('admin')">Адмінка</button>
+            <button id="authBtn" onclick="showSection('login')">Вхід</button>
+            <button id="logoutBtn" style="display:none;" onclick="logout()">Вихід</button>
+        </div>
+    </nav>
 
-  <div class="site">
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="brand" href="#home">
-          <div class="logo"></div>
-          <div class="brand-text">
-            <div class="title">Barracuda Family</div>
-            <div class="subtitle">Stake RP — GTA V Roleplay</div>
-          </div>
-        </a>
-        <button id="navToggle" class="nav-toggle">☰</button>
-        <nav class="site-nav" id="mainNav">
-          <ul>
-            <li><a href="#home">Головна</a></li>
-            <li><a href="#about">Про сім'ю</a></li>
-            <li><a href="#members">Учасники</a></li>
-            <li><a href="#events">Події</a></li>
-            <li><a href="#gallery">Галерея</a></li>
-            <li><a href="#apply" class="primary">Подати заявку</a></li>
-            <li style="margin-left: 20px; padding-left: 20px; border-left: 1px solid rgba(255,255,255,0.1);">
-              <button id="openAuthBtn" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;">
-                <i class="fa-solid fa-user"></i> <span id="authBtnText">Вхід</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-
-    <main>
-      <section id="home" class="hero">
-        <div class="container">
-          <div style="max-width: 600px;">
-            <h1 class="glitch-text">Barracuda Family</h1>
-            <p class="lead">Ми — організована, дисциплінована родина в світі Stake RP. Рольова гра, операції, території та стиль — це про нас.</p>
-            <div style="display:flex; gap:15px;">
-              <a href="#apply" class="btn btn-primary btn-large">Стати частиною сім'ї</a>
-              <a href="#members" class="btn btn-outline btn-large">Дивитися учасників</a>
+    <div class="container">
+        <div id="home" class="section active">
+            <div class="hero">
+                <h1>BARRACUDA</h1>
+                <p>Елітна сім'я GTA 5 RP. Ми — закон вулиць.</p>
+                <br>
+                <button class="btn-main" onclick="showSection('apply')">Приєднатися</button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="about" class="section">
-        <div class="container">
-          <h2>Про Barracuda Family</h2>
-          <p class="muted">Згуртована команда гравців на сервері Stake RP.</p>
-          <div class="cards">
-            <article class="card"><div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div><h3>Місія</h3><p>Розвивати цікаві та драматичні історії всередині сервера.</p></article>
-            <article class="card"><div class="card-icon"><i class="fa-solid fa-user-shield"></i></div><h3>Методи</h3><p>Координація дій, планування операцій та взаємна допомога.</p></article>
-            <article class="card"><div class="card-icon"><i class="fa-solid fa-chart-line"></i></div><h3>Розвиток</h3><p>Підтримка нових гравців та кар'єрний ріст.</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section id="members" class="section">
-        <div class="container">
-          <h2>Учасники</h2>
-          <div class="members-controls">
-            <input id="memberSearch" placeholder="Пошук за іменем або роллю...">
-          </div>
-          <div id="membersGrid" class="members-grid"></div>
-        </div>
-      </section>
-
-      <section id="events" class="section alt">
-        <div class="container">
-          <h2>Новини та події</h2>
-          <div class="events-controls admin-only">
-            <input id="newsTitle" placeholder="Заголовок">
-            <input id="newsDate" type="date">
-            <textarea id="newsSummary" placeholder="Опис події..."></textarea>
-            <button id="addNewsBtn" class="btn btn-primary">Додати</button>
-            <button id="updateNewsBtn" class="btn btn-primary" style="display:none; background: #e6b800;">Зберегти</button>
-            <button id="cancelNewsEditBtn" class="btn btn-outline" style="display:none;">Скасувати</button>
-          </div>
-          <div id="newsList"></div>
-        </div>
-      </section>
-
-      <section id="gallery" class="section">
-        <div class="container">
-          <h2>Галерея</h2>
-          <div class="gallery-controls admin-only">
-            <input id="galleryUrl" placeholder="URL зображення">
-            <button id="addGalleryBtn" class="btn btn-primary">Додати фото</button>
-          </div>
-          <div id="galleryGrid" class="gallery-grid"></div>
-        </div>
-      </section>
-
-      <section id="apply" class="section alt">
-        <div class="container" style="text-align: center;">
-          <h2 style="border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 5px;">ЯК ПОДАТИ ЗАЯВКУ?</h2>
-          <p style="color:#bbb; margin-bottom:40px; font-size:18px; max-width: 600px; margin-left: auto; margin-right: auto;">
-            Ми дбаємо про безпеку та порядок. Щоб подати заявку на вступ, ви повинні увійти до особистого кабінету.
-          </p>
-          <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-              <button onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large" style="min-width: 250px;">
-                  <i class="fa-solid fa-right-to-bracket"></i> Увійти в кабінет
-              </button>
-              <a href="https://discord.gg/CxYnyKeb" target="_blank" class="btn btn-outline btn-large" style="min-width: 250px;">
-                  <i class="fa-brands fa-discord"></i> Наш Discord
-              </a>
-          </div>
-        </div>
-      </section>
-    </main>
-    
-    <footer style="padding:40px 0; text-align:center; border-top:1px solid #222; margin-top:50px;">
-      <div class="container"><p style="color:#555;">© <span id="year"></span> Barakuda Family — Stake RP.</p></div>
-    </footer>
-  </div>
-
-  <div id="dashboardModal" class="dashboard-modal">
-    <div class="dashboard-window">
-        <div class="dash-sidebar">
-            <div class="dash-brand"><i class="fa-solid fa-layer-group"></i> PANEL</div>
-            <div class="dash-user-card">
-                <div class="dash-avatar"><i class="fa-solid fa-user"></i></div>
-                <div class="dash-info"><span id="dashUsername">User</span><small id="dashRole">Role</small></div>
+            <div class="card">
+                <h3>Про нас</h3>
+                <p>Найвпливовіша організація штату. Ми контролюємо бізнес, території та поважаємо лише силу і вірність.</p>
             </div>
-            <nav class="dash-nav">
-                <button class="active" onclick="switchDashTab('profile')"><i class="fa-regular fa-id-card"></i> Профіль</button>
-                <button onclick="switchDashTab('my-member')"><i class="fa-solid fa-user-tag"></i> Мій Персонаж</button>
-                <button onclick="switchDashTab('apply')"><i class="fa-solid fa-file-pen"></i> Заявка в сім'ю</button>
-                <button onclick="switchDashTab('support-user')"><i class="fa-solid fa-headset"></i> Support / Тікети</button>
-                
-                <div class="staff-only-nav" style="display:none; margin-top:15px; border-top:1px solid #222; padding-top:10px;">
-                    <small style="padding-left:10px; color:#555; text-transform:uppercase; font-size:10px;">Staff Zone</small>
-                    <button id="navAppsBtn" onclick="switchDashTab('applications')"><i class="fa-solid fa-envelope-open-text"></i> Вхідні Заявки</button>
-                    <button id="navTicketsBtn" onclick="switchDashTab('support-staff')"><i class="fa-solid fa-clipboard-list"></i> Всі Тікети</button>
-                </div>
-                
-                <div class="admin-only-nav" style="display:none; margin-top:5px;">
-                    <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> Користувачі (Roles)</button>
-                    <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-users"></i> Керування Учасниками</button>
-                    <button onclick="switchDashTab('logs')"><i class="fa-solid fa-list-ul"></i> Логи</button>
-                </div>
-                
-                <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Вийти</button>
-                <button id="closeDashBtn" class="btn-close-dash">Закрити</button>
-            </nav>
         </div>
 
-        <div class="dash-content">
-            <div id="tab-profile" class="dash-view active">
-                <h2>Особистий кабінет</h2>
-                <div style="background:#121315; padding:20px; border-radius:10px; border:1px solid #222;">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                        <div><label style="font-size:11px; color:#555;">ЛОГІН</label><div id="pLogin" style="font-size:18px; font-weight:bold; color:#fff;">---</div></div>
-                        <div><label style="font-size:11px; color:#555;">РОЛЬ</label><div id="pRole" style="font-size:18px; font-weight:bold; color:var(--accent);">---</div></div>
-                    </div>
+        <div id="news" class="section">
+            <h2>Новини Сім'ї</h2>
+            <div id="newsFeed"></div>
+        </div>
+
+        <div id="members" class="section">
+            <h2>Наш Склад</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ім'я</th>
+                        <th>Ранг</th>
+                        <th>Дата вступу</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody id="membersTablePublic"></tbody>
+            </table>
+        </div>
+
+        <div id="apply" class="section">
+            <div class="card">
+                <h2>Заявка на вступ</h2>
+                <div class="form-group">
+                    <label>Ваше Ім'я (IC):</label>
+                    <input type="text" id="applyName" placeholder="Name_Surname">
                 </div>
-            </div>
-
-            <div id="tab-my-member" class="dash-view">
-                <h2>Мій Персонаж</h2>
-                <div id="myMemberContainer"></div>
-                <div id="myMemberStatusPanel" style="display:none; margin-top: 20px; background:#121315; padding:20px; border-radius:10px; border:1px solid #222;">
-                    <label style="font-size:12px; color:#888;">ЗМІНИТИ СТАТУС</label>
-                    <select id="memberStatusSelect" style="margin-top:10px;">
-                        <option value="Активний">🟢 Активний</option>
-                        <option value="Патруль">🔵 Патруль</option>
-                        <option value="Неактив">🔴 Неактив</option>
-                    </select>
-                    <button id="saveStatusBtn" class="btn btn-primary full-width" style="margin-top:10px;">Оновити статус</button>
+                <div class="form-group">
+                    <label>Ваш Discord:</label>
+                    <input type="text" id="applyDiscord" placeholder="user#0000">
                 </div>
-            </div>
-
-            <div id="tab-apply" class="dash-view">
-                <h2>Подача заявки</h2>
-                <div id="applyStatusContainer" style="display:none; background:#121315; padding:20px; border-radius:10px; border:1px solid #333; margin-bottom:20px;">
-                    <h3 style="margin-top:0;">Статус вашої заявки: <span id="myAppStatus" style="color:var(--accent);">---</span></h3>
-                    <p style="color:#888;">Очікуйте рішення адміністрації.</p>
+                <div class="form-group">
+                    <label>Чому саме ми?</label>
+                    <textarea id="applyReason" rows="4"></textarea>
                 </div>
-                <form id="dashAppForm" style="display:block;">
-                    <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Заповніть анкету чесно.</p>
-                    <input type="text" id="appRlNameAge" required placeholder="RL Ім'я / Вік *" style="background:#1a1a1c !important;">
-                    <input type="text" id="appOnline" required placeholder="Онлайн / Часовий пояс *" style="background:#1a1a1c !important;">
-                    <textarea id="appHistory" required rows="3" placeholder="Де були раніше (сім'ї) *" style="background:#1a1a1c !important;"></textarea>
-                    <input type="text" id="appVideo" required placeholder="Відео відкату стрільби (YouTube) *" style="background:#1a1a1c !important;">
-                    <button type="submit" class="btn btn-primary full-width btn-large">Надіслати заявку</button>
-                </form>
+                <button class="btn-main" onclick="submitApplication()">Відправити</button>
+            </div>
+        </div>
+
+        <div id="admin" class="section">
+            <h2>Панель Керування (BOSS)</h2>
+            
+            <div class="card">
+                <h3>Управління Новинами</h3>
+                <input type="text" id="newsTitle" placeholder="Заголовок">
+                <textarea id="newsContent" placeholder="Текст новини"></textarea>
+                <br><br>
+                <button class="btn-sm btn-green" onclick="addNews()">Опублікувати</button>
             </div>
 
-            <div id="tab-support-user" class="dash-view">
-                <h2>Технічна підтримка</h2>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div>
-                        <h3>Створити тікет</h3>
-                        <form id="createTicketForm">
-                            <input type="text" id="ticketTitle" placeholder="Тема питання" required>
-                            <textarea id="ticketMessage" rows="4" placeholder="Опишіть вашу проблему..." required></textarea>
-                            <button type="submit" class="btn btn-primary full-width">Відкрити тікет</button>
-                        </form>
-                    </div>
-                    <div style="background:#151619; padding:15px; border-radius:10px; border:1px solid #333; overflow-y:auto; max-height:400px;">
-                        <h3 style="margin-top:0;">Мої тікети</h3>
-                        <div id="myTicketsList" style="display:flex; flex-direction:column; gap:10px;"></div>
-                    </div>
-                </div>
+            <div class="card">
+                <h3>Заявки на вступ</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ім'я</th>
+                            <th>Discord</th>
+                            <th>Причина</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminApplicationsTable"></tbody>
+                </table>
             </div>
 
-            <div id="tab-applications" class="dash-view">
-                <h2>Вхідні Заявки</h2>
-                <div id="applicationsList" style="display:flex; flex-direction:column; gap:15px;"></div>
+            <div class="card">
+                <h3>Управління складом</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ім'я</th>
+                            <th>Ранг</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminMembersTable"></tbody>
+                </table>
             </div>
+        </div>
 
-            <div id="tab-support-staff" class="dash-view">
-                <h2>Всі Тікети (Support)</h2>
-                <div id="allTicketsList" style="display:flex; flex-direction:column; gap:15px;"></div>
+        <div id="login" class="section">
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <h2>Вхід в систему</h2>
+                <div id="loginAlert" class="alert"></div>
+                <input type="text" id="loginUser" placeholder="Логін">
+                <input type="password" id="loginPass" placeholder="Пароль">
+                <br><br>
+                <button class="btn-main" onclick="login()">Увійти</button>
+                <p style="margin-top: 10px; font-size: 14px;">Немає акаунту? <a href="#" onclick="showSection('register')" style="color: var(--primary);">Реєстрація</a></p>
             </div>
+        </div>
 
-            <div id="tab-users" class="dash-view">
-                <h2>Керування ролями</h2>
-                <div id="adminUsersList" style="display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-
-            <div id="tab-admin-members" class="dash-view">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2 style="border:none; margin:0;">Керування учасниками</h2>
-                    <button id="openAdminAddMember" class="btn btn-primary"> + Додати</button>
-                </div>
-                <div id="adminAddMemberContainer" style="display:none; background:#151619; padding:20px; border-radius:10px; margin-bottom:15px;">
-                    <h3 id="admFormTitle" style="margin-top:0;">Додавання</h3>
-                    <form id="adminAddMemberForm">
-                        <input type="hidden" id="admId">
-                        <input type="text" id="admName" placeholder="Name" required>
-                        <input type="text" id="admRole" placeholder="Role" required>
-                        <input type="text" id="admOwner" placeholder="Owner Login" required>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="admDiscord" placeholder="Discord">
-                            <input type="text" id="admYoutube" placeholder="YouTube">
-                        </div>
-                        <button type="submit" class="btn btn-primary full-width">Зберегти</button>
-                    </form>
-                </div>
-                <input id="adminMemberSearchInput" placeholder="Пошук...">
-                <div id="adminMembersList" style="display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-
-            <div id="tab-logs" class="dash-view">
-                <h2>Логи</h2>
-                <div id="systemLogsList" style="background:#000; padding:15px; color:#0f0; font-family:monospace; height:400px; overflow-y:auto;"></div>
+        <div id="register" class="section">
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <h2>Створення акаунту</h2>
+                <div id="regAlert" class="alert"></div>
+                <input type="text" id="regUser" placeholder="Придумайте Логін">
+                <input type="password" id="regPass" placeholder="Придумайте Пароль">
+                <input type="text" id="regKey" placeholder="Секретний ключ (не обов'язково)">
+                <br><br>
+                <button class="btn-main" onclick="register()">Зареєструватися</button>
             </div>
         </div>
     </div>
-  </div>
 
-  <div id="authModal" class="auth-modal">
-    <div class="auth-content">
-      <span id="closeAuth" class="close-auth">&times;</span>
-      <div class="auth-tabs">
-        <button id="tabLogin" class="active">Вхід</button>
-        <button id="tabRegister">Реєстрація</button>
-      </div>
-      <form id="loginForm">
-        <input type="text" id="loginUser" placeholder="Логін" required>
-        <input type="password" id="loginPass" placeholder="Пароль" required>
-        <button type="submit" class="btn btn-primary full-width btn-large">Увійти</button>
-      </form>
-      <form id="registerForm" style="display: none;">
-        <input type="text" id="regUser" placeholder="Логін" required>
-        <input type="email" id="regEmail" placeholder="Email" required>
-        <input type="password" id="regPass" placeholder="Пароль" required>
-        <input type="password" id="regPassConfirm" placeholder="Повторіть пароль" required>
-        <button type="submit" class="btn btn-primary full-width btn-large">Зареєструватися</button>
-      </form>
-    </div>
-  </div>
+    <script>
+        // --- БАЗА ДАНИХ (LocalStorage) ---
+        const DB = {
+            get: (key) => JSON.parse(localStorage.getItem(key)) || [],
+            set: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
+            init: () => {
+                // 1. Ініціалізація Учасників (1 Учасник за замовчуванням)
+                if (!localStorage.getItem('members')) {
+                    const defaultMember = [
+                        { id: 1, name: 'Don_Barracuda', rank: 'Boss', date: new Date().toLocaleDateString(), status: 'Online' }
+                    ];
+                    DB.set('members', defaultMember);
+                }
+                
+                // 2. Ініціалізація новин
+                if (!localStorage.getItem('news')) {
+                    DB.set('news', [
+                        { id: 1, title: 'Ми відкрились!', content: 'Сім\'я Barracuda починає набір.', date: new Date().toLocaleDateString() }
+                    ]);
+                }
 
-  <div id="customConfirmModal" class="custom-modal">
-    <div class="custom-modal-content" style="max-width:300px; text-align:center;">
-        <span id="closeConfirmModal" class="close-modal">&times;</span>
-        <p id="confirmMessage" style="color:#fff; margin-bottom:20px;"></p>
-        <div style="display:flex; gap:10px; justify-content:center;">
-            <button id="confirmCancelBtn" class="btn btn-outline">Ні</button>
-            <button id="confirmOkBtn" class="btn btn-primary">Так</button>
-        </div>
-    </div>
-  </div>
-  
-  <div id="ticketModal" class="custom-modal">
-      <div class="custom-modal-content" style="max-width:600px; width:90%; height:80vh; display:flex; flex-direction:column;">
-          <span onclick="document.getElementById('ticketModal').classList.remove('show')" class="close-modal">&times;</span>
-          <h3 id="tmTitle" style="border-bottom:1px solid #333; padding-bottom:10px; margin-top:0;">Ticket</h3>
-          <div id="tmMessages" style="flex:1; overflow-y:auto; background:#111; padding:15px; border-radius:8px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;"></div>
-          <div style="display:flex; gap:10px;">
-              <input type="text" id="tmInput" placeholder="Відповісти..." style="margin:0;">
-              <button id="tmSendBtn" class="btn btn-primary">Надіслати</button>
-              <button id="tmCloseTicketBtn" class="btn btn-outline" style="color:#e74c3c; border-color:#e74c3c;">Закрити</button>
-          </div>
-      </div>
-  </div>
+                // 3. Ініціалізація користувачів (порожньо спочатку)
+                if (!localStorage.getItem('users')) {
+                    DB.set('users', []);
+                }
+            }
+        };
 
-  <div id="lightbox" class="custom-modal" style="background:rgba(0,0,0,0.95);">
-    <span id="lightboxCloseBtn" class="close-modal" style="top:20px; right:30px; font-size:40px;">&times;</span>
-    <img id="lightboxImage" src="">
-  </div>
+        let currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
 
-  <script src="script.js"></script>
+        // --- ФУНКЦІЇ СИСТЕМИ ---
+
+        function init() {
+            DB.init();
+            checkAuth();
+            renderAll();
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            renderAll(); // Оновити дані при переході
+        }
+
+        // --- АВТОРИЗАЦІЯ (ЛІМІТ 1 АКАУНТ) ---
+
+        function register() {
+            const user = document.getElementById('regUser').value;
+            const pass = document.getElementById('regPass').value;
+            const key = document.getElementById('regKey').value;
+            const alertBox = document.getElementById('regAlert');
+
+            if (!user || !pass) {
+                showAlert(alertBox, 'Заповніть всі поля!');
+                return;
+            }
+
+            const users = DB.get('users');
+
+            // ПЕРЕВІРКА ЛІМІТУ
+            if (users.length >= 1) {
+                showAlert(alertBox, 'ПОМИЛКА: Дозволено лише 1 акаунт на сайті! Зверніться до адміністратора.');
+                return;
+            }
+
+            // Створення акаунту
+            const role = (key === 'admin123' || users.length === 0) ? 'admin' : 'user'; // Перший завжди адмін
+            const newUser = { user, pass, role };
+            
+            users.push(newUser);
+            DB.set('users', users);
+            
+            alert('Акаунт створено! Увійдіть.');
+            showSection('login');
+        }
+
+        function login() {
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+            const users = DB.get('users');
+            const alertBox = document.getElementById('loginAlert');
+
+            const foundUser = users.find(u => u.user === user && u.pass === pass);
+
+            if (foundUser) {
+                sessionStorage.setItem('currentUser', JSON.stringify(foundUser));
+                currentUser = foundUser;
+                checkAuth();
+                showSection('home');
+            } else {
+                showAlert(alertBox, 'Невірний логін або пароль!');
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            currentUser = null;
+            checkAuth();
+            showSection('login');
+        }
+
+        function checkAuth() {
+            const authBtn = document.getElementById('authBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const adminBtn = document.getElementById('adminBtn');
+
+            if (currentUser) {
+                authBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-block';
+                if (currentUser.role === 'admin') {
+                    adminBtn.style.display = 'inline-block';
+                }
+            } else {
+                authBtn.style.display = 'inline-block';
+                logoutBtn.style.display = 'none';
+                adminBtn.style.display = 'none';
+            }
+        }
+
+        function showAlert(element, msg) {
+            element.innerText = msg;
+            element.style.display = 'block';
+            setTimeout(() => element.style.display = 'none', 3000);
+        }
+
+        // --- ФУНКЦІОНАЛ (CRUD) ---
+
+        // 1. Заявки
+        function submitApplication() {
+            const name = document.getElementById('applyName').value;
+            const discord = document.getElementById('applyDiscord').value;
+            const reason = document.getElementById('applyReason').value;
+
+            if (!name || !discord) { alert('Заповніть поля!'); return; }
+
+            const apps = DB.get('applications');
+            apps.push({ id: Date.now(), name, discord, reason, status: 'pending' });
+            DB.set('applications', apps);
+
+            alert('Заявку відправлено! Лідер розгляне її.');
+            document.getElementById('applyName').value = '';
+            showSection('home');
+        }
+
+        function handleApp(id, action) {
+            let apps = DB.get('applications');
+            const appIndex = apps.findIndex(a => a.id === id);
+            if (appIndex === -1) return;
+
+            const app = apps[appIndex];
+
+            if (action === 'accept') {
+                // Додаємо в учасники
+                const members = DB.get('members');
+                members.push({
+                    id: Date.now(),
+                    name: app.name,
+                    rank: 'Novice',
+                    date: new Date().toLocaleDateString(),
+                    status: 'Active'
+                });
+                DB.set('members', members);
+                apps.splice(appIndex, 1); // Видаляємо заявку
+            } else {
+                apps.splice(appIndex, 1); // Просто видаляємо
+            }
+            
+            DB.set('applications', apps);
+            renderAll();
+        }
+
+        // 2. Новини
+        function addNews() {
+            const title = document.getElementById('newsTitle').value;
+            const content = document.getElementById('newsContent').value;
+
+            if (!title) return;
+
+            const news = DB.get('news');
+            news.unshift({ id: Date.now(), title, content, date: new Date().toLocaleDateString() }); // Додаємо на початок
+            DB.set('news', news);
+
+            document.getElementById('newsTitle').value = '';
+            document.getElementById('newsContent').value = '';
+            renderAll();
+            alert('Новину додано!');
+        }
+
+        // 3. Учасники (Кік/Ранг)
+        function kickMember(id) {
+            if(!confirm('Вигнати учасника?')) return;
+            let members = DB.get('members');
+            members = members.filter(m => m.id !== id);
+            DB.set('members', members);
+            renderAll();
+        }
+
+        function promoteMember(id) {
+            let members = DB.get('members');
+            const member = members.find(m => m.id === id);
+            if (member) {
+                member.rank = 'Member+'; // Спрощена логіка підвищення
+                DB.set('members', members);
+                renderAll();
+            }
+        }
+
+        // --- ВІДОБРАЖЕННЯ (RENDER) ---
+
+        function renderAll() {
+            renderNews();
+            renderMembers();
+            if (currentUser && currentUser.role === 'admin') {
+                renderAdminPanel();
+            }
+        }
+
+        function renderNews() {
+            const news = DB.get('news');
+            const container = document.getElementById('newsFeed');
+            container.innerHTML = news.map(n => `
+                <div class="card">
+                    <h3 style="color:var(--primary)">${n.title}</h3>
+                    <small style="color:gray">${n.date}</small>
+                    <p style="margin-top:10px">${n.content}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderMembers() {
+            const members = DB.get('members');
+            const tbody = document.getElementById('membersTablePublic');
+            tbody.innerHTML = members.map(m => `
+                <tr>
+                    <td>${m.name}</td>
+                    <td><span style="color: var(--primary)">${m.rank}</span></td>
+                    <td>${m.date}</td>
+                    <td>${m.status}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminPanel() {
+            // Заявки
+            const apps = DB.get('applications');
+            document.getElementById('adminApplicationsTable').innerHTML = apps.map(a => `
+                <tr>
+                    <td>${a.name}</td>
+                    <td>${a.discord}</td>
+                    <td>${a.reason}</td>
+                    <td>
+                        <button class="btn-sm btn-green" onclick="handleApp(${a.id}, 'accept')">✔</button>
+                        <button class="btn-sm btn-red" onclick="handleApp(${a.id}, 'reject')">✖</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="4">Заявок немає</td></tr>';
+
+            // Учасники (для управління)
+            const members = DB.get('members');
+            document.getElementById('adminMembersTable').innerHTML = members.map(m => `
+                <tr>
+                    <td>${m.name}</td>
+                    <td>${m.rank}</td>
+                    <td>
+                        <button class="btn-sm btn-blue" onclick="promoteMember(${m.id})">UP</button>
+                        <button class="btn-sm btn-red" onclick="kickMember(${m.id})">Kick</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Запуск
+        window.onload = init;
+    </script>
 </body>
 </html>

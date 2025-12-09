@@ -114,11 +114,10 @@ app.get('/api/gallery', async (req, res) => { const g = await Gallery.find().sor
 app.post('/api/gallery', async (req, res) => { await new Gallery(req.body).save(); res.json({ success: true }); });
 app.delete('/api/gallery/:id', async (req, res) => { await Gallery.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
-// USERS API (Updated for Admin Visibility)
+// USERS API
 app.get('/api/users', async (req, res) => { 
     try {
         const usersFromDb = await User.find().sort({ regDate: -1 });
-        // Додаємо фейкового системного адміна для відображення
         const systemAdmin = {
             _id: 'system_admin_id',
             username: process.env.ADMIN_LOGIN || 'admin',

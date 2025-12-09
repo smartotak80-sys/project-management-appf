@@ -1,12 +1,12 @@
 :root {
   --bg-dark: #050505;
-  --bg-panel: rgba(15, 16, 18, 0.95);
+  --bg-panel: rgba(20, 20, 25, 0.85); /* Трохи світліше для видимості */
   --accent: #ff2a2a;       
-  --accent-dim: rgba(255, 42, 42, 0.1);
-  --accent-glow: rgba(255, 42, 42, 0.5);
+  --accent-dim: rgba(255, 42, 42, 0.15);
+  --accent-glow: rgba(255, 42, 42, 0.6);
   --text-main: #ffffff;
   --text-muted: #94a3b8;
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
   --font-main: 'Orbitron', system-ui, sans-serif;
   --font-body: 'Rajdhani', system-ui, sans-serif;
 }
@@ -24,7 +24,7 @@ body {
   position: relative;
 }
 
-/* --- BACKGROUND ANIMATION --- */
+/* --- BACKGROUND --- */
 .bg-animation {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: -1; pointer-events: none; overflow: hidden;
@@ -96,6 +96,24 @@ main { flex: 1; }
 .section h2 { font-family: var(--font-main); font-size: 32px; margin-bottom: 15px; color: #fff; text-transform: uppercase; }
 .section h2 .highlight { color: var(--accent); }
 
+/* --- CARDS (ПОВЕРНУТО СТАРИЙ ДИЗАЙН) --- */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+.card, .member, .app-card {
+    background: var(--bg-panel); /* Відновлено видимий фон */
+    padding: 30px; border-radius: 16px; 
+    border: 1px solid var(--glass-border); 
+    backdrop-filter: blur(10px); 
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.card:hover, .member:hover {
+    transform: translateY(-5px); 
+    border-color: var(--accent); 
+    box-shadow: 0 10px 40px rgba(255, 42, 42, 0.15);
+}
+.card-icon { font-size: 30px; color: var(--accent); margin-bottom: 15px; }
+.card h3 { color: #fff; margin: 0 0 10px; font-size: 20px; text-transform: uppercase; }
+
 /* --- BUTTONS --- */
 .btn { 
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; 
@@ -113,23 +131,20 @@ main { flex: 1; }
 .btn-discord:hover { background: #4752C4; box-shadow: 0 0 20px rgba(88,101,242,0.4); }
 .full-width { width: 100%; }
 
-/* --- FOOTER CTA SECTION (CENTERED) --- */
-.footer-section {
-    text-align: center;
-    padding: 100px 0;
-    background: radial-gradient(circle at center, rgba(255,42,42,0.05), transparent 70%);
-}
+/* --- FOOTER CTA SECTION --- */
+.footer-section { text-align: center; padding: 100px 0; background: radial-gradient(circle at center, rgba(255,42,42,0.05), transparent 70%); }
 .neon-title { font-family: var(--font-main); font-size: 36px; margin-bottom: 10px; }
 .apply-desc { margin-bottom: 40px; color: #888; }
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
+.action-buttons { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; }
 
-/* --- AUTH MODAL (FIXED WIDTH & CENTERED) --- */
+/* --- GRIDS --- */
+.members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+.gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; border: 1px solid #333; transition: 0.3s; }
+.gallery-grid img:hover { border-color: var(--accent); }
+.role-badge { display: inline-block; background: var(--accent-dim); color: var(--accent); padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 5px; border: 1px solid rgba(255,42,42,0.2); }
+
+/* --- AUTH MODAL --- */
 .auth-modal { 
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background: rgba(0,0,0,0.85); z-index: 3000; 
@@ -137,39 +152,23 @@ main { flex: 1; }
     backdrop-filter: blur(8px); 
 }
 .auth-modal.show { display: flex; }
-
 .auth-content { 
-    background: #09090b; 
-    padding: 40px; 
-    border-radius: 16px; 
-    width: 90%; 
-    max-width: 450px; 
-    border: 1px solid var(--accent); 
-    box-shadow: 0 0 50px rgba(255,42,42,0.15); 
-    animation: scaleIn 0.3s forwards;
-    position: relative;
-    border-top: 3px solid var(--accent); 
+    background: #09090b; padding: 40px; border-radius: 16px; 
+    width: 90%; max-width: 450px; 
+    border: 1px solid var(--accent); box-shadow: 0 0 50px rgba(255,42,42,0.15); 
+    animation: scaleIn 0.3s forwards; position: relative; border-top: 3px solid var(--accent); 
 }
 .auth-title { text-align: center; margin-bottom: 30px; letter-spacing: 2px; font-family: var(--font-main); text-transform: uppercase;}
 .close-auth { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #666; }
 .close-auth:hover { color: #fff; }
-
 .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid #333; }
-.auth-tabs button { 
-    flex: 1; background: none; border: none; padding: 12px; color: #666; 
-    cursor: pointer; font-weight: bold; border-bottom: 2px solid transparent; transition: 0.3s;
-}
+.auth-tabs button { flex: 1; background: none; border: none; padding: 12px; color: #666; cursor: pointer; font-weight: bold; border-bottom: 2px solid transparent; transition: 0.3s; }
 .auth-tabs button.active { color: #fff; border-color: var(--accent); background: rgba(255,42,42,0.05); }
-
-.auth-content input {
-    background: #0f1012; border: 1px solid #222; 
-    padding: 15px; border-radius: 6px; color: #fff; margin-bottom: 15px; width: 100%;
-}
+.auth-content input { background: #0f1012; border: 1px solid #222; padding: 15px; border-radius: 6px; color: #fff; margin-bottom: 15px; width: 100%; }
 .auth-content input:focus { border-color: var(--accent); outline: none; }
-
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-/* --- DASHBOARD V3.0 STYLES (ВИПРАВЛЕНО) --- */
+/* --- DASHBOARD STYLES (ВИПРАВЛЕНО ТА СТАБІЛІЗОВАНО) --- */
 .dashboard-modal { 
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background: #000; z-index: 2000; 
@@ -179,12 +178,10 @@ main { flex: 1; }
 .dashboard-window { 
     display: flex; width: 100%; height: 100%; 
     background: #050505; 
-    /* Ось тут красивий фон, якого не було на фото */
     background-image: radial-gradient(circle at 10% 20%, rgba(255, 42, 42, 0.05) 0%, transparent 20%);
     overflow: hidden; 
 }
 
-/* Сайдбар */
 .dash-sidebar { 
     width: 300px; background: rgba(8,8,10,0.95); 
     border-right: 1px solid rgba(255,255,255,0.08); 
@@ -192,10 +189,8 @@ main { flex: 1; }
     backdrop-filter: blur(10px);
 }
 
-/* Контентна частина */
 .dash-content { flex: 1; padding: 50px; overflow-y: auto; position: relative; }
 
-/* Кнопка закриття */
 .dash-close-global { 
     position: absolute; top: 20px; right: 20px; z-index: 2050; 
     background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); 
@@ -205,7 +200,6 @@ main { flex: 1; }
 }
 .dash-close-global:hover { background: var(--accent); transform: rotate(90deg); }
 
-/* Навігація в адмінці */
 .dash-nav button { 
     width: 100%; text-align: left; background: transparent; border: none; 
     padding: 14px; color: #888; cursor: pointer; display: flex; 
@@ -219,11 +213,21 @@ main { flex: 1; }
     box-shadow: 0 0 15px rgba(255,42,42,0.05);
 }
 
-/* --- ВАЖЛИВО: ПРИХОВУВАННЯ ВКЛАДОК --- */
-/* Цього не вистачало на вашому фото, тому все було купою */
-.dash-view { display: none; opacity: 0; transform: translateY(20px); transition: 0.4s; }
-.dash-view.active { display: block; opacity: 1; transform: translateY(0); }
-/* ------------------------------------- */
+/* !!! КРИТИЧНЕ ВИПРАВЛЕННЯ ДЛЯ ВКЛАДОК !!! */
+/* Це приховує всі неактивні вкладки */
+.dash-view { 
+    display: none; 
+    opacity: 0; 
+    transform: translateY(20px); 
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+/* Це показує активну */
+.dash-view.active { 
+    display: block; 
+    opacity: 1; 
+    transform: translateY(0); 
+}
+/* ---------------------------------------- */
 
 .dash-header { 
     display: flex; justify-content: space-between; align-items: center; 
@@ -231,15 +235,17 @@ main { flex: 1; }
 }
 .dash-header h2 { font-size: 28px; margin: 0; }
 
+/* Відновлено старий дизайн панелей всередині адмінки */
 .glass-panel { 
-    background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.08); 
-    border-radius: 16px; padding: 30px; margin-bottom: 25px; backdrop-filter: blur(20px);
+    background: rgba(20, 20, 25, 0.8); /* Більш темний фон */
+    border: 1px solid rgba(255,255,255,0.1); 
+    border-radius: 16px; padding: 30px; margin-bottom: 25px; 
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
 
 .data-table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
 .data-table th { text-align: left; padding: 15px; color: #666; font-size: 11px; font-weight: bold; }
 .data-table td { padding: 15px; background: rgba(255,255,255,0.02); color: #ccc; border-top: 1px solid rgba(255,255,255,0.02); }
-.data-table tr:hover td { background: rgba(255,255,255,0.05); color: #fff; }
 
 .stat-card { 
     background: rgba(255,255,255,0.02); padding: 25px; border-radius: 14px; 

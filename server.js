@@ -124,23 +124,32 @@ app.delete('/api/gallery/:id', async (req, res) => { await Gallery.findByIdAndDe
 
 app.get('/api/users', async (req, res) => { const u = await User.find().sort({ regDate: -1 }); res.json(u); });
 app.delete('/api/users/:username', async (req, res) => { try { await User.findOneAndDelete({ username: req.params.username }); await Member.deleteMany({ owner: req.params.username }); res.json({ success: true }); } catch (e) { res.status(500).json({ success: false }); } });
-app.get('/api/users/count', async (req, res) => { 
-    try {
-        const total = await User.countDocuments(); 
-        const admins = await User.countDocuments({ role: 'admin' });
-        res.json({ totalUsers: total, totalAdmins: admins + 1 });
-    } catch(e) { res.json({ totalUsers: 0, totalAdmins: 0 }); }
-});
+// Знаходимо цей шматок:
+// app.get('/api/users', async (req, res) => { const u = await User.find().sort({ regDate: -1 }); res.json(u); });
 
-app.post('/api/applications', async (req, res) => { try { await new Application(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
-app.get('/api/applications', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });
-app.get('/api/applications/my', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });
-app.put('/api/applications/:id', async (req, res) => { 
-    try { 
-        const { status, adminComment } = req.body;
-        await Application.findByIdAndUpdate(req.params.id, { status, adminComment }); 
-        res.json({ success: true }); 
-    } catch(e) { res.status(500).json({ success: false }); } 
+// І МІНЯЄМО ЙОГО НА ЦЕЙ:
+app.get('/api/users', async (req, res) => { 
+    try {
+        // 1. Беремо реальних користувачів з бази
+        const usersFromDb = await User.find().sort({ regDate: -1 });
+        
+        // 2. Створюємо об'єкт системного адміна (фейковий запис для відображення)
+        const systemAdmin = {
+            _id: 'system_admin_id', // Вигаданий ID
+            username: process.env.ADMIN_LOGIN || 'admin',
+            email: 'SYSTEM BOT',
+            role: 'admin',
+            regDate: new Date()
+        };
+
+        // 3. Об'єднуємо адміна і реальних користувачів в один список
+        // Спочатку адмін, потім всі інші
+        res.json([systemAdmin, ...usersFromDb]); 
+
+    } catch(e) { 
+        console.error("Помилка завантаження користувачів:", e);
+        res.status(500).json([]); 
+    }
 });
 
 app.post('/api/tickets', async (req, res) => { try { await new Ticket(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });

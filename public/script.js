@@ -171,6 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
       if(res && res.success) { showToast('Заявку надіслано!'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
+  
+  // ОНОВЛЕНА ФУНКЦІЯ ПЕРЕВІРКИ (Показує коментар)
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
       const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
@@ -180,21 +182,42 @@ document.addEventListener('DOMContentLoaded', () => {
       if(myApp) {
           form.style.display = 'none';
           statusBox.style.display = 'block';
-          document.getElementById('myAppStatus').textContent = myApp.status.toUpperCase();
-          document.getElementById('myAppStatus').style.color = myApp.status==='approved'?'#2ecc71':(myApp.status==='rejected'?'#e74c3c':'var(--accent)');
+          
+          let statusText = 'Очікуйте рішення адміністрації.';
+          let color = 'var(--accent)';
+          if(myApp.status === 'approved') { statusText = 'Вашу заявку схвалено! Вітаємо.'; color = '#2ecc71'; }
+          if(myApp.status === 'rejected') { statusText = 'Вашу заявку відхилено.'; color = '#e74c3c'; }
+          
+          // Генеруємо HTML для коментаря, якщо він є
+          let commentHtml = '';
+          if(myApp.adminComment) {
+              commentHtml = `
+              <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); font-size:13px; text-align:left;">
+                  <strong style="color:#ddd">Коментар від Staff:</strong><br>
+                  <span style="color:#ccc">${myApp.adminComment}</span>
+              </div>`;
+          }
+
+          statusBox.innerHTML = `
+            <h3 style="margin-top:0">Статус: <span style="color:${color}">${myApp.status.toUpperCase()}</span></h3>
+            <p style="margin-bottom:0; color:#aaa;">${statusText}</p>
+            ${commentHtml}
+          `;
+          statusBox.style.borderColor = color;
+          statusBox.style.background = myApp.status==='approved' ? 'rgba(46, 204, 113, 0.1)' : (myApp.status==='rejected'?'rgba(231, 76, 60, 0.1)':'rgba(255,42,42,0.1)');
+
       } else {
           form.style.display = 'block';
           statusBox.style.display = 'none';
       }
   }
 
-  // --- APPLICATIONS (Moderator/Admin) - ONOVLENO ---
+  // --- APPLICATIONS (Moderator/Admin) - ОНОВЛЕНО ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       const apps = await apiFetch('/api/applications');
       if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">Немає заявок.</p>'; return; }
       
-      // Новий дизайн карток
       list.innerHTML = apps.map(a => `
         <div class="app-card">
            <div class="app-header">
@@ -225,18 +248,31 @@ document.addEventListener('DOMContentLoaded', () => {
                    <div style="font-size:13px; color:#ccc; line-height:1.4;">${a.history}</div>
                </div>
            </div>
-
+            
            ${a.status==='pending' ? `
-           <div class="app-actions">
-                <button class="btn btn-primary full-width" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
-                <button class="btn btn-outline full-width" style="color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
-           </div>` : ''}
+           <div style="margin-top:15px; border-top:1px solid #222; padding-top:15px;">
+                <input type="text" id="reason-${a.id}" placeholder="Коментар / Причина (необов'язково)..." 
+                       style="width:100%; padding:10px; font-size:13px; margin-bottom:10px; background:#0a0b0e;">
+                
+                <div class="app-actions" style="margin-top:0; border-top:none; padding-top:0;">
+                    <button class="btn btn-primary full-width" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
+                    <button class="btn btn-outline full-width" style="color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
+                </div>
+           </div>` : `
+           ${a.adminComment ? `<div style="margin-top:10px; font-size:12px; color:#666; border-top:1px solid #222; padding-top:10px;">Коментар: ${a.adminComment}</div>` : ''}
+           `}
         </div>`).join('');
   }
+
+  // ОНОВЛЕНА ФУНКЦІЯ (Відправляє коментар)
   window.updateAppStatus = async (id, status) => {
-      await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status})});
+      // Отримуємо текст з поля вводу
+      const input = document.getElementById(`reason-${id}`);
+      const comment = input ? input.value : '';
+
+      await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: comment})});
       showToast('Статус оновлено'); loadApplicationsStaff();
-      addLog(`${currentUser.username} changed app status to ${status}`);
+      addLog(`${currentUser.username} changed app status to ${status} (Note: ${comment})`);
   };
 
   // --- TICKETS (Support System) ---

@@ -1,0 +1,351 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const CURRENT_USER_KEY = 'barakuda_current_user';
+  let members = [];
+  let systemLogs = JSON.parse(localStorage.getItem('barakuda_logs')) || [];
+
+  setTimeout(() => {
+      const p = document.getElementById('preloader');
+      if(p) { p.style.opacity = '0'; setTimeout(()=>p.style.display='none', 500); }
+  }, 2000);
+
+  // UTILS
+  function loadCurrentUser(){ try{ return JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); } catch(e){ return null; } }
+  function saveCurrentUser(val){ localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(val)) }
+  function removeCurrentUser(){ localStorage.removeItem(CURRENT_USER_KEY) }
+  window.showToast = (msg, type = 'success') => {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div'); t.className = `toast ${type}`;
+      t.innerHTML = `<span>${msg}</span>`; c.appendChild(t);
+      setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
+  };
+  function addLog(action) {
+      systemLogs.unshift(`[${new Date().toLocaleTimeString()}] ${action}`);
+      if(systemLogs.length>50) systemLogs.pop();
+      localStorage.setItem('barakuda_logs', JSON.stringify(systemLogs));
+      renderLogs();
+  }
+  function customConfirm(msg, cb) {
+      const m=document.getElementById('customConfirmModal');
+      document.getElementById('confirmMessage').textContent=msg;
+      const ok=document.getElementById('confirmOkBtn');
+      m.classList.add('show');
+      const clean=(r)=>{ m.classList.remove('show'); ok.onclick=null; if(cb)cb(r); };
+      ok.onclick=()=>clean(true); document.getElementById('confirmCancelBtn').onclick=()=>clean(false);
+      document.getElementById('closeConfirmModal').onclick=()=>clean(false);
+  }
+
+  let currentUser = loadCurrentUser(); 
+  async function apiFetch(url, opts={}) {
+      try {
+          const h={'Content-Type':'application/json', ...(opts.headers||{})};
+          const r = await fetch(url, {...opts, headers:h});
+          const d = await r.json();
+          if(!r.ok) { showToast(d.message||"Error", 'error'); return null; }
+          return d;
+      } catch(e) { return null; }
+  }
+
+  async function loadInitialData() {
+      const m = await apiFetch('/api/members'); if(m) { members=m; renderPublicMembers(); }
+      const n = await apiFetch('/api/news'); if(n) renderNews(n);
+      const g = await apiFetch('/api/gallery'); if(g) renderGallery(g);
+      updateAuthUI();
+      document.getElementById('year').textContent = new Date().getFullYear();
+      activateScrollAnimations();
+  }
+  function activateScrollAnimations() {
+      const obs = new IntersectionObserver((e,o)=>{ e.forEach(en=>{ if(en.isIntersecting){en.target.classList.add('animate');o.unobserve(en.target);} }); },{threshold:0.1});
+      document.querySelectorAll('.hero,.section,.card,.member').forEach(el=>obs.observe(el));
+  }
+
+  // --- DASHBOARD ---
+  const dashModal = document.getElementById('dashboardModal');
+  window.switchDashTab = (tab) => {
+      document.querySelectorAll('.dash-view').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.dash-nav button').forEach(e => e.classList.remove('active'));
+      document.getElementById(`tab-${tab}`)?.classList.add('active');
+      
+      if(tab === 'apply') checkMyApplication();
+      if(tab === 'applications') loadApplicationsStaff();
+      if(tab === 'support-user') loadMyTickets();
+      if(tab === 'support-staff') loadAllTickets();
+      if(tab === 'users') loadUsersAdmin();
+      if(tab === 'admin-members') loadAdminMembers();
+      if(tab === 'logs') renderLogs();
+      if(tab === 'my-member') loadMyMemberTab();
+  };
+
+  function openDashboard() {
+      if(!currentUser) return;
+      dashModal.classList.add('show');
+      document.getElementById('dashUsername').textContent = currentUser.username;
+      document.getElementById('dashRole').textContent = currentUser.role;
+      document.getElementById('pLogin').textContent = currentUser.username;
+      document.getElementById('pRole').textContent = currentUser.role.toUpperCase();
+
+      // Show/Hide Nav based on Role
+      const role = currentUser.role;
+      const isStaff = ['admin', 'moderator', 'support'].includes(role);
+      const isAdmin = role === 'admin';
+      const isModOrAdmin = ['admin', 'moderator'].includes(role);
+
+      document.querySelector('.staff-only-nav').style.display = isStaff ? 'block' : 'none';
+      document.querySelector('.admin-only-nav').style.display = isAdmin ? 'block' : 'none';
+      
+      // Filter Staff buttons specific visibility
+      // Support sees Tickets. Mod sees Apps & Tickets. Admin sees all.
+      const btnApps = document.getElementById('navAppsBtn');
+      if(btnApps) btnApps.style.display = isModOrAdmin ? 'flex' : 'none';
+
+      switchDashTab('profile');
+  }
+
+  // --- ROLE MANAGEMENT (Admin) ---
+  async function loadUsersAdmin() {
+      const list = document.getElementById('adminUsersList');
+      const users = await apiFetch('/api/users');
+      if(!users) return;
+      list.innerHTML = users.map(u => `
+        <div class="u-row">
+            <div><strong>${u.username}</strong> <small>(${u.email})</small></div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; padding:5px; height:auto; width:auto; background:#222;">
+                    <option value="member" ${u.role==='member'?'selected':''}>Member</option>
+                    <option value="support" ${u.role==='support'?'selected':''}>Support</option>
+                    <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
+                    <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                </select>
+                <button class="btn btn-outline" style="padding:5px; border-color:#d33; color:#d33;" onclick="window.banUser('${u.username}')">DEL</button>
+            </div>
+        </div>`).join('');
+  }
+  window.changeUserRole = async (u, role) => {
+      await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) });
+      showToast(`Role for ${u} changed to ${role}`);
+      addLog(`Admin changed role of ${u} to ${role}`);
+  };
+
+  // --- APPLICATIONS (User) ---
+  document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const body = {
+          rlNameAge: document.getElementById('appRlNameAge').value,
+          onlineTime: document.getElementById('appOnline').value,
+          history: document.getElementById('appHistory').value,
+          shootingVideo: document.getElementById('appVideo').value,
+          submittedBy: currentUser.username
+      };
+      const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
+      if(res && res.success) { showToast('Заявку надіслано!'); document.getElementById('dashAppForm').reset(); checkMyApplication(); }
+  });
+  async function checkMyApplication() {
+      // Simple check: fetch all apps and find mine (simplified for this demo)
+      const apps = await apiFetch('/api/applications/my');
+      const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
+      const form = document.getElementById('dashAppForm');
+      const statusBox = document.getElementById('applyStatusContainer');
+      
+      if(myApp) {
+          form.style.display = 'none';
+          statusBox.style.display = 'block';
+          document.getElementById('myAppStatus').textContent = myApp.status.toUpperCase();
+          document.getElementById('myAppStatus').style.color = myApp.status==='approved'?'#2ecc71':(myApp.status==='rejected'?'#e74c3c':'var(--accent)');
+      } else {
+          form.style.display = 'block';
+          statusBox.style.display = 'none';
+      }
+  }
+
+  // --- APPLICATIONS (Moderator/Admin) ---
+  async function loadApplicationsStaff() {
+      const list = document.getElementById('applicationsList');
+      const apps = await apiFetch('/api/applications');
+      if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">Немає заявок.</p>'; return; }
+      list.innerHTML = apps.map(a => `
+        <div style="background:#151619; padding:15px; border-radius:8px; border:1px solid #333; position:relative;">
+            <div style="position:absolute; top:10px; right:10px; font-weight:bold; color:${a.status==='pending'?'#e6b800':(a.status==='approved'?'#2ecc71':'#e74c3c')}">${a.status}</div>
+            <h4>${a.rlNameAge} <small>(${a.submittedBy})</small></h4>
+            <div style="font-size:13px; color:#aaa; margin-bottom:10px;">
+                History: ${a.history}<br>Online: ${a.onlineTime}<br>Video: <a href="${a.shootingVideo}" target="_blank">Link</a>
+            </div>
+            ${a.status==='pending' ? `
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-primary" style="padding:5px 10px; font-size:12px;" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
+                <button class="btn btn-outline" style="padding:5px 10px; font-size:12px; color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
+            </div>` : ''}
+        </div>`).join('');
+  }
+  window.updateAppStatus = async (id, status) => {
+      await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status})});
+      showToast('Статус оновлено'); loadApplicationsStaff();
+      addLog(`${currentUser.username} changed app status to ${status}`);
+  };
+
+  // --- TICKETS (Support System) ---
+  document.getElementById('createTicketForm')?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const body = {
+          author: currentUser.username,
+          title: document.getElementById('ticketTitle').value,
+          messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }]
+      };
+      const res = await apiFetch('/api/tickets', {method:'POST', body:JSON.stringify(body)});
+      if(res && res.success) { showToast('Тікет створено'); document.getElementById('createTicketForm').reset(); loadMyTickets(); }
+  });
+
+  async function loadMyTickets() {
+      const list = document.getElementById('myTicketsList');
+      const all = await apiFetch('/api/tickets');
+      const my = all ? all.filter(t => t.author === currentUser.username) : [];
+      renderTicketList(list, my);
+  }
+  async function loadAllTickets() {
+      const list = document.getElementById('allTicketsList');
+      const all = await apiFetch('/api/tickets');
+      renderTicketList(list, all || []);
+  }
+  function renderTicketList(container, tickets) {
+      if(!tickets.length) { container.innerHTML = '<div style="color:#666; font-size:12px;">Пусто</div>'; return; }
+      container.innerHTML = tickets.map(t => `
+        <div onclick="window.openTicket('${t.id}')" style="background:#222; padding:10px; border-radius:5px; cursor:pointer; border-left:3px solid ${t.status==='open'?'#2ecc71':'#666'};">
+            <div style="font-weight:bold; font-size:13px;">${t.title}</div>
+            <div style="font-size:10px; color:#888;">Від: ${t.author} | ${t.status}</div>
+        </div>`).join('');
+  }
+
+  // TICKET CHAT
+  let currentTicketId = null;
+  window.openTicket = async (id) => {
+      currentTicketId = id;
+      const all = await apiFetch('/api/tickets');
+      const t = all.find(x => x.id === id);
+      if(!t) return;
+      
+      document.getElementById('ticketModal').classList.add('show');
+      document.getElementById('tmTitle').textContent = `Ticket: ${t.title}`;
+      
+      const chat = document.getElementById('tmMessages');
+      chat.innerHTML = t.messages.map(m => `
+        <div style="align-self:${m.sender===currentUser.username ? 'flex-end' : 'flex-start'}; background:${m.isStaff?'#2c1a1a':'#1a1a2e'}; padding:8px 12px; border-radius:8px; max-width:80%; font-size:13px; border:1px solid ${m.isStaff?'#e74c3c':'#333'};">
+            <div style="font-size:10px; color:#aaa; margin-bottom:2px;">${m.sender}</div>
+            ${m.text}
+        </div>`).join('');
+      chat.scrollTop = chat.scrollHeight;
+
+      // Enable/Disable close button based on status
+      const btnClose = document.getElementById('tmCloseTicketBtn');
+      if(t.status === 'closed') { btnClose.style.display = 'none'; } else { btnClose.style.display = 'block'; }
+  };
+
+  document.getElementById('tmSendBtn')?.addEventListener('click', async () => {
+      if(!currentTicketId) return;
+      const txt = document.getElementById('tmInput').value;
+      if(!txt) return;
+      const isStaff = ['admin', 'moderator', 'support'].includes(currentUser.role);
+      const msg = { sender: currentUser.username, text: txt, isStaff };
+      
+      await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ message: msg }) });
+      document.getElementById('tmInput').value = '';
+      window.openTicket(currentTicketId); // refresh
+  });
+  document.getElementById('tmCloseTicketBtn')?.addEventListener('click', async () => {
+      if(!currentTicketId) return;
+      await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ status: 'closed' }) });
+      document.getElementById('ticketModal').classList.remove('show');
+      if(document.getElementById('tab-support-staff').classList.contains('active')) loadAllTickets();
+      else loadMyTickets();
+  });
+
+
+  // --- REST OF THE LOGIC (Auth, Members, etc) ---
+  // (Standard rendering logic remains similar to previous version, ensuring continuity)
+  
+  function updateAuthUI() {
+      if(currentUser) {
+          document.body.classList.add('is-logged-in');
+          if(currentUser.role==='admin') document.body.classList.add('is-admin');
+          document.getElementById('authBtnText').textContent = 'Кабінет';
+          document.getElementById('openAuthBtn').onclick = openDashboard;
+      } else {
+          document.body.classList.remove('is-logged-in','is-admin');
+          document.getElementById('authBtnText').textContent = 'Вхід';
+          document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
+      }
+  }
+
+  // GLOBAL EVENTS
+  document.getElementById('navToggle')?.addEventListener('click', ()=>document.getElementById('mainNav').classList.toggle('open'));
+  document.getElementById('closeAuth')?.addEventListener('click', ()=>document.getElementById('authModal').classList.remove('show'));
+  document.getElementById('closeDashBtn')?.addEventListener('click', ()=>dashModal.classList.remove('show'));
+  document.getElementById('logoutBtn')?.addEventListener('click', ()=>{ removeCurrentUser(); location.reload(); });
+  document.getElementById('lightboxCloseBtn')?.addEventListener('click', ()=>document.getElementById('lightbox').classList.remove('show'));
+  document.getElementById('tabLogin')?.addEventListener('click', (e)=>{ e.target.classList.add('active'); document.getElementById('tabRegister').classList.remove('active'); document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; });
+  document.getElementById('tabRegister')?.addEventListener('click', (e)=>{ e.target.classList.add('active'); document.getElementById('tabLogin').classList.remove('active'); document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; });
+
+  document.getElementById('loginForm')?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
+      if(res && res.success) { saveCurrentUser(res.user); showToast(`Welcome, ${res.user.username}`); setTimeout(()=>location.reload(), 500); } 
+  });
+  document.getElementById('registerForm')?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const pass = document.getElementById('regPass').value;
+      if(pass !== document.getElementById('regPassConfirm').value) return showToast('Паролі не співпадають', 'error');
+      const res = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username: document.getElementById('regUser').value, email: document.getElementById('regEmail').value, password: pass }) });
+      if(res && res.success) { showToast('Успіх! Увійдіть.'); document.getElementById('tabLogin').click(); }
+  });
+
+  // Admin Members
+  async function loadAdminMembers() {
+      const list = document.getElementById('adminMembersList');
+      const m = await apiFetch('/api/members');
+      list.innerHTML = m.map(x => `
+        <div class="u-row">
+            <div>${x.name} <small>(${x.role})</small></div>
+            <button class="btn btn-outline" style="color:#d33; border-color:#d33; padding:5px;" onclick="window.deleteMember('${x.id}')">DEL</button>
+        </div>`).join('');
+  }
+  document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
+  document.getElementById('adminAddMemberForm')?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const body = { name: document.getElementById('admName').value, role: document.getElementById('admRole').value, owner: document.getElementById('admOwner').value, links: {discord:document.getElementById('admDiscord').value, youtube:document.getElementById('admYoutube').value} };
+      await apiFetch('/api/members', {method:'POST', body:JSON.stringify(body)});
+      showToast('Member added'); loadAdminMembers();
+  });
+  window.deleteMember = async (id) => customConfirm('Delete?', async (r)=>{ if(r) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Deleted'); loadAdminMembers(); loadInitialData(); } });
+
+  // Load My Member
+  function loadMyMemberTab() {
+      const container = document.getElementById('myMemberContainer');
+      const myMember = members.find(m => m.owner === currentUser.username);
+      if(myMember) {
+          document.getElementById('myMemberStatusPanel').style.display='block';
+          container.innerHTML = `<div style="background:#222; padding:20px; border-radius:10px;"><h3>${myMember.name}</h3>Role: ${myMember.role}</div>`;
+          document.getElementById('saveStatusBtn').onclick=async()=>{
+              let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value;
+              await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})});
+              showToast('Status updated'); loadInitialData(); loadMyMemberTab();
+          };
+      } else {
+          container.innerHTML = `<p style="color:#666;">Ще немає персонажа. Подайте заявку.</p>`;
+          document.getElementById('myMemberStatusPanel').style.display='none';
+      }
+  }
+
+  // Render Public
+  function renderPublicMembers() {
+      const g = document.getElementById('membersGrid');
+      g.innerHTML = members.map(m=>`
+        <div class="member">
+            <h3>${m.name}</h3><div class="role-badge">${m.role}</div>
+            ${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#666;">Discord: ${m.links.discord}</div>`:''}
+        </div>`).join('');
+      activateScrollAnimations();
+  }
+  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card" style="margin-bottom:15px; padding:15px;"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); }
+  function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); }
+  window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
+  window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
+
+  loadInitialData();
+});

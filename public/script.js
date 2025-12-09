@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Security check: only admin can access 'users', 'admin-members', 'logs'
       if(['users', 'admin-members', 'logs'].includes(tab)) {
           if(!currentUser || currentUser.role !== 'admin') {
-              showToast('Доступ заборонено', 'error');
+              showToast('Доступ заборонено. Тільки для ADMIN.', 'error');
               return;
           }
       }
@@ -142,21 +142,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // ТУТ ВІДБУВАЄТЬСЯ ВИДАЧА РОЛЕЙ
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
+      // Очищуємо список перед завантаженням
+      list.innerHTML = '<div style="color:#666; padding:10px;">Завантаження...</div>';
+      
       const users = await apiFetch('/api/users');
-      if(!users) return;
+      
+      if(!users || users.length === 0) {
+          list.innerHTML = `
+            <div style="text-align:center; padding:30px; border:1px dashed #333; border-radius:10px; color:#666;">
+                <i class="fa-solid fa-users-slash" style="font-size:24px; margin-bottom:10px;"></i><br>
+                Список користувачів порожній.<br>
+                <small>Зареєстровані користувачі з'являться тут.</small>
+            </div>`;
+          return;
+      }
       
       // Рендеримо список користувачів з випадаючим списком ролей
       list.innerHTML = users.map(u => `
         <div class="u-row">
-            <div><strong>${u.username}</strong> <small style="color:#666">(${u.email})</small></div>
+            <div style="display:flex; flex-direction:column;">
+                <span style="font-size:16px; font-weight:bold; color:#fff;">${u.username}</span>
+                <span style="font-size:12px; color:#666;">${u.email}</span>
+                <span style="font-size:10px; color:#444; margin-top:2px;">Role: ${u.role}</span>
+            </div>
             <div style="display:flex; align-items:center; gap:10px;">
-                <select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; padding:5px 10px; height:auto; width:auto; font-size:12px; border-color:#333; background:#111;">
+                <select onchange="window.changeUserRole('${u.username}', this.value)" 
+                        style="margin:0; padding:8px 12px; height:auto; width:auto; font-size:12px; border:1px solid #333; background:#050505; color:#fff; border-radius:8px; cursor:pointer;">
                     <option value="member" ${u.role==='member'?'selected':''}>Member</option>
                     <option value="support" ${u.role==='support'?'selected':''}>Support</option>
                     <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
                     <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
                 </select>
-                <button class="btn btn-outline" style="padding:5px; border-color:#d33; color:#d33;" onclick="window.banUser('${u.username}')"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn btn-outline" style="padding:8px 12px; border-color:rgba(231,76,60,0.3); color:#e74c3c;" onclick="window.banUser('${u.username}')" title="Видалити">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
             </div>
         </div>`).join('');
   }
@@ -165,12 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!currentUser || currentUser.role !== 'admin') return showToast('Тільки адмін може це робити', 'error');
       
       await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) });
-      showToast(`Role for ${u} changed to ${role}`);
+      showToast(`Роль для ${u} змінено на ${role}`);
       addLog(`Admin changed role of ${u} to ${role}`);
+      loadUsersAdmin(); // Оновлюємо список щоб побачити зміни
   };
   
-  window.banUser = async (u) => customConfirm(`Видалити користувача ${u}?`, async(r)=>{ 
-      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Deleted'); loadUsersAdmin(); }
+  window.banUser = async (u) => customConfirm(`Видалити користувача ${u}? Це незворотно.`, async(r)=>{ 
+      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Користувача видалено'); loadUsersAdmin(); }
   });
 
   // --- APPLICATIONS (User) ---

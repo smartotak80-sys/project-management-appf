@@ -360,17 +360,26 @@ document.addEventListener('DOMContentLoaded', () => {
       loadMyTickets(); loadAllTickets();
   });
 
-  // --- AUTH ---
+  // --- AUTH UI UPDATE (ЗМІНЕНО ТУТ) ---
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
       if(currentUser) {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
-          document.getElementById('authBtnText').textContent = 'СИСТЕМА';
+          
+          // Змінено текст кнопки в шапці на "АКАУНТ"
+          document.getElementById('authBtnText').textContent = 'АКАУНТ';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
+          
           if(applyText) applyText.style.display = 'none';
-          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> ВІДКРИТИ ПАНЕЛЬ'; applyBtn.onclick = window.openDashboard; }
+          
+          // Змінено текст кнопки подачі заявки на "ПОДАТИ ЗАЯВКУ"
+          if(applyBtn) { 
+              applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> ПОДАТИ ЗАЯВКУ'; 
+              // При кліку тепер відкривається вкладка 'apply', а не профіль
+              applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
+          }
       } else {
           document.body.classList.remove('is-logged-in','is-admin');
           document.getElementById('authBtnText').textContent = 'ВХІД';

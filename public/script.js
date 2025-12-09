@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
           submittedBy: currentUser.username
       };
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
-      if(res && res.success) { showToast('Заявку надіслано!'); document.getElementById('dashAppForm').reset(); checkMyApplication(); }
+      if(res && res.success) { showToast('Заявку надіслано!'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
@@ -291,16 +291,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- AUTH & MISC ---
   
-  function updateAuthUI() {
+  // ЦЯ ФУНКЦІЯ БУЛА ЗМІНЕНА
+  async function updateAuthUI() {
+      const applyText = document.getElementById('applyText');
+      const applyBtn = document.getElementById('applyBtnMain');
+
       if(currentUser) {
+          // LOGGED IN
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           document.getElementById('authBtnText').textContent = 'Кабінет';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
+
+          // Hide warning text
+          if(applyText) applyText.style.display = 'none';
+
+          // Handle button status
+          if(applyBtn) {
+               applyBtn.innerHTML = '<i class="fa-regular fa-id-card"></i> Відкрити панель';
+               applyBtn.onclick = window.openDashboard;
+               
+               // Check if application exists
+               try {
+                   const apps = await apiFetch('/api/applications/my');
+                   const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
+                   
+                   if(myApp) {
+                        let statusColor = '#e6b800'; 
+                        if(myApp.status === 'approved') statusColor = '#2ecc71';
+                        if(myApp.status === 'rejected') statusColor = '#e74c3c';
+                        
+                        applyBtn.innerHTML = `<i class="fa-solid fa-file-contract"></i> Заявка: ${myApp.status.toUpperCase()}`;
+                        applyBtn.style.background = 'rgba(0,0,0,0.5)';
+                        applyBtn.style.borderColor = statusColor;
+                        applyBtn.style.color = statusColor;
+                   }
+               } catch(e) { console.error(e); }
+          }
+
       } else {
+          // GUEST
           document.body.classList.remove('is-logged-in','is-admin');
           document.getElementById('authBtnText').textContent = 'Вхід';
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
+          
+          // Show warning text
+          if(applyText) applyText.style.display = 'block';
+
+          // Reset button
+          if(applyBtn) {
+              applyBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Увійти в кабінет';
+              applyBtn.onclick = () => document.getElementById('openAuthBtn').click();
+              applyBtn.style.background = '';
+              applyBtn.style.borderColor = '';
+              applyBtn.style.color = '';
+          }
       }
   }
 

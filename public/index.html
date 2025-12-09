@@ -113,11 +113,13 @@
       <section id="apply" class="section alt">
         <div class="container" style="text-align: center;">
           <h2 style="border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 5px;">ЯК ПОДАТИ ЗАЯВКУ?</h2>
-          <p style="color:#bbb; margin-bottom:40px; font-size:18px; max-width: 600px; margin-left: auto; margin-right: auto;">
+          
+          <p id="applyText" style="color:#bbb; margin-bottom:40px; font-size:18px; max-width: 600px; margin-left: auto; margin-right: auto;">
             Ми дбаємо про безпеку та порядок. Щоб подати заявку на вступ, ви повинні увійти до особистого кабінету.
           </p>
+          
           <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-              <button onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large" style="min-width: 250px;">
+              <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large" style="min-width: 250px;">
                   <i class="fa-solid fa-right-to-bracket"></i> Увійти в кабінет
               </button>
               <a href="https://discord.gg/CxYnyKeb" target="_blank" class="btn btn-outline btn-large" style="min-width: 250px;">

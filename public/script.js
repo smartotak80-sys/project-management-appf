@@ -188,23 +188,49 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
-  // --- APPLICATIONS (Moderator/Admin) ---
+  // --- APPLICATIONS (Moderator/Admin) - ONOVLENO ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       const apps = await apiFetch('/api/applications');
       if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">Немає заявок.</p>'; return; }
+      
+      // Новий дизайн карток
       list.innerHTML = apps.map(a => `
-        <div style="background:#151619; padding:20px; border-radius:12px; border:1px solid #333; position:relative;">
-            <div style="position:absolute; top:15px; right:15px; font-weight:bold; color:${a.status==='pending'?'#e6b800':(a.status==='approved'?'#2ecc71':'#e74c3c')}">${a.status.toUpperCase()}</div>
-            <h4>${a.rlNameAge} <small style="color:#666">(${a.submittedBy})</small></h4>
-            <div style="font-size:13px; color:#aaa; margin-bottom:15px;">
-                History: ${a.history}<br>Online: ${a.onlineTime}<br>Video: <a href="${a.shootingVideo}" target="_blank" style="color:var(--accent)">Watch Video</a>
-            </div>
-            ${a.status==='pending' ? `
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-primary" style="padding:5px 15px; font-size:12px;" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
-                <button class="btn btn-outline" style="padding:5px 15px; font-size:12px; color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
-            </div>` : ''}
+        <div class="app-card">
+           <div class="app-header">
+               <div>
+                   <h3 style="margin:0; font-size:18px;">${a.rlNameAge}</h3>
+                   <div style="font-size:12px; color:#666; margin-top:2px;">
+                       <i class="fa-solid fa-user"></i> ${a.submittedBy}
+                   </div>
+               </div>
+               <div class="status-badge ${a.status}">${a.status.toUpperCase()}</div>
+           </div>
+           
+           <div class="app-grid">
+               <div class="app-item">
+                   <label>Онлайн</label>
+                   <div>${a.onlineTime}</div>
+               </div>
+               <div class="app-item">
+                   <label>Відео-доказ</label>
+                   <div>
+                        <a href="${a.shootingVideo}" target="_blank" class="app-video-link">
+                            <i class="fa-brands fa-youtube"></i> Дивитись
+                        </a>
+                   </div>
+               </div>
+               <div class="app-item" style="grid-column: 1 / -1; border-top: 1px solid #222; padding-top: 10px; margin-top: 5px;">
+                   <label>Історія гри / Досвід</label>
+                   <div style="font-size:13px; color:#ccc; line-height:1.4;">${a.history}</div>
+               </div>
+           </div>
+
+           ${a.status==='pending' ? `
+           <div class="app-actions">
+                <button class="btn btn-primary full-width" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
+                <button class="btn btn-outline full-width" style="color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
+           </div>` : ''}
         </div>`).join('');
   }
   window.updateAppStatus = async (id, status) => {
@@ -291,7 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- AUTH & MISC ---
   
-  // ЦЯ ФУНКЦІЯ БУЛА ЗМІНЕНА
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
@@ -303,15 +328,12 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('authBtnText').textContent = 'Кабінет';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
 
-          // Hide warning text
           if(applyText) applyText.style.display = 'none';
 
-          // Handle button status
           if(applyBtn) {
                applyBtn.innerHTML = '<i class="fa-regular fa-id-card"></i> Відкрити панель';
                applyBtn.onclick = window.openDashboard;
                
-               // Check if application exists
                try {
                    const apps = await apiFetch('/api/applications/my');
                    const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
@@ -335,10 +357,8 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('authBtnText').textContent = 'Вхід';
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           
-          // Show warning text
           if(applyText) applyText.style.display = 'block';
 
-          // Reset button
           if(applyBtn) {
               applyBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Увійти в кабінет';
               applyBtn.onclick = () => document.getElementById('openAuthBtn').click();

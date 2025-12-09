@@ -30,9 +30,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // ВАЖЛИВО: Railway шукає файли сайту. 
-// Переконайся, що index.html, script.js та styles.css лежать 
-// АБО поруч з server.js, АБО в папці 'public'.
-// Цей код спочатку шукає папку 'public', а якщо її немає - роздає з кореня.
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(__dirname)); 
 
@@ -59,10 +56,12 @@ const News = mongoose.model('News', NewsSchema);
 const GallerySchema = new mongoose.Schema({ url: String, createdAt: { type: Date, default: Date.now } });
 const Gallery = mongoose.model('Gallery', GallerySchema);
 
+// ОНОВЛЕНА СХЕМА ЗАЯВКИ (Додано adminComment)
 const ApplicationSchema = new mongoose.Schema({
     rlNameAge: String, onlineTime: String, history: String, shootingVideo: String,
     status: { type: String, default: 'pending' }, 
     submittedBy: String, 
+    adminComment: String, // Коментар адміністратора
     createdAt: { type: Date, default: Date.now }
 });
 const Application = mongoose.model('Application', ApplicationSchema);
@@ -90,7 +89,6 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
-    // Адмін пароль беремо зі змінних Railway або стандартний
     const adminLogin = process.env.ADMIN_LOGIN || 'admin';
     const adminPass = process.env.ADMIN_PASS || 'admin';
 
@@ -133,10 +131,19 @@ app.get('/api/users/count', async (req, res) => {
     } catch(e) { res.json({ totalUsers: 0, totalAdmins: 0 }); }
 });
 
+// ОНОВЛЕНИЙ ROUTE ДЛЯ ЗАЯВОК (Зберігає коментар)
 app.post('/api/applications', async (req, res) => { try { await new Application(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 app.get('/api/applications', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });
 app.get('/api/applications/my', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });
-app.put('/api/applications/:id', async (req, res) => { try { await Application.findByIdAndUpdate(req.params.id, { status: req.body.status }); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
+
+app.put('/api/applications/:id', async (req, res) => { 
+    try { 
+        // Приймаємо status і adminComment
+        const { status, adminComment } = req.body;
+        await Application.findByIdAndUpdate(req.params.id, { status, adminComment }); 
+        res.json({ success: true }); 
+    } catch(e) { res.status(500).json({ success: false }); } 
+});
 
 app.post('/api/tickets', async (req, res) => { try { await new Ticket(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 app.get('/api/tickets', async (req, res) => { const tickets = await Ticket.find().sort({ createdAt: -1 }); res.json(tickets.map(t => ({ ...t._doc, id: t._id }))); });
@@ -144,13 +151,9 @@ app.put('/api/tickets/:id', async (req, res) => { try { const { message, status 
 
 // Обробка головної сторінки
 app.get("*", (req, res) => { 
-    // Спробуємо знайти index.html в public, якщо ні - в корені
     const p1 = path.join(__dirname, "public", "index.html");
     const p2 = path.join(__dirname, "index.html");
-    
-    res.sendFile(p1, (err) => {
-        if(err) res.sendFile(p2);
-    });
+    res.sendFile(p1, (err) => { if(err) res.sendFile(p2); });
 });
 
 app.listen(PORT, '0.0.0.0', () => {

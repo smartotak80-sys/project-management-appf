@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card');
       elements.forEach((el) => {
           el.classList.add('animate-hidden');
-          if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
+          if(el.parentElement?.classList.contains('members-grid') || el.parentElement?.classList.contains('cards')) {
               const idx = Array.from(el.parentElement.children).indexOf(el);
               el.style.transitionDelay = `${idx * 100}ms`;
           }
@@ -278,36 +278,50 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
+  // --- ОНОВЛЕНА ФУНКЦІЯ ВІДОБРАЖЕННЯ ЗАЯВОК ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
+      list.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">ЗАВАНТАЖЕННЯ ДАНИХ...</div>';
       const apps = await apiFetch('/api/applications');
-      if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">НЕМАЄ ЗАЯВОК</p>'; return; }
       
-      list.innerHTML = apps.map(a => `
-        <div class="app-card animate-hidden">
-           <div class="app-header">
-               <div>
-                   <h3 style="margin:0;">${a.rlNameAge}</h3>
-                   <div style="font-size:12px; color:#666;"><i class="fa-solid fa-user"></i> ${a.submittedBy}</div>
+      if(!apps || !apps.length) { 
+          list.innerHTML = '<div style="padding:40px; text-align:center; color:#444; border:1px dashed #333; border-radius:12px;">НЕМАЄ АКТИВНИХ ЗАЯВОК</div>'; 
+          return; 
+      }
+      
+      list.innerHTML = apps.map(a => {
+          let statusClass = 'pending', statusText = 'ОЧІКУВАННЯ';
+          if(a.status === 'approved') { statusClass = 'approved'; statusText = 'СХВАЛЕНО'; }
+          if(a.status === 'rejected') { statusClass = 'rejected'; statusText = 'ВІДХИЛЕНО'; }
+
+          return `
+            <div class="app-card animate-hidden">
+               <div class="app-header">
+                   <div class="app-user-info">
+                       <h3>${a.rlNameAge}</h3>
+                       <div class="app-submitted-by"><i class="fa-solid fa-user-astronaut"></i> ${a.submittedBy}</div>
+                   </div>
+                   <div class="status-badge ${statusClass}"><i class="fa-solid fa-circle-info"></i> ${statusText}</div>
                </div>
-               <div class="status-badge ${a.status}">${a.status === 'pending' ? 'ОЧІКУВАННЯ' : (a.status === 'approved' ? 'СХВАЛЕНО' : 'ВІДХИЛЕНО')}</div>
-           </div>
-           <div class="app-grid">
-               <div class="app-item"><label>ОНЛАЙН</label><div>${a.onlineTime}</div></div>
-               <div class="app-item"><label>ВІДЕО</label><div><a href="${a.shootingVideo}" target="_blank" class="app-video-link">ПЕРЕГЛЯД</a></div></div>
-               <div class="app-item full"><label>ІСТОРІЯ</label><div>${a.history}</div></div>
-           </div>
-           ${a.status==='pending' ? `
-           <div class="app-controls">
-                <input type="text" id="reason-${a.id}" placeholder="Коментар...">
-                <div class="app-btns">
-                    <button class="btn btn-primary" onclick="window.updateAppStatus('${a.id}','approved')">СХВАЛИТИ</button>
-                    <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.updateAppStatus('${a.id}','rejected')">ВІДХИЛИТИ</button>
-                </div>
-           </div>` : ''}
-        </div>`).join('');
+               <div class="app-grid">
+                   <div class="app-item"><label><i class="fa-regular fa-clock"></i> ОНЛАЙН</label><div>${a.onlineTime}</div></div>
+                   <div class="app-item"><label><i class="fa-brands fa-youtube"></i> ВІДЕО</label><div><a href="${a.shootingVideo}" target="_blank" class="app-video-link">ДИВИТИСЬ <i class="fa-solid fa-external-link-alt"></i></a></div></div>
+                   <div class="app-item full"><label><i class="fa-solid fa-scroll"></i> RP ІСТОРІЯ</label><div style="line-height: 1.4; color: #ccc;">${a.history}</div></div>
+                   ${a.adminComment ? `<div class="app-item full" style="border-color: var(--accent);"><label style="color:var(--accent);">КОМЕНТАР АДМІНА</label><div>${a.adminComment}</div></div>` : ''}
+               </div>
+               ${a.status === 'pending' ? `
+               <div class="app-controls">
+                    <input type="text" id="reason-${a.id}" placeholder="Коментар або причина..." style="margin-bottom:10px;">
+                    <div class="app-btns">
+                        <button class="btn btn-primary" style="background: rgba(46, 204, 113, 0.1); border-color: #2ecc71; color: #2ecc71;" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i> СХВАЛИТИ</button>
+                        <button class="btn btn-outline" style="background: rgba(231, 76, 60, 0.1); border-color: #e74c3c; color: #e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i> ВІДХИЛИТИ</button>
+                    </div>
+               </div>` : ''}
+            </div>`;
+      }).join('');
       activateScrollAnimations();
   }
+
   window.updateAppStatus = async (id, status) => {
       const input = document.getElementById(`reason-${id}`);
       await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: input ? input.value : ''})});

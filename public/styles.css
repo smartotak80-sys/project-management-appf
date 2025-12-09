@@ -78,8 +78,10 @@ body {
 
 .loader-text {
     font-weight: 900; letter-spacing: 5px; color: #fff; font-size: 24px;
-    margin-bottom: 20px; animation: textGlitch 3s infinite;
+    margin-bottom: 20px; 
+    /* ТУТ АНІМАЦІЮ ПРИБРАНО, ВОНА ТЕПЕР ЧЕРЕЗ JS */
     font-family: var(--font-main);
+    min-height: 30px;
 }
 .loader-bar {
     width: 200px; height: 4px; background: #333; margin: 0 auto; border-radius: 2px; overflow: hidden;
@@ -257,6 +259,17 @@ input:focus, textarea:focus, select:focus {
 .gallery-grid img:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: 0 0 20px rgba(255,42,42,0.3); }
 
 /* --- ANIMATIONS (Cascade Reveal) --- */
+/* ДОДАНО: АНІМАЦІЯ ДЛЯ СЕКЦІЇ 'ХТО МИ Є' */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.reveal-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .animate-hidden { opacity: 0; transform: translateY(30px); filter: blur(5px); transition: all 0.6s ease-out; }
 .animate-visible { opacity: 1; transform: translateY(0); filter: blur(0); }
 

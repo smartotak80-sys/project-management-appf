@@ -140,22 +140,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- ROLE MANAGEMENT (Admin) ---
   // ТУТ ВІДБУВАЄТЬСЯ ВИДАЧА РОЛЕЙ
+ // --- ДІАГНОСТИЧНА ВЕРСІЯ ---
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
-      // Очищуємо список перед завантаженням
-      list.innerHTML = '<div style="color:#666; padding:10px;">Завантаження...</div>';
+      if (!list) return showToast('Помилка: елемент списку не знайдено', 'error');
+
+      // 1. Показуємо статус завантаження
+      list.innerHTML = '<div style="color:yellow; padding:20px;">🔄 Запит до сервера...</div>';
       
-      const users = await apiFetch('/api/users');
-      
-      if(!users || users.length === 0) {
-          list.innerHTML = `
-            <div style="text-align:center; padding:30px; border:1px dashed #333; border-radius:10px; color:#666;">
-                <i class="fa-solid fa-users-slash" style="font-size:24px; margin-bottom:10px;"></i><br>
-                Список користувачів порожній.<br>
-                <small>Зареєстровані користувачі з'являться тут.</small>
-            </div>`;
-          return;
+      try {
+          const users = await apiFetch('/api/users');
+          
+          // 2. Якщо прийшов NULL (помилка мережі або сервера)
+          if (!users) {
+              list.innerHTML = '<div style="color:red; padding:20px;">❌ Помилка: API повернув null. Сервер не відповідає або помилка в коді сервера.</div>';
+              return;
+          }
+
+          // 3. Якщо прийшов не масив (щось дивне)
+          if (!Array.isArray(users)) {
+             list.innerHTML = `<div style="color:red; padding:20px;">❌ Помилка даних! Очікували масив, а отримали: ${typeof users} <br> ${JSON.stringify(users)}</div>`;
+             return;
+          }
+
+          // 4. Якщо список порожній
+          if (users.length === 0) {
+              list.innerHTML = `
+                <div style="text-align:center; padding:30px; border:1px dashed #444; border-radius:10px; color:#888;">
+                    <i class="fa-solid fa-users-slash" style="font-size:24px; margin-bottom:10px;"></i><br>
+                    Список порожній (0 користувачів).
+                </div>`;
+              return;
+          }
+
+          // 5. Успіх - рендеримо
+          list.innerHTML = users.map(u => `
+            <div class="u-row" style="background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display:flex; flex-direction:column;">
+                    <span style="font-size:16px; font-weight:bold; color:#fff;">${u.username || 'Без імені'}</span>
+                    <span style="font-size:12px; color:#888;">${u.email || 'No Email'}</span>
+                    <span style="font-size:10px; color:#555; margin-top:2px; text-transform:uppercase;">Role: ${u.role}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                     <select onchange="window.changeUserRole('${u.username}', this.value)" 
+                            style="margin:0; padding:5px; font-size:12px; background:#000; color:#fff; border:1px solid #444;">
+                        <option value="member" ${u.role==='member'?'selected':''}>Member</option>
+                        <option value="support" ${u.role==='support'?'selected':''}>Support</option>
+                        <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
+                        <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                    </select>
+                </div>
+            </div>`).join('');
+            
+      } catch (err) {
+          // 6. Ловимо помилки JS
+          console.error(err);
+          list.innerHTML = `<div style="color:red; padding:20px;">❌ КРИТИЧНА ПОМИЛКА JS:<br>${err.message}</div>`;
       }
+  }
       
       // Рендеримо список користувачів з випадаючим списком ролей
       list.innerHTML = users.map(u => `

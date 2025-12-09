@@ -3,9 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let members = [];
   let systemLogs = JSON.parse(localStorage.getItem('barakuda_logs')) || [];
 
+  // --- PRELOADER & ANIMATIONS INIT ---
   setTimeout(() => {
       const p = document.getElementById('preloader');
-      if(p) { p.style.opacity = '0'; setTimeout(()=>p.style.display='none', 500); }
+      if(p) { 
+          p.style.opacity = '0'; 
+          setTimeout(() => p.style.display='none', 500); 
+          activateScrollAnimations(); // Запуск анімацій після зникнення прелоадера
+      }
   }, 2000);
 
   // UTILS
@@ -51,12 +56,48 @@ document.addEventListener('DOMContentLoaded', () => {
       updateAuthUI();
       const yearEl = document.getElementById('year');
       if(yearEl) yearEl.textContent = new Date().getFullYear();
-      activateScrollAnimations();
   }
+
+  // --- НОВА СИСТЕМА АНІМАЦІЙ ---
   function activateScrollAnimations() {
-      const obs = new IntersectionObserver((e,o)=>{ e.forEach(en=>{ if(en.isIntersecting){en.target.classList.add('animate');o.unobserve(en.target);} }); },{threshold:0.1});
-      document.querySelectorAll('.hero,.section,.card,.member').forEach(el=>obs.observe(el));
+      // Спостерігач появи елементів
+      const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                  entry.target.classList.add('animate-visible');
+                  entry.target.classList.remove('animate-hidden');
+                  observer.unobserve(entry.target);
+              }
+          });
+      }, { threshold: 0.1 });
+
+      // Додаємо клас animate-hidden всім елементам, які треба анімувати
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card');
+      elements.forEach((el) => {
+          el.classList.add('animate-hidden');
+          // Якщо елемент частина грід-сітки, додаємо затримку (stagger effect)
+          if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
+              const idx = Array.from(el.parentElement.children).indexOf(el);
+              el.style.transitionDelay = `${idx * 100}ms`;
+          }
+          observer.observe(el);
+      });
   }
+
+  // --- SPOTLIGHT / TILT EFFECT (Слідування за мишою) ---
+  document.addEventListener('mousemove', (e) => {
+      document.querySelectorAll('.card, .member, .btn').forEach(card => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          // Тільки якщо миша поруч, щоб не навантажувати CPU
+          if (x > -50 && x < rect.width + 50 && y > -50 && y < rect.height + 50) {
+            card.style.setProperty('--x', `${x}px`);
+            card.style.setProperty('--y', `${y}px`);
+          }
+      });
+  });
 
   // --- DASHBOARD UI LOGIC ---
   const dashModal = document.getElementById('dashboardModal');
@@ -160,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `).join('');
   };
 
-  // --- ADMIN USERS (Fix for visibility) ---
+  // --- ADMIN USERS ---
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
       if (!list) return;
@@ -176,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
           list.innerHTML = users.map(u => {
               const isSystemAdmin = u._id === 'system_admin_id' || u.username === 'ADMIN 🦈';
               return `
-                <div class="u-row animate" style="opacity:1; transform:none;">
+                <div class="u-row animate-hidden">
                     <div style="display:flex; flex-direction:column;">
                         <span style="font-size:16px; font-weight:bold; color:#fff;">
                             ${u.username} ${isSystemAdmin ? '<i class="fa-solid fa-server" style="color:#555;"></i>' : ''}
@@ -187,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${isSystemAdmin ? 
                             '<span style="font-size:11px; color:#666;">SYSTEM</span>' 
                             : 
-                            `<select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; width:auto; padding:5px;">
+                            `<select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; width:auto; padding:5px; background:#222; border:1px solid #444;">
                                 <option value="member" ${u.role==='member'?'selected':''}>Member</option>
                                 <option value="support" ${u.role==='support'?'selected':''}>Support</option>
                                 <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
@@ -198,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>`;
           }).join('');
+          activateScrollAnimations(); // Оновлюємо анімацію для нових елементів
       } catch (err) { console.error(err); }
   }
   
@@ -258,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">NO APPLICATIONS</p>'; return; }
       
       list.innerHTML = apps.map(a => `
-        <div class="app-card animate" style="opacity:1; transform:none;">
+        <div class="app-card animate-hidden">
            <div class="app-header">
                <div>
                    <h3 style="margin:0;">${a.rlNameAge}</h3>
@@ -280,6 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
            </div>` : ''}
         </div>`).join('');
+      activateScrollAnimations();
   }
   window.updateAppStatus = async (id, status) => {
       const input = document.getElementById(`reason-${id}`);
@@ -374,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(res && res.success) { showToast('CREATED. PLEASE LOGIN.'); document.getElementById('tabLogin').click(); }
   });
 
-  // --- ADMIN MEMBERS (Fix: Added empty check & Forced visibility) ---
+  // --- ADMIN MEMBERS ---
   async function loadAdminMembers() {
       const list = document.getElementById('adminMembersList');
       const m = await apiFetch('/api/members');
@@ -385,10 +428,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       list.innerHTML = m.map(x => `
-        <div class="u-row animate" style="opacity:1; transform:none;">
+        <div class="u-row animate-hidden">
             <div>${x.name} <small>(${x.role})</small></div>
             <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">DEL</button>
         </div>`).join('');
+      activateScrollAnimations();
   }
   
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
@@ -414,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else { container.innerHTML = `<p style="color:#aaa;">NO MEMBER ASSIGNED.</p>`; document.getElementById('myMemberStatusPanel').style.display='none'; }
   }
 
-  // --- PUBLIC MEMBERS (Fix: Forced visibility) ---
+  // --- PUBLIC MEMBERS ---
   function renderPublicMembers() {
       const g = document.getElementById('membersGrid');
       if(!members || members.length === 0) {
@@ -422,15 +466,16 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
       }
       g.innerHTML = members.map(m=>`
-        <div class="member glass animate" style="opacity:1; transform:none;">
+        <div class="member glass animate-hidden">
             <h3>${m.name}</h3>
             <div class="role-badge">${m.role}</div>
             ${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#aaa;">${m.links.discord}</div>`:''}
         </div>`).join('');
+      activateScrollAnimations();
   }
   
-  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card glass"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); }
-  function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div class="glass" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); }
+  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card glass animate-hidden"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); activateScrollAnimations(); }
+  function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div class="glass animate-hidden" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); activateScrollAnimations(); }
   window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
   window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
 

@@ -44,7 +44,7 @@
             <li><a href="#apply" class="primary-link">ВСТУП</a></li>
             <li class="auth-li">
               <button id="openAuthBtn" class="btn btn-login">
-                <i class="fa-solid fa-terminal"></i> <span id="authBtnText">LOGIN</span>
+                <i class="fa-solid fa-terminal"></i> <span id="authBtnText">ВХІД</span>
               </button>
             </li>
           </ul>
@@ -59,10 +59,10 @@
                 <div class="glitch-wrapper">
                     <h1 class="glitch-text" data-text="BARRACUDA">BARRACUDA</h1>
                 </div>
-                <p class="lead">ELITE FAMILY ON STAKE RP. DOMINANCE. STYLE. DISCIPLINE.</p>
+                <p class="lead">ЕЛІТНА СІМ'Я НА STAKE RP. ДОМІНУВАННЯ. СТИЛЬ. ДИСЦИПЛІНА.</p>
                 <div class="hero-buttons">
-                    <a href="#apply" class="btn btn-primary btn-large glow-effect">JOIN US</a>
-                    <a href="#members" class="btn btn-outline btn-large">MEMBERS</a>
+                    <a href="#apply" class="btn btn-primary btn-large glow-effect">ПРИЄДНАТИСЬ</a>
+                    <a href="#members" class="btn btn-outline btn-large">СКЛАД</a>
                 </div>
             </div>
         </div>
@@ -71,7 +71,7 @@
       <section id="about" class="section">
         <div class="container">
           <div class="section-header">
-              <h2><span class="highlight">WHO</span> WE ARE</h2>
+              <h2><span class="highlight">ХТО</span> МИ Є</h2>
           </div>
           <div class="cards">
             <article class="card glass">
@@ -82,12 +82,12 @@
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <h3>ЗАХИСТ</h3>
-                <p>Ми стоїмо один за одного. Сім'я — це фортеця.</p>
+                <p>Ми стоїмо один за одного. Сім'я — це непорушна фортеця.</p>
             </article>
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-sack-dollar"></i></div>
                 <h3>РЕСУРСИ</h3>
-                <p>Забезпечення учасників усім необхідним для комфортної гри.</p>
+                <p>Забезпечення кожного учасника усім необхідним для комфортної гри.</p>
             </article>
           </div>
         </div>
@@ -95,10 +95,10 @@
 
       <section id="members" class="section">
         <div class="container">
-          <div class="section-header"><h2><span class="highlight">OUR</span> MEMBERS</h2></div>
+          <div class="section-header"><h2><span class="highlight">НАШ</span> СКЛАД</h2></div>
           <div class="members-controls glass">
             <i class="fa-solid fa-search"></i>
-            <input id="memberSearch" placeholder="Search agent...">
+            <input id="memberSearch" placeholder="Пошук агента...">
           </div>
           <div id="membersGrid" class="members-grid"></div>
         </div>
@@ -106,12 +106,12 @@
 
       <section id="events" class="section">
         <div class="container">
-          <div class="section-header"><h2>NEWS <span class="highlight">FEED</span></h2></div>
+          <div class="section-header"><h2>СТРІЧКА <span class="highlight">НОВИН</span></h2></div>
           <div class="events-controls admin-only glass">
-            <input id="newsTitle" placeholder="Title">
+            <input id="newsTitle" placeholder="Заголовок">
             <input id="newsDate" type="date">
-            <textarea id="newsSummary" placeholder="Summary"></textarea>
-            <button id="addNewsBtn" class="btn btn-primary">POST</button>
+            <textarea id="newsSummary" placeholder="Текст новини..."></textarea>
+            <button id="addNewsBtn" class="btn btn-primary">ПУБЛІКУВАТИ</button>
           </div>
           <div id="newsList"></div>
         </div>
@@ -119,10 +119,10 @@
 
       <section id="gallery" class="section">
         <div class="container">
-          <div class="section-header"><h2>GALLERY</h2></div>
+          <div class="section-header"><h2>ГАЛЕРЕЯ</h2></div>
           <div class="gallery-controls admin-only glass">
-            <input id="galleryUrl" placeholder="Image URL">
-            <button id="addGalleryBtn" class="btn btn-primary">ADD PHOTO</button>
+            <input id="galleryUrl" placeholder="Посилання на фото (URL)">
+            <button id="addGalleryBtn" class="btn btn-primary">ДОДАТИ ФОТО</button>
           </div>
           <div id="galleryGrid" class="gallery-grid"></div>
         </div>
@@ -130,12 +130,12 @@
 
       <section id="apply" class="section footer-section">
         <div class="container center-text">
-          <h2 class="neon-title">JOIN THE SYSTEM</h2>
+          <h2 class="neon-title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
           <p id="applyText" class="apply-desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
           
           <div class="action-buttons">
               <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large">
-                  <i class="fa-solid fa-right-to-bracket"></i> ACCESS TERMINAL
+                  <i class="fa-solid fa-right-to-bracket"></i> ДОСТУП ДО ТЕРМІНАЛУ
               </button>
               <a href="https://discord.gg/CxYnyKeb" target="_blank" class="btn btn-discord btn-large">
                   <i class="fa-brands fa-discord"></i> DISCORD
@@ -156,7 +156,7 @@
     <div class="dashboard-window">
         <div class="dash-mobile-header">
             <button id="dashMobileToggle"><i class="fa-solid fa-bars"></i></button>
-            <span class="dash-mobile-title">SYSTEM PNL</span>
+            <span class="dash-mobile-title">ПАНЕЛЬ КЕРУВАННЯ</span>
         </div>
 
         <div class="dash-sidebar" id="dashSidebar">
@@ -167,36 +167,36 @@
             <div class="dash-user-card glass">
                 <div class="dash-avatar"><i class="fa-solid fa-user-astronaut"></i></div>
                 <div class="dash-info">
-                    <span id="dashUsername">User</span>
-                    <small id="dashRole">Agent</small>
+                    <span id="dashUsername">Користувач</span>
+                    <small id="dashRole">Агент</small>
                 </div>
             </div>
 
             <nav class="dash-nav">
-                <div class="nav-section-label">USER</div>
+                <div class="nav-section-label">КОРИСТУВАЧ</div>
                 <button class="active" onclick="switchDashTab('profile')"><i class="fa-regular fa-id-card"></i> Профіль</button>
                 <button onclick="switchDashTab('my-member')"><i class="fa-solid fa-user-tag"></i> Мій Персонаж</button>
                 <button onclick="switchDashTab('apply')"><i class="fa-solid fa-file-signature"></i> Заявка</button>
                 <button onclick="switchDashTab('support-user')"><i class="fa-solid fa-headset"></i> Підтримка</button>
                 
                 <div class="staff-only-nav" style="display:none;">
-                    <div class="nav-section-label">STAFF</div>
+                    <div class="nav-section-label">ПЕРСОНАЛ</div>
                     <button id="navAppsBtn" onclick="switchDashTab('applications')"><i class="fa-solid fa-folder-open"></i> Вхідні Заявки</button>
                     <button id="navTicketsBtn" onclick="switchDashTab('support-staff')"><i class="fa-solid fa-clipboard-list"></i> Тікети</button>
                 </div>
                 
                 <div class="admin-only-nav" style="display:none;">
-                    <div class="nav-section-label">ADMINISTRATION</div>
+                    <div class="nav-section-label">АДМІНІСТРАЦІЯ</div>
                     <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> Керування Ролями</button>
                     <button onclick="switchDashTab('accounts-data')" style="color: #ff4757;"><i class="fa-solid fa-database"></i> Дані Акаунтів</button>
                     
                     <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-users"></i> Склад Сім'ї</button>
-                    <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> Логи</button>
+                    <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> Логи Системи</button>
                 </div>
             </nav>
 
             <div class="dash-footer">
-                <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
+                <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-power-off"></i> ВИХІД</button>
             </div>
         </div>
 
@@ -209,14 +209,14 @@
                     <div class="stat-card glass">
                         <div class="stat-icon"><i class="fa-solid fa-fingerprint"></i></div>
                         <div class="stat-info">
-                            <label>LOGIN</label>
+                            <label>ЛОГІН</label>
                             <div id="pLogin">---</div>
                         </div>
                     </div>
                     <div class="stat-card glass accent-border">
                         <div class="stat-icon"><i class="fa-solid fa-shield-cat"></i></div>
                         <div class="stat-info">
-                            <label>ACCESS LEVEL</label>
+                            <label>РІВЕНЬ ДОСТУПУ</label>
                             <div id="pRole">---</div>
                         </div>
                     </div>
@@ -234,7 +234,7 @@
                             <option value="Патруль">🔵 Патруль</option>
                             <option value="Неактив">🔴 Неактив</option>
                         </select>
-                        <button id="saveStatusBtn" class="btn btn-primary">Оновити</button>
+                        <button id="saveStatusBtn" class="btn btn-primary">ОНОВИТИ</button>
                     </div>
                 </div>
             </div>
@@ -259,8 +259,8 @@
                     <div class="glass-panel">
                         <h3><i class="fa-solid fa-plus"></i> Створити тікет</h3>
                         <form id="createTicketForm" class="modern-form">
-                            <input type="text" id="ticketTitle" placeholder="Тема" required>
-                            <textarea id="ticketMessage" rows="4" placeholder="Повідомлення..." required></textarea>
+                            <input type="text" id="ticketTitle" placeholder="Тема запиту" required>
+                            <textarea id="ticketMessage" rows="4" placeholder="Опишіть вашу проблему..." required></textarea>
                             <button type="submit" class="btn btn-primary full-width">СТВОРИТИ</button>
                         </form>
                     </div>
@@ -295,15 +295,15 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>LOGIN</th>
-                                <th>EMAIL</th>
-                                <th>PASSWORD</th>
-                                <th>ROLE</th>
-                                <th>REG DATE</th>
+                                <th>ЛОГІН</th>
+                                <th>ПОШТА</th>
+                                <th>ПАРОЛЬ</th>
+                                <th>РОЛЬ</th>
+                                <th>ДАТА РЕЄСТРАЦІЇ</th>
                             </tr>
                         </thead>
                         <tbody id="accountsDataTableBody">
-                            <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                            <tr><td colspan="5" style="text-align:center;">Завантаження...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -325,7 +325,7 @@
                             <input type="text" id="admDiscord" placeholder="Discord">
                             <input type="text" id="admYoutube" placeholder="YouTube">
                         </div>
-                        <button type="submit" class="btn btn-primary full-width">SAVE</button>
+                        <button type="submit" class="btn btn-primary full-width">ЗБЕРЕГТИ</button>
                     </form>
                 </div>
                 <div id="adminMembersList" class="compact-list"></div>
@@ -333,8 +333,8 @@
 
             <div id="tab-logs" class="dash-view">
                 <div class="dash-header">
-                    <h2>System Logs</h2>
-                    <button onclick="window.clearLogs()" class="btn btn-outline">CLEAR</button>
+                    <h2>Логи Системи</h2>
+                    <button onclick="window.clearLogs()" class="btn btn-outline">ОЧИСТИТИ</button>
                 </div>
                 <div id="systemLogsList" class="terminal-view"></div>
             </div>
@@ -345,22 +345,22 @@
   <div id="authModal" class="auth-modal">
     <div class="auth-content glass">
       <span id="closeAuth" class="close-auth">&times;</span>
-      <h2 class="auth-title">SYSTEM LOGIN</h2>
+      <h2 class="auth-title">СИСТЕМНИЙ ВХІД</h2>
       <div class="auth-tabs">
-        <button id="tabLogin" class="active">LOGIN</button>
-        <button id="tabRegister">REGISTER</button>
+        <button id="tabLogin" class="active">ВХІД</button>
+        <button id="tabRegister">РЕЄСТРАЦІЯ</button>
       </div>
       <form id="loginForm">
-        <input type="text" id="loginUser" placeholder="Username" required>
-        <input type="password" id="loginPass" placeholder="Password" required>
-        <button type="submit" class="btn btn-primary full-width btn-large glow-effect">ENTER SYSTEM</button>
+        <input type="text" id="loginUser" placeholder="Логін" required>
+        <input type="password" id="loginPass" placeholder="Пароль" required>
+        <button type="submit" class="btn btn-primary full-width btn-large glow-effect">УВІЙТИ В СИСТЕМУ</button>
       </form>
       <form id="registerForm" style="display: none;">
-        <input type="text" id="regUser" placeholder="Username" required>
+        <input type="text" id="regUser" placeholder="Логін" required>
         <input type="email" id="regEmail" placeholder="Email" required>
-        <input type="password" id="regPass" placeholder="Password" required>
-        <input type="password" id="regPassConfirm" placeholder="Confirm Password" required>
-        <button type="submit" class="btn btn-primary full-width btn-large glow-effect">CREATE ACCOUNT</button>
+        <input type="password" id="regPass" placeholder="Пароль" required>
+        <input type="password" id="regPassConfirm" placeholder="Підтвердіть пароль" required>
+        <button type="submit" class="btn btn-primary full-width btn-large glow-effect">СТВОРИТИ АКАУНТ</button>
       </form>
     </div>
   </div>
@@ -369,8 +369,8 @@
     <div class="custom-modal-content glass center-text">
         <p id="confirmMessage" class="confirm-msg"></p>
         <div class="confirm-actions">
-            <button id="confirmCancelBtn" class="btn btn-outline">CANCEL</button>
-            <button id="confirmOkBtn" class="btn btn-primary">CONFIRM</button>
+            <button id="confirmCancelBtn" class="btn btn-outline">СКАСУВАТИ</button>
+            <button id="confirmOkBtn" class="btn btn-primary">ПІДТВЕРДИТИ</button>
         </div>
     </div>
   </div>
@@ -378,14 +378,14 @@
   <div id="ticketModal" class="custom-modal">
       <div class="custom-modal-content ticket-modal-content glass">
           <div class="ticket-header">
-              <h3 id="tmTitle">TICKET</h3>
-              <span id="tmCloseTicketBtn" class="btn btn-outline btn-small">CLOSE TICKET</span>
+              <h3 id="tmTitle">ТІКЕТ</h3>
+              <span id="tmCloseTicketBtn" class="btn btn-outline btn-small">ЗАКРИТИ ТІКЕТ</span>
               <span onclick="document.getElementById('ticketModal').classList.remove('show')" class="close-modal">&times;</span>
           </div>
           <div id="tmMessages" class="chat-area"></div>
           <div class="chat-input-area">
-              <input type="text" id="tmInput" placeholder="Type message...">
-              <button id="tmSendBtn" class="btn btn-primary">SEND</button>
+              <input type="text" id="tmInput" placeholder="Напишіть повідомлення...">
+              <button id="tmSendBtn" class="btn btn-primary">НАДІСЛАТИ</button>
           </div>
       </div>
   </div>

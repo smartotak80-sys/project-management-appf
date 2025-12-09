@@ -89,9 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.switchDashTab = (tab) => {
+      // Security check: only admin can access 'users', 'admin-members', 'logs'
+      if(['users', 'admin-members', 'logs'].includes(tab)) {
+          if(!currentUser || currentUser.role !== 'admin') {
+              showToast('Доступ заборонено', 'error');
+              return;
+          }
+      }
+
       document.querySelectorAll('.dash-view').forEach(e => e.classList.remove('active'));
       document.querySelectorAll('.dash-nav button').forEach(e => e.classList.remove('active'));
-      // Find the button that calls this tab to mark active (approximation)
+      
       const btn = Array.from(document.querySelectorAll('.dash-nav button')).find(b => b.getAttribute('onclick')?.includes(tab));
       if(btn) btn.classList.add('active');
       
@@ -131,15 +139,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- ROLE MANAGEMENT (Admin) ---
+  // ТУТ ВІДБУВАЄТЬСЯ ВИДАЧА РОЛЕЙ
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
       const users = await apiFetch('/api/users');
       if(!users) return;
+      
+      // Рендеримо список користувачів з випадаючим списком ролей
       list.innerHTML = users.map(u => `
         <div class="u-row">
             <div><strong>${u.username}</strong> <small style="color:#666">(${u.email})</small></div>
             <div style="display:flex; align-items:center; gap:10px;">
-                <select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; padding:5px 10px; height:auto; width:auto;">
+                <select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; padding:5px 10px; height:auto; width:auto; font-size:12px; border-color:#333; background:#111;">
                     <option value="member" ${u.role==='member'?'selected':''}>Member</option>
                     <option value="support" ${u.role==='support'?'selected':''}>Support</option>
                     <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
@@ -149,11 +160,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>`).join('');
   }
+  
   window.changeUserRole = async (u, role) => {
+      if(!currentUser || currentUser.role !== 'admin') return showToast('Тільки адмін може це робити', 'error');
+      
       await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) });
       showToast(`Role for ${u} changed to ${role}`);
       addLog(`Admin changed role of ${u} to ${role}`);
   };
+  
   window.banUser = async (u) => customConfirm(`Видалити користувача ${u}?`, async(r)=>{ 
       if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Deleted'); loadUsersAdmin(); }
   });
@@ -171,8 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
       if(res && res.success) { showToast('Заявку надіслано!'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
-  
-  // ОНОВЛЕНА ФУНКЦІЯ ПЕРЕВІРКИ (Показує коментар)
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
       const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
@@ -188,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if(myApp.status === 'approved') { statusText = 'Вашу заявку схвалено! Вітаємо.'; color = '#2ecc71'; }
           if(myApp.status === 'rejected') { statusText = 'Вашу заявку відхилено.'; color = '#e74c3c'; }
           
-          // Генеруємо HTML для коментаря, якщо він є
           let commentHtml = '';
           if(myApp.adminComment) {
               commentHtml = `
@@ -212,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
-  // --- APPLICATIONS (Moderator/Admin) - ОНОВЛЕНО ---
+  // --- APPLICATIONS (Moderator/Admin) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       const apps = await apiFetch('/api/applications');
@@ -263,10 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
            `}
         </div>`).join('');
   }
-
-  // ОНОВЛЕНА ФУНКЦІЯ (Відправляє коментар)
   window.updateAppStatus = async (id, status) => {
-      // Отримуємо текст з поля вводу
       const input = document.getElementById(`reason-${id}`);
       const comment = input ? input.value : '';
 

@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
       systemLogs.unshift(`[${new Date().toLocaleTimeString()}] ${action}`);
       if(systemLogs.length>50) systemLogs.pop();
       localStorage.setItem('barakuda_logs', JSON.stringify(systemLogs));
-      renderLogs();
+      if(document.getElementById('tab-logs')?.classList.contains('active')) renderLogs();
   }
   function customConfirm(msg, cb) {
       const m=document.getElementById('customConfirmModal');
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const d = await r.json();
           if(!r.ok) { showToast(d.message||"Error", 'error'); return null; }
           return d;
-      } catch(e) { return null; }
+      } catch(e) { console.error(e); return null; }
   }
 
   async function loadInitialData() {
@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const n = await apiFetch('/api/news'); if(n) renderNews(n);
       const g = await apiFetch('/api/gallery'); if(g) renderGallery(g);
       updateAuthUI();
-      document.getElementById('year').textContent = new Date().getFullYear();
+      const yearEl = document.getElementById('year');
+      if(yearEl) yearEl.textContent = new Date().getFullYear();
       activateScrollAnimations();
   }
   function activateScrollAnimations() {
@@ -129,8 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const isAdmin = role === 'admin';
       const isModOrAdmin = ['admin', 'moderator'].includes(role);
 
-      document.querySelector('.staff-only-nav').style.display = isStaff ? 'block' : 'none';
-      document.querySelector('.admin-only-nav').style.display = isAdmin ? 'block' : 'none';
+      const staffNav = document.querySelector('.staff-only-nav');
+      const adminNav = document.querySelector('.admin-only-nav');
+      
+      if(staffNav) staffNav.style.display = isStaff ? 'block' : 'none';
+      if(adminNav) adminNav.style.display = isAdmin ? 'block' : 'none';
       
       const btnApps = document.getElementById('navAppsBtn');
       if(btnApps) btnApps.style.display = isModOrAdmin ? 'flex' : 'none';
@@ -139,87 +143,61 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- ROLE MANAGEMENT (Admin) ---
-  // ТУТ ВІДБУВАЄТЬСЯ ВИДАЧА РОЛЕЙ
- // --- ДІАГНОСТИЧНА ВЕРСІЯ ---
+  // Оновлена функція з захистом від збоїв
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
-      if (!list) return showToast('Помилка: елемент списку не знайдено', 'error');
+      if (!list) return;
 
-      // 1. Показуємо статус завантаження
-      list.innerHTML = '<div style="color:yellow; padding:20px;">🔄 Запит до сервера...</div>';
+      list.innerHTML = '<div style="color:#666; padding:10px;">Завантаження...</div>';
       
       try {
           const users = await apiFetch('/api/users');
           
-          // 2. Якщо прийшов NULL (помилка мережі або сервера)
-          if (!users) {
-              list.innerHTML = '<div style="color:red; padding:20px;">❌ Помилка: API повернув null. Сервер не відповідає або помилка в коді сервера.</div>';
-              return;
-          }
-
-          // 3. Якщо прийшов не масив (щось дивне)
-          if (!Array.isArray(users)) {
-             list.innerHTML = `<div style="color:red; padding:20px;">❌ Помилка даних! Очікували масив, а отримали: ${typeof users} <br> ${JSON.stringify(users)}</div>`;
-             return;
-          }
-
-          // 4. Якщо список порожній
-          if (users.length === 0) {
+          if(!users || !Array.isArray(users) || users.length === 0) {
               list.innerHTML = `
-                <div style="text-align:center; padding:30px; border:1px dashed #444; border-radius:10px; color:#888;">
+                <div style="text-align:center; padding:30px; border:1px dashed #333; border-radius:10px; color:#666;">
                     <i class="fa-solid fa-users-slash" style="font-size:24px; margin-bottom:10px;"></i><br>
-                    Список порожній (0 користувачів).
+                    Список користувачів порожній.<br>
+                    <small>Зареєстровані користувачі з'являться тут.</small>
                 </div>`;
               return;
           }
-
-          // 5. Успіх - рендеримо
-          list.innerHTML = users.map(u => `
-            <div class="u-row" style="background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display:flex; flex-direction:column;">
-                    <span style="font-size:16px; font-weight:bold; color:#fff;">${u.username || 'Без імені'}</span>
-                    <span style="font-size:12px; color:#888;">${u.email || 'No Email'}</span>
-                    <span style="font-size:10px; color:#555; margin-top:2px; text-transform:uppercase;">Role: ${u.role}</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                     <select onchange="window.changeUserRole('${u.username}', this.value)" 
-                            style="margin:0; padding:5px; font-size:12px; background:#000; color:#fff; border:1px solid #444;">
-                        <option value="member" ${u.role==='member'?'selected':''}>Member</option>
-                        <option value="support" ${u.role==='support'?'selected':''}>Support</option>
-                        <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
-                        <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                    </select>
-                </div>
-            </div>`).join('');
-            
+          
+          list.innerHTML = users.map(u => {
+              // Перевірка чи це системний адмін (щоб не дати видалити)
+              const isSystemAdmin = u._id === 'system_admin_id' || u.username === 'ADMIN 🦈';
+              
+              return `
+                <div class="u-row">
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-size:16px; font-weight:bold; color:#fff;">
+                            ${u.username} ${isSystemAdmin ? '<i class="fa-solid fa-server" style="color:#666; font-size:10px; margin-left:5px;" title="System User"></i>' : ''}
+                        </span>
+                        <span style="font-size:12px; color:#666;">${u.email}</span>
+                        <span style="font-size:10px; color:#444; margin-top:2px;">Role: ${u.role}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        ${isSystemAdmin ? 
+                            '<span style="font-size:11px; color:#666; background:#111; padding:5px 10px; border-radius:5px; border:1px solid #333;">SYSTEM</span>' 
+                            : 
+                            `<select onchange="window.changeUserRole('${u.username}', this.value)" 
+                                    style="margin:0; padding:8px 12px; height:auto; width:auto; font-size:12px; border:1px solid #333; background:#050505; color:#fff; border-radius:8px; cursor:pointer;">
+                                <option value="member" ${u.role==='member'?'selected':''}>Member</option>
+                                <option value="support" ${u.role==='support'?'selected':''}>Support</option>
+                                <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
+                                <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                            </select>
+                            <button class="btn btn-outline" style="padding:8px 12px; border-color:rgba(231,76,60,0.3); color:#e74c3c;" onclick="window.banUser('${u.username}')" title="Видалити">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>`
+                        }
+                    </div>
+                </div>`;
+          }).join('');
       } catch (err) {
-          // 6. Ловимо помилки JS
           console.error(err);
-          list.innerHTML = `<div style="color:red; padding:20px;">❌ КРИТИЧНА ПОМИЛКА JS:<br>${err.message}</div>`;
+          list.innerHTML = `<div style="color:#e74c3c; padding:15px;">Помилка завантаження списку.</div>`;
       }
-  }
-      
-      // Рендеримо список користувачів з випадаючим списком ролей
-      list.innerHTML = users.map(u => `
-        <div class="u-row">
-            <div style="display:flex; flex-direction:column;">
-                <span style="font-size:16px; font-weight:bold; color:#fff;">${u.username}</span>
-                <span style="font-size:12px; color:#666;">${u.email}</span>
-                <span style="font-size:10px; color:#444; margin-top:2px;">Role: ${u.role}</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <select onchange="window.changeUserRole('${u.username}', this.value)" 
-                        style="margin:0; padding:8px 12px; height:auto; width:auto; font-size:12px; border:1px solid #333; background:#050505; color:#fff; border-radius:8px; cursor:pointer;">
-                    <option value="member" ${u.role==='member'?'selected':''}>Member</option>
-                    <option value="support" ${u.role==='support'?'selected':''}>Support</option>
-                    <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
-                    <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                </select>
-                <button class="btn btn-outline" style="padding:8px 12px; border-color:rgba(231,76,60,0.3); color:#e74c3c;" onclick="window.banUser('${u.username}')" title="Видалити">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>
-        </div>`).join('');
   }
   
   window.changeUserRole = async (u, role) => {
@@ -228,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) });
       showToast(`Роль для ${u} змінено на ${role}`);
       addLog(`Admin changed role of ${u} to ${role}`);
-      loadUsersAdmin(); // Оновлюємо список щоб побачити зміни
+      loadUsersAdmin(); 
   };
   
   window.banUser = async (u) => customConfirm(`Видалити користувача ${u}? Це незворотно.`, async(r)=>{ 
@@ -397,7 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`).join('');
       chat.scrollTop = chat.scrollHeight;
 
-      // Enable/Disable close button based on status
       const btnClose = document.getElementById('tmCloseTicketBtn');
       if(t.status === 'closed') { btnClose.style.display = 'none'; } else { btnClose.style.display = 'block'; }
   };

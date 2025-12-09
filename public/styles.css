@@ -487,13 +487,17 @@ input:focus, textarea:focus, select:focus {
     border-radius: 16px; 
     width: 100%; max-width: 420px; 
     position: relative;
-    transform: scale(0.8); opacity: 0; 
+    
+    /* АНІМАЦІЯ ВИЛІТАННЯ */
+    transform: scale(0.8); opacity: 0; /* Початковий стан */
 }
 
+/* Коли батьківський елемент має клас .show, запускаємо анімацію */
 .auth-modal.show .auth-content {
     animation: popOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
+/* Гарна анімація "вилітання" */
 @keyframes popOut {
     0% { transform: scale(0.8) translateY(20px); opacity: 0; }
     100% { transform: scale(1) translateY(0); opacity: 1; }
@@ -566,87 +570,83 @@ body.is-admin .admin-only-nav { display: block !important; }
 }
 .action-buttons .btn { min-width: 220px; }
 
-/* --- ELITE TEXT DESIGN (ОНОВЛЕНО ДЛЯ "ПРО НАС") --- */
-.elite-text-card {
+
+/* --- НОВИЙ ДИЗАЙН "ХТО МИ Є" --- */
+
+.about-text-block.cyber-card {
     position: relative;
-    padding: 60px;
-    background: #08080a; /* Дуже темний фон, як на фото */
-    border-radius: 4px;
-    margin-bottom: 60px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-    border: 1px solid #1a1a1a;
-    overflow: hidden;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(20, 20, 25, 0.9), rgba(10, 10, 12, 0.95));
+    border-left: 4px solid var(--accent); /* Червона лінія зліва */
+    border-right: 1px solid rgba(255, 42, 42, 0.1);
+    border-radius: 4px; /* Більш квадратні кути для суворості */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Щоб анімація не вилазила */
+    margin-bottom: 50px;
 }
 
-/* Червона лінія зліва, що світиться */
-.card-glow-bar {
-    position: absolute;
-    top: 0; left: 0;
-    width: 6px;
-    height: 100%;
-    background: #ff2a2a;
-    box-shadow: 0 0 20px rgba(255, 42, 42, 0.6);
+/* Стиль тексту */
+.about-text-block p {
+    color: #ccc;
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    text-align: justify; /* Вирівнювання по ширині */
+    font-family: var(--font-body);
+    position: relative;
+    z-index: 2;
 }
 
-.elite-text-card p {
-    color: #b0b0b0; /* Світло-сірий текст */
-    font-size: 17px;
-    line-height: 1.9;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 500;
-    margin-bottom: 35px;
-    text-align: justify; /* Вирівнювання по ширині як в книзі/на фото */
-}
-
-.elite-text-card p:last-child {
+.about-text-block p:last-child {
     margin-bottom: 0;
 }
 
-/* ЕФЕКТ 1: Жирний білий текст з червоним підкресленням (пунктиром або лінією) */
-.crimson-text {
-    color: #ffffff;
+/* Виділення слів (червоний неон) */
+.highlight-text {
+    color: #fff;
     font-weight: 700;
-    text-decoration: underline;
-    text-decoration-color: #ff2a2a;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
-    text-shadow: 0 0 10px rgba(255, 42, 42, 0.4);
+    text-shadow: 0 0 10px var(--accent-glow);
+    border-bottom: 1px dashed var(--accent);
 }
 
-/* ЕФЕКТ 2: Текст з ефектом "світіння" (для "професіоналізм", "еліта") */
-.crimson-underline {
-    color: #ffffff;
-    font-weight: 700;
-    position: relative;
-    display: inline-block;
-}
-
-.crimson-underline::after {
-    content: '';
+/* --- АНІМАЦІЯ "СКАНУВАННЯ" --- */
+.scan-line {
     position: absolute;
-    bottom: -2px;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #ff2a2a, transparent);
-    box-shadow: 0 0 10px #ff2a2a;
-    animation: glowPulse 2s infinite;
+    height: 10px; /* Висота променя */
+    background: linear-gradient(to bottom, transparent, var(--accent));
+    opacity: 0.5;
+    filter: blur(5px);
+    z-index: 1;
+    animation: scanning 4s ease-in-out infinite;
+    pointer-events: none;
 }
 
-@keyframes glowPulse {
-    0% { opacity: 0.5; width: 80%; left: 10%; }
-    50% { opacity: 1; width: 100%; left: 0; }
-    100% { opacity: 0.5; width: 80%; left: 10%; }
+/* Додатковий фон-сітка тільки для цього блоку */
+.cyber-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
 }
 
-/* Мобільна адаптація для тексту */
-@media (max-width: 768px) {
-    .elite-text-card {
-        padding: 30px;
-        padding-left: 25px;
-    }
-    .elite-text-card p {
-        font-size: 15px;
-        text-align: left;
-    }
+@keyframes scanning {
+    0% { top: -10%; opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { top: 110%; opacity: 0; }
+}
+
+/* Ефект при наведенні мишкою */
+.cyber-card:hover {
+    border-left-color: #fff;
+    box-shadow: 0 0 20px rgba(255, 42, 42, 0.15);
 }

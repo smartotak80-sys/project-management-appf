@@ -66,6 +66,8 @@ body {
     transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 .loader-content { text-align: center; }
+
+/* УВАГА: ЗАМІНІТЬ URL ВНИЗУ НА ВАШЕ НОВЕ ФОТО (наприклад 'logo.png') */
 .loader-logo {
     width: 80px; height: 80px; margin: 0 auto 20px;
     background-image: url('https://i.postimg.cc/hzCBQ980/B.png'); 
@@ -73,6 +75,7 @@ body {
     box-shadow: 0 0 30px var(--accent-glow);
     animation: pulseLogo 2s infinite;
 }
+
 .loader-text {
     font-weight: 900; letter-spacing: 5px; color: #fff; font-size: 24px;
     margin-bottom: 20px; animation: textGlitch 3s infinite;
@@ -135,6 +138,8 @@ main { flex: 1; }
 }
 .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; height: 80px; }
 .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; }
+
+/* УВАГА: ТУТ ТАКОЖ ЗАМІНІТЬ URL */
 .logo { 
   width: 45px; height: 45px; border-radius: 10px; 
   background-image: url('https://i.postimg.cc/hzCBQ980/B.png'); 

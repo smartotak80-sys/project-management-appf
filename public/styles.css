@@ -394,3 +394,55 @@ body.is-admin .admin-only-nav { display: block !important; }
   
   .dash-close-global { top: 10px; right: 10px; width: 35px; height: 35px; background: transparent; border: none; }
 }
+
+/* =========================================
+   NEW: ADMIN APPLICATION CARD STYLES
+========================================= */
+.app-card {
+    background: #141518;
+    border: 1px solid #2a2b30;
+    border-radius: 16px;
+    padding: 25px;
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.app-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+    background: #333; transition: 0.3s;
+}
+.app-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    border-color: #444;
+}
+.app-card:hover::before { background: var(--accent); }
+
+.app-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+
+.status-badge {
+    padding: 5px 12px; border-radius: 20px; font-size: 11px;
+    font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+    display: inline-block;
+}
+.status-badge.pending { background: rgba(230, 184, 0, 0.15); color: #e6b800; border: 1px solid rgba(230, 184, 0, 0.3); }
+.status-badge.approved { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
+.status-badge.rejected { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+
+.app-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+    margin: 15px 0 20px 0; background: #0a0b0e; padding: 15px;
+    border-radius: 12px; border: 1px solid #222;
+}
+.app-item { display: flex; flex-direction: column; }
+.app-item label { font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
+.app-item div { color: #ddd; font-size: 14px; font-weight: 500; }
+
+.app-video-link {
+    color: var(--accent); text-decoration: none; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 5px; transition: 0.2s;
+}
+.app-video-link:hover { color: #fff; text-shadow: 0 0 10px var(--accent); }
+
+.app-actions { display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid #222; padding-top: 15px; }

@@ -450,12 +450,48 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Auth Modal Specifics */
-.auth-modal { backdrop-filter: blur(15px); }
-.auth-content { 
-    background: #0b0b0d; border: 1px solid #222; box-shadow: 0 0 60px rgba(0,0,0,0.5); 
-    border-top: 2px solid var(--accent);
+.auth-modal { 
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0, 0, 0, 0.8); z-index: 3000; 
+    align-items: center; justify-content: center; 
+    backdrop-filter: blur(8px);
 }
-.auth-title { text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
+
+.auth-modal.show {
+    display: flex;
+    animation: fadeIn 0.3s forwards;
+}
+
+/* Саме вікно (білий блок) */
+.auth-content { 
+    background: #0b0b0d; 
+    border: 1px solid #333; 
+    box-shadow: 0 0 60px rgba(0,0,0,0.6); 
+    border-top: 2px solid var(--accent);
+    padding: 40px; 
+    border-radius: 16px; 
+    width: 100%; max-width: 420px; 
+    position: relative;
+    
+    /* АНІМАЦІЯ ВИЛІТАННЯ */
+    transform: scale(0.8); opacity: 0; /* Початковий стан */
+}
+
+/* Коли батьківський елемент має клас .show, запускаємо анімацію */
+.auth-modal.show .auth-content {
+    animation: popOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Гарна анімація "вилітання" */
+@keyframes popOut {
+    0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.auth-title { text-align: center; margin-bottom: 25px; letter-spacing: 3px; font-size: 24px; text-transform: uppercase; color: #fff; }
 
 /* MODALS */
 .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }

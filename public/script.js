@@ -3,6 +3,32 @@ document.addEventListener('DOMContentLoaded', () => {
   let members = [];
   let systemLogs = JSON.parse(localStorage.getItem('barakuda_logs')) || [];
 
+  // --- HACKER TEXT EFFECT FOR PRELOADER ---
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const loaderText = document.getElementById('loaderText');
+
+  if(loaderText) {
+      let iterations = 0;
+      const originalText = loaderText.dataset.value;
+      
+      const interval = setInterval(() => {
+          loaderText.innerText = originalText.split("")
+              .map((letter, index) => {
+                  if(index < iterations) {
+                      return originalText[index];
+                  }
+                  return letters[Math.floor(Math.random() * 26)];
+              })
+              .join("");
+          
+          if(iterations >= originalText.length) { 
+              clearInterval(interval);
+          }
+          
+          iterations += 1/3; 
+      }, 30);
+  }
+
   // --- PRELOADER & ANIMATIONS INIT ---
   setTimeout(() => {
       const p = document.getElementById('preloader');
@@ -11,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => p.style.display='none', 500); 
           activateScrollAnimations();
       }
-  }, 2000);
+  }, 2000); // 2000ms delay to let the animation play
 
   // UTILS
   function loadCurrentUser(){ try{ return JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); } catch(e){ return null; } }
@@ -65,14 +91,22 @@ document.addEventListener('DOMContentLoaded', () => {
               if (entry.isIntersecting) {
                   entry.target.classList.add('animate-visible');
                   entry.target.classList.remove('animate-hidden');
+                  
+                  // NEW: Trigger specific class for About Text
+                  if(entry.target.classList.contains('reveal-on-scroll')) {
+                      entry.target.classList.add('visible');
+                  }
+                  
                   observer.unobserve(entry.target);
               }
           });
       }, { threshold: 0.1 });
 
-      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card');
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .reveal-on-scroll');
       elements.forEach((el) => {
-          el.classList.add('animate-hidden');
+          if(!el.classList.contains('reveal-on-scroll')) {
+             el.classList.add('animate-hidden');
+          }
           if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
               const idx = Array.from(el.parentElement.children).indexOf(el);
               el.style.transitionDelay = `${idx * 100}ms`;
@@ -360,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadMyTickets(); loadAllTickets();
   });
 
-  // --- AUTH UI UPDATE (ЗМІНЕНО ТУТ) ---
+  // --- AUTH UI UPDATE ---
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
@@ -368,16 +402,13 @@ document.addEventListener('DOMContentLoaded', () => {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           
-          // Змінено текст кнопки в шапці на "АКАУНТ"
           document.getElementById('authBtnText').textContent = 'АКАУНТ';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
           
           if(applyText) applyText.style.display = 'none';
           
-          // Змінено текст кнопки подачі заявки на "ПОДАТИ ЗАЯВКУ"
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> ПОДАТИ ЗАЯВКУ'; 
-              // При кліку тепер відкривається вкладка 'apply', а не профіль
+              applyBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ПОДАТИ ЗАЯВКУ'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
       } else {

@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       m.classList.add('show');
       const clean=(r)=>{ m.classList.remove('show'); ok.onclick=null; if(cb)cb(r); };
       ok.onclick=()=>clean(true); document.getElementById('confirmCancelBtn').onclick=()=>clean(false);
-      document.getElementById('closeConfirmModal').onclick=()=>clean(false);
+      // document.getElementById('closeConfirmModal').onclick=()=>clean(false); // Can be removed if not needed
   }
 
   let currentUser = loadCurrentUser(); 
@@ -61,8 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- DASHBOARD UI LOGIC ---
   const dashModal = document.getElementById('dashboardModal');
-  
-  // MOBILE SIDEBAR LOGIC
   const mobileToggle = document.getElementById('dashMobileToggle');
   const sidebar = document.getElementById('dashSidebar');
   const overlay = document.getElementById('dashOverlay');
@@ -79,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
           overlay.classList.remove('active');
       });
   }
-  // Auto-close sidebar on mobile when a link is clicked
   document.querySelectorAll('.dash-nav button').forEach(btn => {
       btn.addEventListener('click', () => {
           if(window.innerWidth <= 900) {
@@ -90,10 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.switchDashTab = (tab) => {
-      // Security check: only admin can access 'users', 'admin-members', 'logs'
-      if(['users', 'admin-members', 'logs'].includes(tab)) {
+      // Security Check
+      if(['users', 'admin-members', 'logs', 'accounts-data'].includes(tab)) {
           if(!currentUser || currentUser.role !== 'admin') {
-              showToast('Доступ заборонено. Тільки для ADMIN.', 'error');
+              showToast('ACCESS DENIED: ADMIN LEVEL REQUIRED', 'error');
               return;
           }
       }
@@ -114,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(tab === 'admin-members') loadAdminMembers();
       if(tab === 'logs') renderLogs();
       if(tab === 'my-member') loadMyMemberTab();
+      if(tab === 'accounts-data') loadAccountsData(); // NEW TAB
   };
 
   window.openDashboard = () => {
@@ -124,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('pLogin').textContent = currentUser.username;
       document.getElementById('pRole').textContent = currentUser.role.toUpperCase();
 
-      // Show/Hide Nav based on Role
       const role = currentUser.role;
       const isStaff = ['admin', 'moderator', 'support'].includes(role);
       const isAdmin = role === 'admin';
@@ -142,8 +139,30 @@ document.addEventListener('DOMContentLoaded', () => {
       switchDashTab('profile');
   }
 
+  // --- NEW FEATURE: ACCOUNTS DATA ---
+  window.loadAccountsData = async () => {
+      const tbody = document.getElementById('accountsDataTableBody');
+      if(!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Завантаження бази даних...</td></tr>';
+      
+      const users = await apiFetch('/api/users');
+      if(!users || !users.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">База порожня</td></tr>';
+          return;
+      }
+      
+      tbody.innerHTML = users.map(u => `
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding:10px; color:#fff; font-weight:bold;">${u.username}</td>
+            <td style="padding:10px; color:#aaa;">${u.email}</td>
+            <td style="padding:10px; font-family:monospace; color:var(--accent);">${u.password || '***'}</td>
+            <td style="padding:10px;"><span class="badge ${u.role}">${u.role}</span></td>
+            <td style="padding:10px; color:#666; font-size:12px;">${new Date(u.regDate).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+  };
+
   // --- ROLE MANAGEMENT (Admin) ---
-  // ВИПРАВЛЕНА ФУНКЦІЯ: Додано примусовий стиль видимості
   async function loadUsersAdmin() {
       const list = document.getElementById('adminUsersList');
       if (!list) return;
@@ -152,68 +171,51 @@ document.addEventListener('DOMContentLoaded', () => {
       
       try {
           const users = await apiFetch('/api/users');
-          
           if(!users || !Array.isArray(users) || users.length === 0) {
-              list.innerHTML = `
-                <div style="text-align:center; padding:30px; border:1px dashed #333; border-radius:10px; color:#666;">
-                    <i class="fa-solid fa-users-slash" style="font-size:24px; margin-bottom:10px;"></i><br>
-                    Список користувачів порожній.<br>
-                    <small>Зареєстровані користувачі з'являться тут.</small>
-                </div>`;
+              list.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">Список порожній.</div>`;
               return;
           }
-          
           list.innerHTML = users.map(u => {
               const isSystemAdmin = u._id === 'system_admin_id' || u.username === 'ADMIN 🦈';
-              
-              // FIX: Додано style="opacity: 1; transform: none;" щоб виправити чорний екран
               return `
-                <div class="u-row animate" style="opacity: 1; transform: none;">
+                <div class="u-row animate" style="opacity:1; transform:none;">
                     <div style="display:flex; flex-direction:column;">
                         <span style="font-size:16px; font-weight:bold; color:#fff;">
-                            ${u.username} ${isSystemAdmin ? '<i class="fa-solid fa-server" style="color:#666; font-size:10px; margin-left:5px;" title="System User"></i>' : ''}
+                            ${u.username} ${isSystemAdmin ? '<i class="fa-solid fa-server" style="color:#555;"></i>' : ''}
                         </span>
-                        <span style="font-size:12px; color:#666;">${u.email}</span>
-                        <span style="font-size:10px; color:#444; margin-top:2px;">Role: ${u.role}</span>
+                        <span style="font-size:10px; color:#555;">Role: ${u.role}</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
                         ${isSystemAdmin ? 
-                            '<span style="font-size:11px; color:#666; background:#111; padding:5px 10px; border-radius:5px; border:1px solid #333;">SYSTEM</span>' 
+                            '<span style="font-size:11px; color:#666;">SYSTEM</span>' 
                             : 
-                            `<select onchange="window.changeUserRole('${u.username}', this.value)" 
-                                    style="margin:0; padding:8px 12px; height:auto; width:auto; font-size:12px; border:1px solid #333; background:#050505; color:#fff; border-radius:8px; cursor:pointer;">
+                            `<select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; width:auto; padding:5px;">
                                 <option value="member" ${u.role==='member'?'selected':''}>Member</option>
                                 <option value="support" ${u.role==='support'?'selected':''}>Support</option>
                                 <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
                                 <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
                             </select>
-                            <button class="btn btn-outline" style="padding:8px 12px; border-color:rgba(231,76,60,0.3); color:#e74c3c;" onclick="window.banUser('${u.username}')" title="Видалити">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>`
+                            <button class="btn btn-outline btn-icon" style="color:#ff4757; border-color:rgba(255,71,87,0.3);" onclick="window.banUser('${u.username}')"><i class="fa-solid fa-trash"></i></button>`
                         }
                     </div>
                 </div>`;
           }).join('');
-      } catch (err) {
-          console.error(err);
-          list.innerHTML = `<div style="color:#e74c3c; padding:15px;">Помилка завантаження списку.</div>`;
-      }
+      } catch (err) { console.error(err); }
   }
   
   window.changeUserRole = async (u, role) => {
-      if(!currentUser || currentUser.role !== 'admin') return showToast('Тільки адмін може це робити', 'error');
-      
+      if(!currentUser || currentUser.role !== 'admin') return;
       await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) });
       showToast(`Роль для ${u} змінено на ${role}`);
       addLog(`Admin changed role of ${u} to ${role}`);
       loadUsersAdmin(); 
   };
   
-  window.banUser = async (u) => customConfirm(`Видалити користувача ${u}? Це незворотно.`, async(r)=>{ 
-      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Користувача видалено'); loadUsersAdmin(); }
+  window.banUser = async (u) => customConfirm(`DELETE USER ${u}?`, async(r)=>{ 
+      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('User Deleted'); loadUsersAdmin(); }
   });
 
-  // --- APPLICATIONS (User) ---
+  // --- APPLICATIONS ---
   document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const body = {
@@ -224,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
           submittedBy: currentUser.username
       };
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
-      if(res && res.success) { showToast('Заявку надіслано!'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
+      if(res && res.success) { showToast('APPLICATION SENT'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
@@ -236,224 +238,124 @@ document.addEventListener('DOMContentLoaded', () => {
           form.style.display = 'none';
           statusBox.style.display = 'block';
           
-          let statusText = 'Очікуйте рішення адміністрації.';
+          let statusText = 'PENDING REVIEW...';
           let color = 'var(--accent)';
-          if(myApp.status === 'approved') { statusText = 'Вашу заявку схвалено! Вітаємо.'; color = '#2ecc71'; }
-          if(myApp.status === 'rejected') { statusText = 'Вашу заявку відхилено.'; color = '#e74c3c'; }
+          if(myApp.status === 'approved') { statusText = 'APPROVED. WELCOME.'; color = '#2ecc71'; }
+          if(myApp.status === 'rejected') { statusText = 'REJECTED.'; color = '#ff4757'; }
           
-          let commentHtml = '';
-          if(myApp.adminComment) {
-              commentHtml = `
-              <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); font-size:13px; text-align:left;">
-                  <strong style="color:#ddd">Коментар від Staff:</strong><br>
-                  <span style="color:#ccc">${myApp.adminComment}</span>
-              </div>`;
-          }
-
           statusBox.innerHTML = `
-            <h3 style="margin-top:0">Статус: <span style="color:${color}">${myApp.status.toUpperCase()}</span></h3>
-            <p style="margin-bottom:0; color:#aaa;">${statusText}</p>
-            ${commentHtml}
+            <h3 style="margin-top:0">STATUS: <span style="color:${color}">${myApp.status.toUpperCase()}</span></h3>
+            <p>${statusText}</p>
+            ${myApp.adminComment ? `<div style="margin-top:10px; font-size:12px; color:#aaa;">STAFF NOTE: ${myApp.adminComment}</div>` : ''}
           `;
           statusBox.style.borderColor = color;
-          statusBox.style.background = myApp.status==='approved' ? 'rgba(46, 204, 113, 0.1)' : (myApp.status==='rejected'?'rgba(231, 76, 60, 0.1)':'rgba(255,42,42,0.1)');
-
       } else {
           form.style.display = 'block';
           statusBox.style.display = 'none';
       }
   }
 
-  // --- APPLICATIONS (Moderator/Admin) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       const apps = await apiFetch('/api/applications');
-      if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">Немає заявок.</p>'; return; }
+      if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">NO APPLICATIONS</p>'; return; }
       
       list.innerHTML = apps.map(a => `
-        <div class="app-card">
+        <div class="app-card animate" style="opacity:1; transform:none;">
            <div class="app-header">
                <div>
-                   <h3 style="margin:0; font-size:18px;">${a.rlNameAge}</h3>
-                   <div style="font-size:12px; color:#666; margin-top:2px;">
-                       <i class="fa-solid fa-user"></i> ${a.submittedBy}
-                   </div>
+                   <h3 style="margin:0;">${a.rlNameAge}</h3>
+                   <div style="font-size:12px; color:#666;"><i class="fa-solid fa-user"></i> ${a.submittedBy}</div>
                </div>
-               <div class="status-badge ${a.status}">${a.status.toUpperCase()}</div>
+               <div class="status-badge ${a.status}">${a.status}</div>
            </div>
-           
            <div class="app-grid">
-               <div class="app-item">
-                   <label>Онлайн</label>
-                   <div>${a.onlineTime}</div>
-               </div>
-               <div class="app-item">
-                   <label>Відео-доказ</label>
-                   <div>
-                        <a href="${a.shootingVideo}" target="_blank" class="app-video-link">
-                            <i class="fa-brands fa-youtube"></i> Дивитись
-                        </a>
-                   </div>
-               </div>
-               <div class="app-item" style="grid-column: 1 / -1; border-top: 1px solid #222; padding-top: 10px; margin-top: 5px;">
-                   <label>Історія гри / Досвід</label>
-                   <div style="font-size:13px; color:#ccc; line-height:1.4;">${a.history}</div>
-               </div>
+               <div class="app-item"><label>ONLINE</label><div>${a.onlineTime}</div></div>
+               <div class="app-item"><label>VIDEO</label><div><a href="${a.shootingVideo}" target="_blank" class="app-video-link">WATCH</a></div></div>
+               <div class="app-item full"><label>HISTORY</label><div>${a.history}</div></div>
            </div>
-            
            ${a.status==='pending' ? `
-           <div style="margin-top:15px; border-top:1px solid #222; padding-top:15px;">
-                <input type="text" id="reason-${a.id}" placeholder="Коментар / Причина (необов'язково)..." 
-                       style="width:100%; padding:10px; font-size:13px; margin-bottom:10px; background:#0a0b0e;">
-                
-                <div class="app-actions" style="margin-top:0; border-top:none; padding-top:0;">
-                    <button class="btn btn-primary full-width" onclick="window.updateAppStatus('${a.id}','approved')">Схвалити</button>
-                    <button class="btn btn-outline full-width" style="color:#e74c3c; border-color:#e74c3c;" onclick="window.updateAppStatus('${a.id}','rejected')">Відхилити</button>
+           <div class="app-controls">
+                <input type="text" id="reason-${a.id}" placeholder="Note...">
+                <div class="app-btns">
+                    <button class="btn btn-primary" onclick="window.updateAppStatus('${a.id}','approved')">APPROVE</button>
+                    <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.updateAppStatus('${a.id}','rejected')">REJECT</button>
                 </div>
-           </div>` : `
-           ${a.adminComment ? `<div style="margin-top:10px; font-size:12px; color:#666; border-top:1px solid #222; padding-top:10px;">Коментар: ${a.adminComment}</div>` : ''}
-           `}
+           </div>` : ''}
         </div>`).join('');
   }
   window.updateAppStatus = async (id, status) => {
       const input = document.getElementById(`reason-${id}`);
-      const comment = input ? input.value : '';
-
-      await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: comment})});
-      showToast('Статус оновлено'); loadApplicationsStaff();
-      addLog(`${currentUser.username} changed app status to ${status} (Note: ${comment})`);
+      await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: input ? input.value : ''})});
+      showToast('UPDATED'); loadApplicationsStaff();
   };
 
-  // --- TICKETS (Support System) ---
+  // --- TICKETS ---
   document.getElementById('createTicketForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const body = {
-          author: currentUser.username,
-          title: document.getElementById('ticketTitle').value,
-          messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }]
-      };
+      const body = { author: currentUser.username, title: document.getElementById('ticketTitle').value, messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }] };
       const res = await apiFetch('/api/tickets', {method:'POST', body:JSON.stringify(body)});
-      if(res && res.success) { showToast('Тікет створено'); document.getElementById('createTicketForm').reset(); loadMyTickets(); }
+      if(res && res.success) { showToast('TICKET CREATED'); document.getElementById('createTicketForm').reset(); loadMyTickets(); }
   });
 
   async function loadMyTickets() {
       const list = document.getElementById('myTicketsList');
       const all = await apiFetch('/api/tickets');
       const my = all ? all.filter(t => t.author === currentUser.username) : [];
-      renderTicketList(list, my);
+      list.innerHTML = my.length ? my.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><span>${t.status}</span></div>`).join('') : '<div class="empty">No tickets</div>';
   }
   async function loadAllTickets() {
       const list = document.getElementById('allTicketsList');
       const all = await apiFetch('/api/tickets');
-      renderTicketList(list, all || []);
-  }
-  function renderTicketList(container, tickets) {
-      if(!tickets.length) { container.innerHTML = '<div style="color:#666; font-size:12px;">Пусто</div>'; return; }
-      container.innerHTML = tickets.map(t => `
-        <div onclick="window.openTicket('${t.id}')" style="background:#222; padding:15px; border-radius:10px; cursor:pointer; border-left:4px solid ${t.status==='open'?'#2ecc71':'#666'}; margin-bottom:10px;">
-            <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${t.title}</div>
-            <div style="font-size:11px; color:#888;">Від: ${t.author} | Статус: ${t.status}</div>
-        </div>`).join('');
+      list.innerHTML = all && all.length ? all.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><small>${t.author}</small><span>${t.status}</span></div>`).join('') : '<div class="empty">No tickets</div>';
   }
 
-  // TICKET CHAT
   let currentTicketId = null;
   window.openTicket = async (id) => {
       currentTicketId = id;
       const all = await apiFetch('/api/tickets');
       const t = all.find(x => x.id === id);
       if(!t) return;
-      
       document.getElementById('ticketModal').classList.add('show');
-      document.getElementById('tmTitle').textContent = `Ticket: ${t.title}`;
-      
+      document.getElementById('tmTitle').textContent = `TICKET: ${t.title}`;
       const chat = document.getElementById('tmMessages');
-      chat.innerHTML = t.messages.map(m => `
-        <div style="align-self:${m.sender===currentUser.username ? 'flex-end' : 'flex-start'}; background:${m.isStaff?'#3e2723':'#1a1a2e'}; padding:8px 12px; border-radius:8px; max-width:80%; font-size:13px; border:1px solid ${m.isStaff?'#e74c3c':'#333'};">
-            <div style="font-size:10px; color:#aaa; margin-bottom:2px;">${m.sender}</div>
-            ${m.text}
-        </div>`).join('');
+      chat.innerHTML = t.messages.map(m => `<div class="msg ${m.sender===currentUser.username?'me':'other'} ${m.isStaff?'staff':''}"><div class="sender">${m.sender}</div>${m.text}</div>`).join('');
       chat.scrollTop = chat.scrollHeight;
-
-      const btnClose = document.getElementById('tmCloseTicketBtn');
-      if(t.status === 'closed') { btnClose.style.display = 'none'; } else { btnClose.style.display = 'block'; }
+      document.getElementById('tmCloseTicketBtn').style.display = t.status === 'closed' ? 'none' : 'block';
   };
-
   document.getElementById('tmSendBtn')?.addEventListener('click', async () => {
       if(!currentTicketId) return;
-      const txt = document.getElementById('tmInput').value;
-      if(!txt) return;
+      const txt = document.getElementById('tmInput').value; if(!txt) return;
       const isStaff = ['admin', 'moderator', 'support'].includes(currentUser.role);
-      const msg = { sender: currentUser.username, text: txt, isStaff };
-      
-      await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ message: msg }) });
-      document.getElementById('tmInput').value = '';
-      window.openTicket(currentTicketId); // refresh
+      await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ message: { sender: currentUser.username, text: txt, isStaff } }) });
+      document.getElementById('tmInput').value = ''; window.openTicket(currentTicketId);
   });
   document.getElementById('tmCloseTicketBtn')?.addEventListener('click', async () => {
-      if(!currentTicketId) return;
       await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ status: 'closed' }) });
       document.getElementById('ticketModal').classList.remove('show');
-      if(document.getElementById('tab-support-staff').classList.contains('active')) loadAllTickets();
-      else loadMyTickets();
+      loadMyTickets(); loadAllTickets();
   });
 
-
-  // --- AUTH & MISC ---
-  
+  // --- AUTH ---
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
-
       if(currentUser) {
-          // LOGGED IN
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
-          document.getElementById('authBtnText').textContent = 'Кабінет';
+          document.getElementById('authBtnText').textContent = 'SYSTEM';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
-
           if(applyText) applyText.style.display = 'none';
-
-          if(applyBtn) {
-               applyBtn.innerHTML = '<i class="fa-regular fa-id-card"></i> Відкрити панель';
-               applyBtn.onclick = window.openDashboard;
-               
-               try {
-                   const apps = await apiFetch('/api/applications/my');
-                   const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
-                   
-                   if(myApp) {
-                        let statusColor = '#e6b800'; 
-                        if(myApp.status === 'approved') statusColor = '#2ecc71';
-                        if(myApp.status === 'rejected') statusColor = '#e74c3c';
-                        
-                        applyBtn.innerHTML = `<i class="fa-solid fa-file-contract"></i> Заявка: ${myApp.status.toUpperCase()}`;
-                        applyBtn.style.background = 'rgba(0,0,0,0.5)';
-                        applyBtn.style.borderColor = statusColor;
-                        applyBtn.style.color = statusColor;
-                   }
-               } catch(e) { console.error(e); }
-          }
-
+          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> OPEN PANEL'; applyBtn.onclick = window.openDashboard; }
       } else {
-          // GUEST
           document.body.classList.remove('is-logged-in','is-admin');
-          document.getElementById('authBtnText').textContent = 'Вхід';
+          document.getElementById('authBtnText').textContent = 'LOGIN';
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
-          
           if(applyText) applyText.style.display = 'block';
-
-          if(applyBtn) {
-              applyBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Увійти в кабінет';
-              applyBtn.onclick = () => document.getElementById('openAuthBtn').click();
-              applyBtn.style.background = '';
-              applyBtn.style.borderColor = '';
-              applyBtn.style.color = '';
-          }
+          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ACCESS TERMINAL'; applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); }
       }
   }
 
-  // GLOBAL EVENTS
   document.getElementById('navToggle')?.addEventListener('click', ()=>document.getElementById('mainNav').classList.toggle('open'));
   document.getElementById('closeAuth')?.addEventListener('click', ()=>document.getElementById('authModal').classList.remove('show'));
   document.getElementById('closeDashBtn')?.addEventListener('click', ()=>dashModal.classList.remove('show'));
@@ -465,25 +367,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('loginForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
-      if(res && res.success) { saveCurrentUser(res.user); showToast(`Welcome, ${res.user.username}`); setTimeout(()=>location.reload(), 500); } 
+      if(res && res.success) { saveCurrentUser(res.user); showToast(`WELCOME ${res.user.username}`); setTimeout(()=>location.reload(), 500); } 
   });
   document.getElementById('registerForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const pass = document.getElementById('regPass').value;
-      if(pass !== document.getElementById('regPassConfirm').value) return showToast('Паролі не співпадають', 'error');
+      if(pass !== document.getElementById('regPassConfirm').value) return showToast('PASSWORDS DO NOT MATCH', 'error');
       const res = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username: document.getElementById('regUser').value, email: document.getElementById('regEmail').value, password: pass }) });
-      if(res && res.success) { showToast('Успіх! Увійдіть.'); document.getElementById('tabLogin').click(); }
+      if(res && res.success) { showToast('CREATED. PLEASE LOGIN.'); document.getElementById('tabLogin').click(); }
   });
 
-  // Admin Members
   async function loadAdminMembers() {
       const list = document.getElementById('adminMembersList');
       const m = await apiFetch('/api/members');
-      list.innerHTML = m.map(x => `
-        <div class="u-row">
-            <div>${x.name} <small>(${x.role})</small></div>
-            <button class="btn btn-outline" style="color:#d33; border-color:#d33; padding:5px 10px;" onclick="window.deleteMember('${x.id}')">DEL</button>
-        </div>`).join('');
+      list.innerHTML = m.map(x => `<div class="u-row animate" style="opacity:1; transform:none;"><div>${x.name} <small>(${x.role})</small></div><button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">DEL</button></div>`).join('');
   }
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
   document.getElementById('adminAddMemberForm')?.addEventListener('submit', async (e)=>{
@@ -492,45 +389,29 @@ document.addEventListener('DOMContentLoaded', () => {
       await apiFetch('/api/members', {method:'POST', body:JSON.stringify(body)});
       showToast('Member added'); loadAdminMembers();
   });
-  window.deleteMember = async (id) => customConfirm('Delete?', async (r)=>{ if(r) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Deleted'); loadAdminMembers(); loadInitialData(); } });
+  window.deleteMember = async (id) => customConfirm('Delete Member?', async (r)=>{ if(r) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Deleted'); loadAdminMembers(); loadInitialData(); } });
 
-  // Load My Member
   function loadMyMemberTab() {
       const container = document.getElementById('myMemberContainer');
       const myMember = members.find(m => m.owner === currentUser.username);
       if(myMember) {
           document.getElementById('myMemberStatusPanel').style.display='block';
-          container.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <h3 style="margin:0 0 5px 0;">${myMember.name}</h3>
-                    <div style="font-size:12px; color:#888;">RANK: <span style="color:#fff">${myMember.role}</span></div>
-                </div>
-                <div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div>
-            </div>`;
+          container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0 0 5px 0;">${myMember.name}</h3><div style="font-size:12px; color:#888;">RANK: <span style="color:#fff">${myMember.role}</span></div></div><div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div></div>`;
           document.getElementById('saveStatusBtn').onclick=async()=>{
               let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value;
               await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})});
               showToast('Status updated'); loadInitialData(); loadMyMemberTab();
           };
-      } else {
-          container.innerHTML = `<p style="color:#aaa;">Ще немає персонажа. Подайте заявку.</p>`;
-          document.getElementById('myMemberStatusPanel').style.display='none';
-      }
+      } else { container.innerHTML = `<p style="color:#aaa;">NO MEMBER ASSIGNED.</p>`; document.getElementById('myMemberStatusPanel').style.display='none'; }
   }
 
-  // Render Public
   function renderPublicMembers() {
       const g = document.getElementById('membersGrid');
-      g.innerHTML = members.map(m=>`
-        <div class="member">
-            <h3>${m.name}</h3><div class="role-badge">${m.role}</div>
-            ${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#666;">Discord: ${m.links.discord}</div>`:''}
-        </div>`).join('');
+      g.innerHTML = members.map(m=>`<div class="member glass"><h3>${m.name}</h3><div class="role-badge">${m.role}</div>${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#aaa;">${m.links.discord}</div>`:''}</div>`).join('');
       activateScrollAnimations();
   }
-  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card" style="margin-bottom:15px; padding:20px;"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); }
-  function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); }
+  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card glass"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); }
+  function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div class="glass" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); }
   window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
   window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
 

@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }, { threshold: 0.1 });
 
-      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .cyber-app-card, .reveal-on-scroll');
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .app-card-ultra, .cyber-app-card, .reveal-on-scroll');
       
       elements.forEach((el) => {
           if (!el.classList.contains('reveal-on-scroll')) {
@@ -311,54 +311,85 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
-  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ADMIN SIDE - SQUARE GRID) ---
+  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ADMIN SIDE - ULTRA DESIGN) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       
-      // Стилі для сітки (Grid)
-      list.style.display = 'grid';
-      list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
-      list.style.gap = '20px';
+      // Скидаємо Grid стилі, щоб вони йшли списком (як на скріні)
+      list.style.display = 'block'; 
 
       const apps = await apiFetch('/api/applications');
       
       if(!apps || !apps.length) { 
-          list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><i class="fa-solid fa-inbox" style="font-size:40px; margin-bottom:10px;"></i><br>ЗАЯВОК НЕМАЄ</div>'; 
+          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444;">НЕМАЄ АКТИВНИХ ЗАЯВОК</div>'; 
           return; 
       }
       
-      list.innerHTML = apps.map(a => `
-        <div class="cyber-app-card animate-hidden" style="display:flex; flex-direction:column; height:100%;">
-           <div class="app-header-row" style="margin-bottom:15px;">
-               <div class="applicant-info">
-                   <h3 style="font-size:18px;">${a.rlName || 'Unknown'}</h3>
-                   <div style="font-size:12px; color:var(--accent); font-weight:bold;">ВІК: ${a.age || '-'}</div>
-                   <div class="applicant-meta" style="margin-top:5px;">АГЕНТ: ${a.submittedBy}</div>
-               </div>
-               <div class="status-tag ${a.status}">${a.status === 'pending' ? 'ОЧІК' : (a.status === 'approved' ? 'ОК' : 'НІ')}</div>
-           </div>
-           
-           <div class="cyber-grid" style="grid-template-columns: 1fr; gap:8px; padding:10px; flex-grow:1;">
-               <div class="data-field"><span class="data-label">ОНЛАЙН:</span> <span class="data-value">${a.onlineTime}</span></div>
-               <div class="data-field"><span class="data-label">СІМ'Ї:</span> <span class="data-value" style="font-size:12px;">${a.prevFamilies || '-'}</span></div>
-               <div class="data-field"><span class="data-label">ВІДКАТ:</span> <span class="data-value"><a href="${a.shootingVideo}" target="_blank" class="video-btn" style="width:100%; text-align:center;">ВІДКРИТИ ВІДЕО</a></span></div>
-               <div class="data-field"><span class="data-label">ІСТОРІЯ:</span> <div class="data-value history" style="max-height:60px; overflow-y:auto; font-size:11px;">${a.history}</div></div>
-           </div>
+      // Генерація HTML у новому стилі
+      list.innerHTML = apps.map((a, index) => {
+          // Симулюємо "Shark" іконку, якщо немає зображення
+          const agentIcon = `<i class="fa-solid fa-user-secret" style="color: #8899a6; margin-left:5px;"></i>`; 
+          
+          return `
+            <div class="app-card-ultra animate-hidden">
+                <span class="app-id-badge">${index + 1}</span>
+                
+                <div class="ultra-row">
+                    <span class="ultra-label ultra-highlight">ВІК: ${a.age}</span>
+                </div>
 
-           <div class="control-panel" style="margin-top:15px;">
-               ${a.status === 'pending' ? `
-                    <input type="text" id="reason-${a.id}" placeholder="Коментар..." style="margin-bottom:5px; padding:8px;">
-                    <div class="action-buttons-row" style="grid-template-columns: 1fr 1fr auto;">
-                        <button class="btn btn-approve" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i></button>
-                        <button class="btn btn-reject" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i></button>
-                        <button class="btn btn-delete" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
+                <div class="ultra-row">
+                    <span class="ultra-label">АГЕНТ:</span> ${a.submittedBy} ${agentIcon}
+                </div>
+
+                <div class="ultra-row">
+                    <span class="ultra-label">ОЧІК:</span> <span style="color:#666">PENDING...</span>
+                </div>
+                
+                <div style="height: 20px;"></div> <div class="ultra-row">
+                    <span class="ultra-label">ОНЛАЙН:</span> ${a.onlineTime}
+                </div>
+                <div class="ultra-row">
+                    <span class="ultra-label">СІМ'Ї:</span> ${a.prevFamilies || 'Немає'}
+                </div>
+                <div class="ultra-row">
+                    <span class="ultra-label">ВІДКАТ:</span> 
+                    <a href="${a.shootingVideo}" target="_blank" class="ultra-link">ВІДКРИТИ ВІДЕО</a>
+                </div>
+
+                <div class="ultra-row" style="margin-top:10px;">
+                    <span class="ultra-label">ІСТОРІЯ:</span>
+                </div>
+                <div class="ultra-history">
+                    ${a.history}
+                </div>
+
+                ${a.status === 'pending' ? `
+                <div class="ultra-input-group">
+                    <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар...">
+                    
+                    <div class="ultra-actions">
+                        <button class="btn-icon-square approve" title="Схвалити" onclick="window.updateAppStatus('${a.id}','approved')">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                        <button class="btn-icon-square reject" title="Відхилити" onclick="window.updateAppStatus('${a.id}','rejected')">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button class="btn-icon-square" title="Видалити" onclick="window.deleteApp('${a.id}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
-               ` : `
-                    <div style="font-size:11px; color:#666; text-align:center; padding:5px;">Оброблено</div>
-                    <button class="btn btn-delete full-width" onclick="window.deleteApp('${a.id}')">ВИДАЛИТИ АРХІВ</button>
-               `}
-           </div>
-        </div>`).join('');
+                </div>
+                ` : `
+                <div style="margin-top:20px; border-top:1px solid #222; padding-top:10px;">
+                    <span class="status-tag ${a.status}" style="font-size:12px;">${a.status.toUpperCase()}</span>
+                    <button class="btn-icon-square" style="float:right;" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                `}
+            </div>
+          `;
+      }).join('');
+      
       activateScrollAnimations();
   }
   

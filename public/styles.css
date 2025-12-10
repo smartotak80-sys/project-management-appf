@@ -128,7 +128,7 @@ h1, h2, h3, .brand-text { font-family: var(--font-main); letter-spacing: 1px; }
 .toast.error { border-color: #e74c3c; }
 @keyframes slideInToast { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-/* --- HEADER & NAV (UPDATED) --- */
+/* --- HEADER & NAV (UPDATED LAYOUT) --- */
 .site { display: flex; flex-direction: column; min-height: 100vh; }
 .container { width: 90%; max-width: 1200px; margin: 0 auto; }
 main { flex: 1; }
@@ -176,17 +176,77 @@ main { flex: 1; }
 
 .nav-toggle { display: none; background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; }
 
-/* Стилізація вибору мови */
-.lang-dropdown select {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  color: #fff; padding: 10px; border-radius: 8px; cursor: pointer;
-  font-family: var(--font-body); font-weight: 700; font-size: 14px;
-  width: auto; appearance: none; -webkit-appearance: none; text-align: center;
-  margin-bottom: 0; /* Override global input margin */
+/* --- CUSTOM LANGUAGE MENU --- */
+.lang-custom-wrapper {
+    position: relative;
+    z-index: 2000;
 }
-.lang-dropdown select:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); }
-.lang-dropdown select:focus { outline: none; box-shadow: 0 0 10px var(--accent-dim); }
+
+.lang-trigger-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+.lang-trigger-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
+
+.lang-dropdown-grid {
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    width: 320px;
+    background: #0f1012;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+}
+.lang-dropdown-grid.show {
+    display: grid;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #aaa;
+    transition: 0.2s;
+    text-transform: uppercase;
+}
+.lang-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+.lang-option.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-left: 2px solid var(--accent);
+}
+.l-flag {
+    font-size: 18px;
+}
 
 /* --- HERO & SECTIONS --- */
 .hero { padding: 120px 0; display: flex; align-items: center; min-height: 80vh; }
@@ -460,6 +520,12 @@ input:focus, textarea:focus, select:focus {
   .header-actions { gap: 10px; }
   .btn-login span { display: none; } /* Ховаємо текст Вхід на мобілках */
   .btn-login { padding: 10px; min-width: auto; }
+  
+  /* Адаптація меню мов */
+  .lang-dropdown-grid {
+      right: -60px;
+      width: 300px;
+  }
 
   .nav-toggle { display: block; }
   .hero h1 { font-size: 40px; }

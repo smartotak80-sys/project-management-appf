@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Barracuda Family</title>
+  <title>Barracuda Family — System</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -31,10 +31,8 @@
           <div class="logo"></div>
           <div class="brand-text">
             <div class="title">Barracuda</div>
-            </div>
+          </div>
         </a>
-        
-        <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
         
         <nav class="site-nav" id="mainNav">
           <ul>
@@ -43,57 +41,50 @@
             <li><a href="#members" data-lang="members">СКЛАД</a></li>
             <li><a href="#gallery" data-lang="media">МЕДІА</a></li>
             <li><a href="#apply" class="primary-link" data-lang="apply">ВСТУП</a></li>
-            
-            <li class="auth-li">
-              <button id="openAuthBtn" class="btn btn-login">
-                <i class="fa-solid fa-user-secret"></i> <span id="authBtnText" data-lang="login">ВХІД</span>
-              </button>
-            </li>
-
-            <li class="lang-li">
-                <div class="lang-custom-wrapper">
-                    <button id="langTrigger" class="lang-trigger-btn">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <img id="currentFlagImg" src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon" alt="flag">
-                            <span id="currentLangLabel">UKR</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 8px; opacity: 0.7;"></i>
-                    </button>
-
-                    <div id="langDropdown" class="lang-dropdown-grid">
-                        <div class="lang-option" data-lang="en">
-                            <img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon">
-                            <span>ENGLISH</span>
-                        </div>
-                        <div class="lang-option" data-lang="de">
-                            <img src="https://flagcdn.com/w40/de.png" class="lang-flag-icon">
-                            <span>DEUTSCH</span>
-                        </div>
-                        <div class="lang-option" data-lang="es">
-                            <img src="https://flagcdn.com/w40/es.png" class="lang-flag-icon">
-                            <span>ESPAÑOL</span>
-                        </div>
-                        <div class="lang-option" data-lang="pt">
-                            <img src="https://flagcdn.com/w40/br.png" class="lang-flag-icon">
-                            <span>PORTUGUÊS</span>
-                        </div>
-                        <div class="lang-option" data-lang="pl">
-                            <img src="https://flagcdn.com/w40/pl.png" class="lang-flag-icon">
-                            <span>POLSKI</span>
-                        </div>
-                        <div class="lang-option" data-lang="ru">
-                            <img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon">
-                            <span>РУССКИЙ</span>
-                        </div>
-                        <div class="lang-option active" data-lang="ua" style="grid-column: 1 / -1; background: rgba(255,255,255,0.08);">
-                            <img src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon">
-                            <span>УКРАЇНСЬКА</span>
-                        </div>
-                    </div>
-                </div>
-            </li>
           </ul>
         </nav>
+
+        <div class="header-actions">
+            <button id="openAuthBtn" class="btn btn-login">
+                <i class="fa-solid fa-user-secret"></i> <span id="authBtnText" data-lang="login">ВХІД</span>
+            </button>
+
+            <div class="lang-custom-wrapper">
+                <button id="langTrigger" class="lang-trigger-btn">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img id="currentFlagImg" src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon" alt="flag">
+                        <span id="currentLangLabel">UKR</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 8px; opacity: 0.7;"></i>
+                </button>
+
+                <div id="langDropdown" class="lang-dropdown-grid">
+                    <div class="lang-option" data-lang="en">
+                        <img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon"><span>ENGLISH</span>
+                    </div>
+                    <div class="lang-option" data-lang="de">
+                        <img src="https://flagcdn.com/w40/de.png" class="lang-flag-icon"><span>DEUTSCH</span>
+                    </div>
+                    <div class="lang-option" data-lang="es">
+                        <img src="https://flagcdn.com/w40/es.png" class="lang-flag-icon"><span>ESPAÑOL</span>
+                    </div>
+                    <div class="lang-option" data-lang="pt">
+                        <img src="https://flagcdn.com/w40/br.png" class="lang-flag-icon"><span>PORTUGUÊS</span>
+                    </div>
+                    <div class="lang-option" data-lang="pl">
+                        <img src="https://flagcdn.com/w40/pl.png" class="lang-flag-icon"><span>POLSKI</span>
+                    </div>
+                    <div class="lang-option" data-lang="ru">
+                        <img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon"><span>РУССКИЙ</span>
+                    </div>
+                    <div class="lang-option active" data-lang="ua" style="grid-column: 1 / -1; background: rgba(255,255,255,0.08);">
+                        <img src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon"><span>УКРАЇНСЬКА</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
+        </div>
       </div>
     </header>
 
@@ -118,6 +109,7 @@
           <div class="section-header">
               <h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2>
           </div>
+          
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div>
@@ -177,6 +169,7 @@
         <div class="container center-text">
           <h2 class="neon-title" data-lang="join_system_title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
           <p id="applyText" class="apply-desc" data-lang="join_system_desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
+          
           <div class="action-buttons">
               <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large">
                   <i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">ДОСТУП ДО ТЕРМІНАЛУ</span>
@@ -300,8 +293,8 @@
                         <input type="text" id="appFamilies" required placeholder="Назви сімей...">
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">5. Історія гри на UA/KZ проектах</label>
                         <textarea id="appHistory" required rows="3" placeholder="Де грали, чого досягли..."></textarea>
-                        <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Посилання на відкат стрільби</label>
-                        <input type="text" id="appNote" required placeholder="YouTube / Imgur link">
+                        <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Посилання на відкат стрільби / Коментар</label>
+                        <input type="text" id="appNote" required placeholder="YouTube link або ваш коментар">
                         <button type="submit" class="btn btn-primary full-width" style="margin-top:10px;">ВІДПРАВИТИ</button>
                     </form>
                 </div>

@@ -58,34 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
       if(yearEl) yearEl.textContent = new Date().getFullYear();
   }
 
-  // --- АНІМАЦІЇ (ВИПРАВЛЕНО) ---
+  // --- АНІМАЦІЇ ---
   function activateScrollAnimations() {
       const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
               if (entry.isIntersecting) {
-                  // Стандартна анімація появи
                   entry.target.classList.add('animate-visible');
                   entry.target.classList.remove('animate-hidden');
-                  
-                  // Спеціально для тексту "ХТО МИ Є"
                   if (entry.target.classList.contains('reveal-on-scroll')) {
                       entry.target.classList.add('visible');
                   }
-                  
                   observer.unobserve(entry.target);
               }
           });
       }, { threshold: 0.1 });
 
-      // Додано .reveal-on-scroll до списку елементів
-      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .reveal-on-scroll');
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .cyber-app-card, .reveal-on-scroll');
       
       elements.forEach((el) => {
-          // Якщо це не спец-блок reveal-on-scroll, додаємо стандартний прихований клас
           if (!el.classList.contains('reveal-on-scroll')) {
               el.classList.add('animate-hidden');
           }
-          
           if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
               const idx = Array.from(el.parentElement.children).indexOf(el);
               el.style.transitionDelay = `${idx * 100}ms`;
@@ -265,10 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
 
-  // --- ОНОВЛЕНА ФУНКЦІЯ ПЕРЕВІРКИ ЗАЯВКИ (НОВИЙ ДИЗАЙН) ---
+  // --- НОВА ФУНКЦІЯ ПЕРЕВІРКИ ЗАЯВКИ (USER SIDE) ---
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
-      // Знаходимо останню заявку користувача
       const myApp = apps ? apps.filter(a => a.submittedBy === currentUser.username).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0] : null;
       
       const form = document.getElementById('dashAppForm');
@@ -278,110 +270,78 @@ document.addEventListener('DOMContentLoaded', () => {
           form.style.display = 'none';
           statusBox.style.display = 'block';
           
-          // Базові класи для контейнера
           statusBox.className = 'glass-panel status-panel';
-          // Додаємо специфічний клас статусу (pending, approved, або rejected)
           statusBox.classList.add(myApp.status);
           
-          let icon = '';
-          let title = '';
-          let desc = '';
-          let feedbackLabel = '';
-          let feedbackIcon = '';
-
-          // Налаштування контенту залежно від статусу
+          let icon = ''; let title = ''; let desc = ''; let feedbackLabel = ''; let feedbackIcon = '';
           switch(myApp.status) {
               case 'approved':
-                  icon = '<i class="fa-solid fa-circle-check"></i>';
-                  title = 'ДОСТУП ДОЗВОЛЕНО';
-                  desc = 'Ласкаво просимо до системи Barracuda Family.';
-                  feedbackLabel = 'ПОВІДОМЛЕННЯ КУРАТОРА';
-                  feedbackIcon = 'fa-solid fa-handshake';
+                  icon = '<i class="fa-solid fa-circle-check"></i>'; title = 'ДОСТУП ДОЗВОЛЕНО'; desc = 'Ласкаво просимо до системи Barracuda Family.';
+                  feedbackLabel = 'ПОВІДОМЛЕННЯ КУРАТОРА'; feedbackIcon = 'fa-solid fa-handshake';
                   break;
               case 'rejected':
-                  icon = '<i class="fa-solid fa-circle-xmark"></i>';
-                  title = 'ЗАЯВКУ ВІДХИЛЕНО';
-                  desc = 'У доступі до системи відмовлено.';
-                  feedbackLabel = 'ПРИЧИНА ВІДМОВИ / КОМЕНТАР';
-                  feedbackIcon = 'fa-solid fa-triangle-exclamation';
+                  icon = '<i class="fa-solid fa-circle-xmark"></i>'; title = 'ЗАЯВКУ ВІДХИЛЕНО'; desc = 'У доступі до системи відмовлено.';
+                  feedbackLabel = 'ПРИЧИНА ВІДМОВИ / КОМЕНТАР'; feedbackIcon = 'fa-solid fa-triangle-exclamation';
                   break;
-              default: // pending
-                  icon = '<i class="fa-solid fa-hourglass-half"></i>';
-                  title = 'ОЧІКУВАННЯ ПЕРЕВІРКИ';
-                  desc = 'Ваші дані обробляються адміністрацією.';
-                  feedbackLabel = 'СИСТЕМНЕ ПОВІДОМЛЕННЯ';
-                  feedbackIcon = 'fa-solid fa-terminal';
+              default:
+                  icon = '<i class="fa-solid fa-hourglass-half"></i>'; title = 'ОЧІКУВАННЯ ПЕРЕВІРКИ'; desc = 'Ваші дані обробляються адміністрацією.';
+                  feedbackLabel = 'СИСТЕМНЕ ПОВІДОМЛЕННЯ'; feedbackIcon = 'fa-solid fa-terminal';
                   break;
           }
           
-          // Формуємо новий HTML
           let htmlContent = `
-            <div class="status-header">
-                <div class="status-icon-box">${icon}</div>
-                <div class="status-title">
-                    <h2>${title}</h2>
-                    <p>${desc}</p>
-                </div>
-            </div>
+            <div class="status-header"><div class="status-icon-box">${icon}</div><div class="status-title"><h2>${title}</h2><p>${desc}</p></div></div>
           `;
 
-          // Якщо є коментар адміна АБО якщо заявку відхилено (навіть без коментаря показати блок)
           if(myApp.adminComment || myApp.status === 'rejected') {
              const commentText = myApp.adminComment ? myApp.adminComment : (myApp.status === 'rejected' ? 'Причину не вказано. Зв\'яжіться з адміністрацією в Discord.' : '');
-             
              if(commentText) {
-                 htmlContent += `
-                    <div class="admin-feedback-box animate-visible">
-                        <div class="feedback-label">
-                            <i class="${feedbackIcon}"></i> ${feedbackLabel}
-                        </div>
-                        <div class="feedback-text">
-                            ${commentText}
-                        </div>
-                    </div>
-                 `;
+                 htmlContent += `<div class="admin-feedback-box animate-visible"><div class="feedback-label"><i class="${feedbackIcon}"></i> ${feedbackLabel}</div><div class="feedback-text">${commentText}</div></div>`;
              }
           }
-
           statusBox.innerHTML = htmlContent;
-
       } else {
           form.style.display = 'block';
           statusBox.style.display = 'none';
       }
   }
 
+  // --- НОВА ФУНКЦІЯ ВІДОБРАЖЕННЯ ЗАЯВОК (ADMIN SIDE) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       const apps = await apiFetch('/api/applications');
-      if(!apps || !apps.length) { list.innerHTML = '<p style="color:#666;">НЕМАЄ ЗАЯВОК</p>'; return; }
+      
+      if(!apps || !apps.length) { 
+          list.innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><i class="fa-solid fa-inbox" style="font-size:40px; margin-bottom:10px;"></i><br>ЗАЯВОК НЕМАЄ</div>'; 
+          return; 
+      }
       
       list.innerHTML = apps.map(a => `
-        <div class="app-card animate-hidden">
-           <div class="app-header">
-               <div>
-                   <h3 style="margin:0;">${a.rlNameAge}</h3>
-                   <div style="font-size:12px; color:#666;"><i class="fa-solid fa-user"></i> ${a.submittedBy}</div>
-               </div>
-               <div class="status-badge ${a.status}">${a.status === 'pending' ? 'ОЧІКУВАННЯ' : (a.status === 'approved' ? 'СХВАЛЕНО' : 'ВІДХИЛЕНО')}</div>
+        <div class="cyber-app-card animate-hidden">
+           <div class="app-header-row">
+               <div class="applicant-info"><h3>${a.rlNameAge}</h3><div class="applicant-meta"><i class="fa-solid fa-user-tag"></i> АГЕНТ: ${a.submittedBy} <span style="margin:0 5px; color:#444;">|</span> ${new Date(a.createdAt).toLocaleDateString()}</div></div>
+               <div class="status-tag ${a.status}">${a.status === 'pending' ? 'ОЧІКУВАННЯ' : (a.status === 'approved' ? 'СХВАЛЕНО' : 'ВІДХИЛЕНО')}</div>
            </div>
-           <div class="app-grid">
-               <div class="app-item"><label>ОНЛАЙН</label><div>${a.onlineTime}</div></div>
-               <div class="app-item"><label>ВІДЕО</label><div><a href="${a.shootingVideo}" target="_blank" class="app-video-link">ПЕРЕГЛЯД</a></div></div>
-               <div class="app-item full"><label>ІСТОРІЯ</label><div>${a.history}</div></div>
+           <div class="cyber-grid">
+               <div class="data-field"><span class="data-label"><i class="fa-regular fa-clock"></i> ОНЛАЙН</span><span class="data-value">${a.onlineTime}</span></div>
+               <div class="data-field"><span class="data-label"><i class="fa-solid fa-film"></i> ВІД КАТ</span><span class="data-value"><a href="${a.shootingVideo}" target="_blank" class="video-btn"><i class="fa-brands fa-youtube"></i> ПЕРЕГЛЯД</a></span></div>
+               <div class="data-field" style="grid-column: 1 / -1;"><span class="data-label"><i class="fa-solid fa-book-open"></i> ІСТОРІЯ ГРИ</span><span class="data-value history">${a.history}</span></div>
            </div>
-           <div class="app-controls">
-                ${a.status==='pending' ? `
-                <input type="text" id="reason-${a.id}" placeholder="Коментар...">
-                <div class="app-btns">
-                    <button class="btn btn-primary" onclick="window.updateAppStatus('${a.id}','approved')">СХВАЛИТИ</button>
-                    <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.updateAppStatus('${a.id}','rejected')">ВІДХИЛИТИ</button>
-                    <button class="btn btn-outline" style="color:#aaa; border-color:#555;" onclick="window.deleteApp('${a.id}')" title="Видалити назавжди"><i class="fa-solid fa-trash"></i></button>
-                </div>` 
-                : 
-                `<div class="app-btns">
-                    <button class="btn btn-outline full-width" style="color:#aaa; border-color:#555;" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i> ВИДАЛИТИ ЗАЯВКУ</button>
-                </div>`}
+           <div class="control-panel">
+               ${a.status === 'pending' ? `
+                    <input type="text" id="reason-${a.id}" placeholder="Введіть коментар або причину відмови...">
+                    <div class="action-buttons-row">
+                        <button class="btn btn-approve" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i> ПРИЙНЯТИ</button>
+                        <button class="btn btn-reject" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i> ВІДМОВИТИ</button>
+                        <button class="btn btn-delete" onclick="window.deleteApp('${a.id}')" title="Видалити"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+               ` : `
+                    <div style="font-size:12px; color:#666; margin-bottom:5px;">Рішення вже прийнято.</div>
+                    <div class="action-buttons-row">
+                        <button class="btn btn-outline full-width" style="grid-column: 1 / -2; border-color:#333; color:#aaa;" disabled>АРХІВОВАНО</button>
+                        <button class="btn btn-delete" onclick="window.deleteApp('${a.id}')" title="Видалити"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+               `}
            </div>
         </div>`).join('');
       activateScrollAnimations();
@@ -463,7 +423,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
-              // --- ІКОНКА ЗАМІНЕНА ТУТ ---
               applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ПОДАТИ ЗАЯВКУ'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
@@ -473,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
           if(applyBtn) { 
-              // --- ІКОНКА ЗАМІНЕНА ТУТ ---
               applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ДОСТУП ДО ТЕРМІНАЛУ'; 
               applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
           }

@@ -244,12 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Користувача видалено'); loadUsersAdmin(); }
   });
 
-  // --- APPLICATIONS ---
+  // --- APPLICATIONS (Оновлено для нових полів) ---
   document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const body = {
-          rlNameAge: document.getElementById('appRlNameAge').value,
+          rlName: document.getElementById('appRlName').value,
+          age: document.getElementById('appAge').value,
           onlineTime: document.getElementById('appOnline').value,
+          prevFamilies: document.getElementById('appFamilies').value,
           history: document.getElementById('appHistory').value,
           shootingVideo: document.getElementById('appVideo').value,
           submittedBy: currentUser.username
@@ -258,16 +260,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
 
-  // --- НОВА ФУНКЦІЯ ПЕРЕВІРКИ ЗАЯВКИ (USER SIDE) ---
+  // --- ПЕРЕВІРКА ЗАЯВКИ (USER SIDE) ---
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
       const myApp = apps ? apps.filter(a => a.submittedBy === currentUser.username).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0] : null;
       
       const form = document.getElementById('dashAppForm');
       const statusBox = document.getElementById('applyStatusContainer');
-      
+      const container = document.querySelector('.compact-square-container'); // Для приховування форми
+
       if(myApp) {
-          form.style.display = 'none';
+          if(container) container.style.display = 'none'; // Ховаємо всю форму
+          if(form) form.style.display = 'none';
           statusBox.style.display = 'block';
           
           statusBox.className = 'glass-panel status-panel';
@@ -301,46 +305,57 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           statusBox.innerHTML = htmlContent;
       } else {
-          form.style.display = 'block';
+          if(container) container.style.display = 'block';
+          if(form) form.style.display = 'block';
           statusBox.style.display = 'none';
       }
   }
 
-  // --- НОВА ФУНКЦІЯ ВІДОБРАЖЕННЯ ЗАЯВОК (ADMIN SIDE) ---
+  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ADMIN SIDE - SQUARE GRID) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
+      
+      // Стилі для сітки (Grid)
+      list.style.display = 'grid';
+      list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+      list.style.gap = '20px';
+
       const apps = await apiFetch('/api/applications');
       
       if(!apps || !apps.length) { 
-          list.innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><i class="fa-solid fa-inbox" style="font-size:40px; margin-bottom:10px;"></i><br>ЗАЯВОК НЕМАЄ</div>'; 
+          list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><i class="fa-solid fa-inbox" style="font-size:40px; margin-bottom:10px;"></i><br>ЗАЯВОК НЕМАЄ</div>'; 
           return; 
       }
       
       list.innerHTML = apps.map(a => `
-        <div class="cyber-app-card animate-hidden">
-           <div class="app-header-row">
-               <div class="applicant-info"><h3>${a.rlNameAge}</h3><div class="applicant-meta"><i class="fa-solid fa-user-tag"></i> АГЕНТ: ${a.submittedBy} <span style="margin:0 5px; color:#444;">|</span> ${new Date(a.createdAt).toLocaleDateString()}</div></div>
-               <div class="status-tag ${a.status}">${a.status === 'pending' ? 'ОЧІКУВАННЯ' : (a.status === 'approved' ? 'СХВАЛЕНО' : 'ВІДХИЛЕНО')}</div>
+        <div class="cyber-app-card animate-hidden" style="display:flex; flex-direction:column; height:100%;">
+           <div class="app-header-row" style="margin-bottom:15px;">
+               <div class="applicant-info">
+                   <h3 style="font-size:18px;">${a.rlName || 'Unknown'}</h3>
+                   <div style="font-size:12px; color:var(--accent); font-weight:bold;">ВІК: ${a.age || '-'}</div>
+                   <div class="applicant-meta" style="margin-top:5px;">АГЕНТ: ${a.submittedBy}</div>
+               </div>
+               <div class="status-tag ${a.status}">${a.status === 'pending' ? 'ОЧІК' : (a.status === 'approved' ? 'ОК' : 'НІ')}</div>
            </div>
-           <div class="cyber-grid">
-               <div class="data-field"><span class="data-label"><i class="fa-regular fa-clock"></i> ОНЛАЙН</span><span class="data-value">${a.onlineTime}</span></div>
-               <div class="data-field"><span class="data-label"><i class="fa-solid fa-film"></i> ВІД КАТ</span><span class="data-value"><a href="${a.shootingVideo}" target="_blank" class="video-btn"><i class="fa-brands fa-youtube"></i> ПЕРЕГЛЯД</a></span></div>
-               <div class="data-field" style="grid-column: 1 / -1;"><span class="data-label"><i class="fa-solid fa-book-open"></i> ІСТОРІЯ ГРИ</span><span class="data-value history">${a.history}</span></div>
+           
+           <div class="cyber-grid" style="grid-template-columns: 1fr; gap:8px; padding:10px; flex-grow:1;">
+               <div class="data-field"><span class="data-label">ОНЛАЙН:</span> <span class="data-value">${a.onlineTime}</span></div>
+               <div class="data-field"><span class="data-label">СІМ'Ї:</span> <span class="data-value" style="font-size:12px;">${a.prevFamilies || '-'}</span></div>
+               <div class="data-field"><span class="data-label">ВІДКАТ:</span> <span class="data-value"><a href="${a.shootingVideo}" target="_blank" class="video-btn" style="width:100%; text-align:center;">ВІДКРИТИ ВІДЕО</a></span></div>
+               <div class="data-field"><span class="data-label">ІСТОРІЯ:</span> <div class="data-value history" style="max-height:60px; overflow-y:auto; font-size:11px;">${a.history}</div></div>
            </div>
-           <div class="control-panel">
+
+           <div class="control-panel" style="margin-top:15px;">
                ${a.status === 'pending' ? `
-                    <input type="text" id="reason-${a.id}" placeholder="Введіть коментар або причину відмови...">
-                    <div class="action-buttons-row">
-                        <button class="btn btn-approve" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i> ПРИЙНЯТИ</button>
-                        <button class="btn btn-reject" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i> ВІДМОВИТИ</button>
-                        <button class="btn btn-delete" onclick="window.deleteApp('${a.id}')" title="Видалити"><i class="fa-solid fa-trash"></i></button>
+                    <input type="text" id="reason-${a.id}" placeholder="Коментар..." style="margin-bottom:5px; padding:8px;">
+                    <div class="action-buttons-row" style="grid-template-columns: 1fr 1fr auto;">
+                        <button class="btn btn-approve" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i></button>
+                        <button class="btn btn-reject" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i></button>
+                        <button class="btn btn-delete" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                ` : `
-                    <div style="font-size:12px; color:#666; margin-bottom:5px;">Рішення вже прийнято.</div>
-                    <div class="action-buttons-row">
-                        <button class="btn btn-outline full-width" style="grid-column: 1 / -2; border-color:#333; color:#aaa;" disabled>АРХІВОВАНО</button>
-                        <button class="btn btn-delete" onclick="window.deleteApp('${a.id}')" title="Видалити"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                    <div style="font-size:11px; color:#666; text-align:center; padding:5px;">Оброблено</div>
+                    <button class="btn btn-delete full-width" onclick="window.deleteApp('${a.id}')">ВИДАЛИТИ АРХІВ</button>
                `}
            </div>
         </div>`).join('');

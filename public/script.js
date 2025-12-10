@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }, { threshold: 0.1 });
 
-      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .app-card-ultra, .ticket-card-ultra, .reveal-on-scroll');
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .app-card-ultra, .cyber-app-card, .reveal-on-scroll');
       
       elements.forEach((el) => {
           if (!el.classList.contains('reveal-on-scroll')) {
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Користувача видалено'); loadUsersAdmin(); }
   });
 
-  // --- APPLICATIONS ---
+  // --- APPLICATIONS (Оновлено для нових полів) ---
   document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const body = {
@@ -253,23 +253,24 @@ document.addEventListener('DOMContentLoaded', () => {
           onlineTime: document.getElementById('appOnline').value,
           prevFamilies: document.getElementById('appFamilies').value,
           history: document.getElementById('appHistory').value,
-          note: document.getElementById('appNote').value,
+          shootingVideo: document.getElementById('appVideo').value,
           submittedBy: currentUser.username
       };
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
       if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
 
+  // --- ПЕРЕВІРКА ЗАЯВКИ (USER SIDE) ---
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
       const myApp = apps ? apps.filter(a => a.submittedBy === currentUser.username).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0] : null;
       
       const form = document.getElementById('dashAppForm');
       const statusBox = document.getElementById('applyStatusContainer');
-      const container = document.querySelector('.compact-square-container'); 
+      const container = document.querySelector('.compact-square-container'); // Для приховування форми
 
       if(myApp) {
-          if(container) container.style.display = 'none'; 
+          if(container) container.style.display = 'none'; // Ховаємо всю форму
           if(form) form.style.display = 'none';
           statusBox.style.display = 'block';
           
@@ -310,68 +311,88 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
-  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ULTRA REDESIGN) ---
+  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ULTRA GRID DESIGN) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
-      if(!list) return;
+      
+      // Вмикаємо відображення блоками (щоб картки йшли одна за одною)
       list.style.display = 'block'; 
+
       const apps = await apiFetch('/api/applications');
       
       if(!apps || !apps.length) { 
-          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444; font-family:var(--font-main);">DATABASE EMPTY / НЕМАЄ ЗАЯВОК</div>'; 
+          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444; font-family:var(--font-main);">НЕМАЄ АКТИВНИХ ЗАЯВОК</div>'; 
           return; 
       }
       
+      // Генеруємо HTML карток
       list.innerHTML = apps.map((a, index) => {
-          // Розпізнавання посилання
-          const noteContent = a.note || a.shootingVideo || 'Не вказано';
-          const isLink = noteContent.startsWith('http') || noteContent.startsWith('www');
-          const displayNote = isLink 
-              ? `<a href="${noteContent}" target="_blank" class="ultra-link"><i class="fa-solid fa-link"></i> ВІДКРИТИ ПОСИЛАННЯ</a>` 
-              : `<span style="color:#ccc;">${noteContent}</span>`;
-
+          // Іконки агентів (декор)
+          const agentIcons = `<i class="fa-solid fa-user-secret" style="color: #ccc; margin-left:8px;"></i>`; 
+          
           return `
             <div class="app-card-ultra animate-hidden">
-                <span class="app-id-badge">#${index + 1}</span>
+                <span class="app-id-badge">${index + 1}</span>
+                
                 <div class="ultra-row">
-                    <span class="ultra-label">КАНДИДАТ</span>
-                    <span class="ultra-highlight">${a.rlName} <span style="font-size:14px; color:#666; font-weight:400;">(${a.age} р.)</span></span>
+                    <span class="ultra-highlight" style="min-width: 60px;">ВІК: ${a.age}</span>
                 </div>
+
                 <div class="ultra-row">
-                    <span class="ultra-label">АГЕНТ</span> 
+                    <span class="ultra-label">АГЕНТ:</span> 
                     <span style="color:#fff; font-weight:700;">${a.submittedBy}</span> 
-                    <i class="fa-solid fa-user-secret" style="color:#444; margin-left:5px;"></i>
+                    ${agentIcons}
+                </div>
+
+                <div class="ultra-row">
+                    <span class="ultra-label">ОЧІК:</span> 
+                    <span style="color:#444; text-transform:uppercase;">${a.status}...</span>
+                </div>
+                
+                <div style="height: 15px;"></div> <div class="ultra-row">
+                    <span class="ultra-label">ОНЛАЙН:</span> ${a.onlineTime}
                 </div>
                 <div class="ultra-row">
-                    <span class="ultra-label">ОНЛАЙН</span> <span style="color:#ccc;">${a.onlineTime}</span>
-                </div>
-                 <div class="ultra-row">
-                    <span class="ultra-label">СІМ'Ї</span> <span style="color:#ccc;">${a.prevFamilies}</span>
+                    <span class="ultra-label">СІМ'Ї:</span> ${a.prevFamilies || 'Не вказано'}
                 </div>
                 <div class="ultra-row">
-                    <span class="ultra-label">ПРИМІТКА</span> 
-                    ${displayNote}
+                    <span class="ultra-label">ВІДКАТ:</span> 
+                    <a href="${a.shootingVideo}" target="_blank" class="ultra-link">ВІДКРИТИ ВІДЕО</a>
                 </div>
-                <div style="margin-top:15px; font-size:10px; color:#666; font-weight:800; letter-spacing:1px;">ІСТОРІЯ ГРАВЦЯ:</div>
-                <div class="ultra-history">${a.history}</div>
+
+                <div class="ultra-row" style="margin-top:15px;">
+                    <span class="ultra-label">ІСТОРІЯ:</span>
+                </div>
+                <div class="ultra-history">
+                    ${a.history}
+                </div>
+
                 ${a.status === 'pending' ? `
                 <div class="ultra-input-group">
-                    <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар адміністратора...">
+                    <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар...">
+                    
                     <div class="ultra-actions">
-                        <button class="btn-icon-square approve" title="СХВАЛИТИ" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i></button>
-                        <button class="btn-icon-square reject" title="ВІДХИЛИТИ" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i></button>
-                        <button class="btn-icon-square delete" title="ВИДАЛИТИ" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-icon-square approve" title="СХВАЛИТИ" onclick="window.updateAppStatus('${a.id}','approved')">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                        <button class="btn-icon-square reject" title="ВІДХИЛИТИ" onclick="window.updateAppStatus('${a.id}','rejected')">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button class="btn-icon-square delete" title="ВИДАЛИТИ" onclick="window.deleteApp('${a.id}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 </div>
                 ` : `
-                <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span class="status-tag" style="color:${a.status==='approved'?'#2ecc71':'#e74c3c'}; border-color:${a.status==='approved'?'#2ecc71':'#e74c3c'};">СТАТУС: ${a.status.toUpperCase()}</span>
+                <div style="margin-top:20px; border-top:1px solid #222; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span class="status-tag ${a.status}" style="font-size:12px; font-weight:bold; color:${a.status==='approved'?'#2ecc71':'#e74c3c'}">${a.status.toUpperCase()}</span>
                     <button class="btn-icon-square delete" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
                 </div>
                 `}
             </div>
           `;
       }).join('');
+      
       activateScrollAnimations();
   }
   
@@ -382,19 +403,19 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   window.deleteApp = async (id) => {
+      // ВИКОРИСТАННЯ НОВОГО CYBER MODAL ДЛЯ ПІДТВЕРДЖЕННЯ
       openCyberModal(
-          'УВАГА: ВИДАЛЕННЯ ДАНИХ',
-          `<p style="color:#aaa;">Ви ініціювали видалення анкети з бази даних. Ця дія є незворотньою і файл не підлягає відновленню.</p>
-           <p style="color:#fff; font-weight:bold;">Підтвердити знищення даних?</p>`,
+          'ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ',
+          `<p style="color:#aaa;">Ви дійсно бажаєте безповоротно видалити цю заявку з бази даних? Цю дію неможливо скасувати.</p>`,
           async () => {
               await apiFetch(`/api/applications/${id}`, { method: 'DELETE' });
-              showToast('ФАЙЛ ЗНИЩЕНО');
+              showToast('ЗАЯВКУ ВИДАЛЕНО');
               loadApplicationsStaff();
           }
       );
   };
 
-  // --- TICKETS (ULTRA REDESIGN) ---
+  // --- TICKETS ---
   document.getElementById('createTicketForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const body = { author: currentUser.username, title: document.getElementById('ticketTitle').value, messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }] };
@@ -404,56 +425,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadMyTickets() {
       const list = document.getElementById('myTicketsList');
-      if(!list) return;
       const all = await apiFetch('/api/tickets');
       const my = all ? all.filter(t => t.author === currentUser.username) : [];
-      
-      if(!my.length) { list.innerHTML = '<div class="empty" style="text-align:center; color:#555;">НЕМАЄ ТІКЕТІВ</div>'; return; }
-
-      // ULTRA LIST DESIGN
-      list.innerHTML = my.map(t => `
-        <div class="ticket-card-ultra ${t.status}" onclick="window.openTicket('${t.id}')" style="cursor:pointer; margin-bottom:10px; border-left-color: ${t.status==='open'?'var(--accent-blue)':'#7f8c8d'};">
-            <div class="ultra-row">
-                <span class="ultra-label">ТЕМА</span>
-                <span style="color:#fff; font-weight:bold;">${t.title}</span>
-            </div>
-            <div class="ultra-row">
-                <span class="ultra-label">СТАТУС</span>
-                <span class="status-tag ${t.status}" style="${t.status==='closed'?'color:#95a5a6; border-color:#95a5a6;':''}">${t.status.toUpperCase()}</span>
-            </div>
-        </div>
-      `).join('');
+      list.innerHTML = my.length ? my.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><span>${t.status}</span></div>`).join('') : '<div class="empty">Немає тікетів</div>';
   }
-
   async function loadAllTickets() {
       const list = document.getElementById('allTicketsList');
-      if(!list) return;
-      list.style.display = 'block';
       const all = await apiFetch('/api/tickets');
-      
-      if(!all || !all.length) { list.innerHTML = '<div class="empty" style="text-align:center;">НЕМАЄ ТІКЕТІВ</div>'; return; }
-
-      list.innerHTML = all.map((t, index) => `
-        <div class="ticket-card-ultra animate-hidden ${t.status}">
-            <span class="app-id-badge" style="font-size:32px;">#${index+1}</span>
-            <div class="ultra-row">
-                <span class="ultra-label">АВТОР</span>
-                <span class="ultra-highlight" style="color:#fff; font-size:16px;">${t.author}</span>
-            </div>
-            <div class="ultra-row">
-                <span class="ultra-label">ПРОБЛЕМА</span>
-                <span style="color:#ccc;">${t.title}</span>
-            </div>
-             <div class="ultra-row">
-                <span class="ultra-label">СТАТУС</span>
-                <span class="status-tag ${t.status}" style="${t.status==='closed'?'color:#95a5a6; border-color:#95a5a6;':''}">${t.status.toUpperCase()}</span>
-            </div>
-            <div class="ultra-actions" style="margin-top:15px;">
-                <button class="btn-icon-square open-ticket" onclick="window.openTicket('${t.id}')" title="Відкрити чат"><i class="fa-regular fa-comments"></i></button>
-            </div>
-        </div>
-      `).join('');
-      activateScrollAnimations();
+      list.innerHTML = all && all.length ? all.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><small>${t.author}</small><span>${t.status}</span></div>`).join('') : '<div class="empty">Немає тікетів</div>';
   }
 
   let currentTicketId = null;
@@ -467,27 +446,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const chat = document.getElementById('tmMessages');
       chat.innerHTML = t.messages.map(m => `<div class="msg ${m.sender===currentUser.username?'me':'other'} ${m.isStaff?'staff':''}"><div class="sender">${m.sender}</div>${m.text}</div>`).join('');
       chat.scrollTop = chat.scrollHeight;
-      
-      const closeBtn = document.getElementById('tmCloseTicketBtn');
-      if(t.status === 'closed') {
-          closeBtn.style.display = 'none';
-      } else {
-          closeBtn.style.display = 'inline-block';
-          closeBtn.onclick = () => {
-              openCyberModal(
-                  'ЗАКРИТТЯ ЗАПИТУ',
-                  '<p style="color:#ccc;">Ви впевнені, що проблема вирішена і тікет можна закрити?</p>',
-                  async () => {
-                       await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ status: 'closed' }) });
-                       document.getElementById('ticketModal').classList.remove('show');
-                       showToast('ТІКЕТ ЗАКРИТО');
-                       loadMyTickets(); loadAllTickets();
-                  }
-              );
-          };
-      }
+      document.getElementById('tmCloseTicketBtn').style.display = t.status === 'closed' ? 'none' : 'block';
   };
-
   document.getElementById('tmSendBtn')?.addEventListener('click', async () => {
       if(!currentTicketId) return;
       const txt = document.getElementById('tmInput').value; if(!txt) return;
@@ -495,203 +455,36 @@ document.addEventListener('DOMContentLoaded', () => {
       await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ message: { sender: currentUser.username, text: txt, isStaff } }) });
       document.getElementById('tmInput').value = ''; window.openTicket(currentTicketId);
   });
+  document.getElementById('tmCloseTicketBtn')?.addEventListener('click', async () => {
+      await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ status: 'closed' }) });
+      document.getElementById('ticketModal').classList.remove('show');
+      loadMyTickets(); loadAllTickets();
+  });
 
-  // --- LANGUAGE SYSTEM & AUTH UI UPDATE ---
-  
-  const translations = {
-    ua: {
-        flag: "ua", label: "UKR",
-        home: "ГОЛОВНА", about: "ІНФО", members: "СКЛАД", media: "МЕДІА", apply: "ВСТУП",
-        login: "ВХІД", account: "АКАУНТ", hero_btn: "ПРИЄДНАТИСЬ", hero_members: "СКЛАД",
-        about_title_span: "ХТО", about_title: "МИ Є",
-        card_mission: "МІСІЯ", card_mission_desc: "Створення унікального RP досвіду та домінування в сферах впливу.",
-        card_protection: "ЗАХИСТ", card_protection_desc: "Ми стоїмо один за одного. Сім'я — це непорушна фортеця.",
-        card_resources: "РЕСУРСИ", card_resources_desc: "Забезпечення кожного учасника усім необхідним для комфортної гри.",
-        members_title_span: "НАШ", members_title: "СКЛАД",
-        news_title: "СТРІЧКА", news_title_span: "НОВИН",
-        gallery_title: "ГАЛЕРЕЯ",
-        join_system_title: "ПРИЄДНУЙСЯ ДО СИСТЕМИ", join_system_desc: "Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.",
-        access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ",
-        footer: "BARRACUDA FAMILY. RP."
-    },
-    ru: {
-        flag: "ru", label: "RUS",
-        home: "ГЛАВНАЯ", about: "ИНФО", members: "СОСТАВ", media: "МЕДИА", apply: "ВСТУПИТЬ",
-        login: "ВХОД", account: "АККАУНТ", hero_btn: "ПРИСОЕДИНИТЬСЯ", hero_members: "СОСТАВ",
-        about_title_span: "КТО", about_title: "МЫ ЕСТЬ",
-        card_mission: "МИССИЯ", card_mission_desc: "Создание уникального RP опыта и доминирование в сферах влияния.",
-        card_protection: "ЗАЩИТА", card_protection_desc: "Мы стоим друг за друга. Семья — это нерушимая крепость.",
-        card_resources: "РЕСУРСЫ", card_resources_desc: "Обеспечение каждого участника всем необходимым для комфортной игры.",
-        members_title_span: "НАШ", members_title: "СОСТАВ",
-        news_title: "ЛЕНТА", news_title_span: "НОВОСТЕЙ",
-        gallery_title: "ГАЛЕРЕЯ",
-        join_system_title: "ПРИСОЕДИНЯЙСЯ К СИСТЕМЕ", join_system_desc: "Авторизуйтесь, чтобы получить доступ к закрытому разделу подачи заявок.",
-        access_terminal: "ДОСТУП К ТЕРМИНАЛУ",
-        footer: "BARRACUDA FAMILY. RP."
-    },
-    en: {
-        flag: "gb", label: "ENG",
-        home: "HOME", about: "INFO", members: "ROSTER", media: "MEDIA", apply: "APPLY",
-        login: "LOGIN", account: "ACCOUNT", hero_btn: "JOIN US", hero_members: "ROSTER",
-        about_title_span: "WHO", about_title: "WE ARE",
-        card_mission: "MISSION", card_mission_desc: "Creating a unique RP experience and dominating spheres of influence.",
-        card_protection: "PROTECTION", card_protection_desc: "We stand for each other. The family is an unshakeable fortress.",
-        card_resources: "RESOURCES", card_resources_desc: "Providing every member with everything needed for comfortable gameplay.",
-        members_title_span: "OUR", members_title: "ROSTER",
-        news_title: "NEWS", news_title_span: "FEED",
-        gallery_title: "GALLERY",
-        join_system_title: "JOIN THE SYSTEM", join_system_desc: "Authorize to access the restricted application section.",
-        access_terminal: "ACCESS TERMINAL",
-        footer: "BARRACUDA FAMILY. RP."
-    },
-    pl: {
-        flag: "pl", label: "POL",
-        home: "GŁÓWNA", about: "INFO", members: "EKIPA", media: "MEDIA", apply: "REKRUTACJA",
-        login: "WEJŚCIE", account: "KONTO", hero_btn: "DOŁĄCZ", hero_members: "EKIPA",
-        about_title_span: "KIM", about_title: "JESTEŚMY",
-        card_mission: "MISJA", card_mission_desc: "Tworzenie unikalnego doświadczenia RP i dominacja w strefach wpływów.",
-        card_protection: "OCHRONA", card_protection_desc: "Stoimy za sobą murem. Rodzina to nienaruszalna twierdza.",
-        card_resources: "ZASOBY", card_resources_desc: "Zapewnienie każdemu członkowi wszystkiego, co niezbędne do gry.",
-        members_title_span: "NASZA", members_title: "EKIPA",
-        news_title: "WIADOMOŚCI", news_title_span: "I NEWSY",
-        gallery_title: "GALERIA",
-        join_system_title: "DOŁĄCZ DO SYSTEMU", join_system_desc: "Zaloguj się, aby uzyskać dostęp do sekcji rekrutacji.",
-        access_terminal: "DOSTĘP DO TERMINALA",
-        footer: "RODZINA BARRACUDA. RP."
-    },
-    de: {
-        flag: "de", label: "DEU",
-        home: "HOME", about: "INFO", members: "MITGLIEDER", media: "MEDIEN", apply: "BEWERBEN",
-        login: "LOGIN", account: "KONTO", hero_btn: "BEITRETEN", hero_members: "MITGLIEDER",
-        about_title_span: "WER", about_title: "WIR SIND",
-        card_mission: "MISSION", card_mission_desc: "Schaffung eines einzigartigen RP-Erlebnisses und Dominanz in Einflussbereichen.",
-        card_protection: "SCHUTZ", card_protection_desc: "Wir stehen füreinander ein. Die Familie ist eine unerschütterliche Festung.",
-        card_resources: "RESSOURCEN", card_resources_desc: "Bereitstellung aller notwendigen Mittel für ein komfortables Spiel.",
-        members_title_span: "UNSERE", members_title: "MITGLIEDER",
-        news_title: "NACHRICHTEN", news_title_span: "FEED",
-        gallery_title: "GALERIE",
-        join_system_title: "TRITT DEM SYSTEM BEI", join_system_desc: "Melden Sie sich an, um Zugang zum Bewerbungsbereich zu erhalten.",
-        access_terminal: "TERMINAL ZUGRIFF",
-        footer: "BARRACUDA FAMILIE. RP."
-    },
-    es: {
-        flag: "es", label: "ESP",
-        home: "INICIO", about: "INFO", members: "MIEMBROS", media: "MEDIOS", apply: "APLICAR",
-        login: "ACCESO", account: "CUENTA", hero_btn: "ÚNETE", hero_members: "MIEMBROS",
-        about_title_span: "QUIÉNES", about_title: "SOMOS",
-        card_mission: "MISIÓN", card_mission_desc: "Creando una experiencia RP única y dominando las esferas de influencia.",
-        card_protection: "PROTECCIÓN", card_protection_desc: "Nos defendemos mutuamente. La familia es una fortaleza inquebrantable.",
-        card_resources: "RECURSOS", card_resources_desc: "Proporcionando a cada miembro todo lo necesario para un juego cómodo.",
-        members_title_span: "NUESTROS", members_title: "MIEMBROS",
-        news_title: "NOTICIAS", news_title_span: "FEED",
-        gallery_title: "GALERÍA",
-        join_system_title: "ÚNETE AL SISTEMA", join_system_desc: "Inicia sesión para acceder a la sección de solicitudes restringidas.",
-        access_terminal: "ACCESO TERMINAL",
-        footer: "FAMILIA BARRACUDA. RP."
-    },
-    pt: {
-        flag: "br", label: "POR",
-        home: "INÍCIO", about: "INFO", members: "MEMBROS", media: "MÍDIA", apply: "APLICAR",
-        login: "LOGIN", account: "CONTA", hero_btn: "JUNTAR-SE", hero_members: "MEMBROS",
-        about_title_span: "QUEM", about_title: "SOMOS",
-        card_mission: "MISSÃO", card_mission_desc: "Criando uma experiência única de RP e dominando esferas de influência.",
-        card_protection: "PROTEÇÃO", card_protection_desc: "Nós nos defendemos. A família é uma fortaleza inabalável.",
-        card_resources: "RECURSOS", card_resources_desc: "Fornecendo a cada membro tudo o que é necessário para um jogo confortável.",
-        members_title_span: "NOSSOS", members_title: "MEMBROS",
-        news_title: "NOTÍCIAS", news_title_span: "FEED",
-        gallery_title: "GALERIA",
-        join_system_title: "JUNTE-SE AO SISTEMA", join_system_desc: "Faça login para acessar a seção de aplicativos restrita.",
-        access_terminal: "ACESSO TERMINAL",
-        footer: "FAMÍLIA BARRACUDA. RP."
-    }
-  };
-
-  const langTrigger = document.getElementById('langTrigger');
-  const langDropdown = document.getElementById('langDropdown');
-  const currentFlagImg = document.getElementById('currentFlagImg');
-  const currentLangLabel = document.getElementById('currentLangLabel');
-
-  function changeLanguage(lang) {
-      document.querySelectorAll('[data-lang]').forEach(el => {
-          const key = el.getAttribute('data-lang');
-          if (key === 'login') {
-             const textEl = document.getElementById('authBtnText');
-             if(currentUser) {
-                 textEl.textContent = translations[lang]['account'];
-             } else {
-                 textEl.textContent = translations[lang]['login'];
-             }
-          } else if (translations[lang] && translations[lang][key]) {
-              el.textContent = translations[lang][key];
-          }
-      });
-      
-      if(translations[lang]) {
-        // Оновлюємо прапорець на кнопці (використовуючи код країни з перекладів)
-        const flagCode = translations[lang].flag; 
-        currentFlagImg.src = `https://flagcdn.com/w40/${flagCode}.png`;
-        currentLangLabel.textContent = translations[lang].label;
-      }
-
-      localStorage.setItem('barracuda_lang', lang);
-      
-      document.querySelectorAll('.lang-option').forEach(opt => {
-          opt.classList.remove('active');
-          if(opt.getAttribute('data-lang') === lang) opt.classList.add('active');
-      });
-  }
-
-  if(langTrigger && langDropdown) {
-      langTrigger.addEventListener('click', (e) => {
-          e.stopPropagation();
-          langDropdown.classList.toggle('show');
-      });
-
-      document.querySelectorAll('.lang-option').forEach(opt => {
-          opt.addEventListener('click', () => {
-              const selectedLang = opt.getAttribute('data-lang');
-              // Зберігаємо мову
-              localStorage.setItem('barracuda_lang', selectedLang);
-              // ОНОВЛЮЄМО САЙТ
-              location.reload();
-          });
-      });
-
-      document.addEventListener('click', (e) => {
-          if(!langTrigger.contains(e.target) && !langDropdown.contains(e.target)) {
-              langDropdown.classList.remove('show');
-          }
-      });
-
-      const savedLang = localStorage.getItem('barracuda_lang') || 'ua';
-      changeLanguage(savedLang);
-  }
-
+  // --- AUTH UI UPDATE ---
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
-      const currentLang = localStorage.getItem('barracuda_lang') || 'ua';
-      
       if(currentUser) {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           
-          document.getElementById('authBtnText').textContent = translations[currentLang].account;
+          document.getElementById('authBtnText').textContent = 'АКАУНТ';
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
           
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="apply">' + translations[currentLang].apply + '</span>'; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ПОДАТИ ЗАЯВКУ'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
       } else {
           document.body.classList.remove('is-logged-in','is-admin');
-          document.getElementById('authBtnText').textContent = translations[currentLang].login;
+          document.getElementById('authBtnText').textContent = 'ВХІД';
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">' + translations[currentLang].access_terminal + '</span>'; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ДОСТУП ДО ТЕРМІНАЛУ'; 
               applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
           }
       }
@@ -781,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
   
   // ============================================
-  // --- ULTRA CYBER MODAL LOGIC (GLOBAL) ---
+  // --- ULTRA CYBER MODAL LOGIC (FULL CODE) ---
   // ============================================
 
   window.openCyberModal = (title, htmlContent, onConfirm = null) => {
@@ -792,14 +585,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!modal || !titleEl || !contentEl || !footerEl) return;
 
+      // 1. Встановлюємо контент
       titleEl.textContent = title || 'SYSTEM ALERT';
       contentEl.innerHTML = htmlContent || '<p>No data received.</p>';
 
+      // 2. Налаштовуємо кнопки
       if (onConfirm && typeof onConfirm === 'function') {
+          // Режим підтвердження
           footerEl.innerHTML = `
               <button class="btn btn-outline" onclick="closeCyberModal()">СКАСУВАТИ</button>
               <button id="cyberConfirmBtn" class="btn btn-primary">ПІДТВЕРДИТИ</button>
           `;
+          
           setTimeout(() => {
               const confirmBtn = document.getElementById('cyberConfirmBtn');
               if (confirmBtn) {
@@ -810,18 +607,24 @@ document.addEventListener('DOMContentLoaded', () => {
               }
           }, 50);
       } else {
+          // Інформаційний режим
           footerEl.innerHTML = `
               <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>
           `;
       }
+
+      // 3. Відкриваємо вікно
       modal.classList.add('active');
   };
 
   window.closeCyberModal = () => {
       const modal = document.getElementById('cyberModal');
-      if (modal) modal.classList.remove('active');
+      if (modal) {
+          modal.classList.remove('active');
+      }
   };
 
+  // --- Слухачі подій ---
   const cyberModal = document.getElementById('cyberModal');
   if (cyberModal) {
       cyberModal.addEventListener('click', (e) => {

@@ -51,13 +51,20 @@
             <i class="fa-solid fa-user-secret"></i> <span id="authBtnText" data-lang="login">ВХІД</span>
           </button>
 
-          <div class="lang-dropdown">
-            <select id="languageSelect">
-              <option value="ua">🇺🇦 UA</option>
-              <option value="en">🇺🇸 EN</option>
-              <option value="pl">🇵🇱 PL</option>
-              <option value="de">🇩🇪 DE</option>
-            </select>
+          <div class="lang-custom-wrapper">
+            <button id="langTrigger" class="lang-trigger-btn">
+                <span id="currentFlag">🇺🇦</span> <span id="currentLangLabel">UKR</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            
+            <div id="langDropdown" class="lang-dropdown-grid">
+                <div class="lang-option" data-lang="en"><span class="l-flag">🇬🇧</span> ENGLISH</div>
+                <div class="lang-option" data-lang="de"><span class="l-flag">🇩🇪</span> DEUTSCH</div>
+                <div class="lang-option" data-lang="es"><span class="l-flag">🇪🇸</span> ESPAÑOL</div>
+                <div class="lang-option" data-lang="pt"><span class="l-flag">🇧🇷</span> PORTUGUÊS</div>
+                <div class="lang-option" data-lang="pl"><span class="l-flag">🇵🇱</span> POLSKI</div>
+                <div class="lang-option" data-lang="ru"><span class="l-flag">🇷🇺</span> РУССКИЙ</div>
+                <div class="lang-option" data-lang="ua"><span class="l-flag">🇺🇦</span> УКРАЇНСЬКА</div>
+            </div>
           </div>
 
           <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
@@ -167,7 +174,6 @@
 
   <div id="dashboardModal" class="dashboard-modal">
     <button id="closeDashBtn" class="dash-close-global" title="Закрити панель"><i class="fa-solid fa-xmark"></i></button>
-    
     <div class="dashboard-window">
         <div class="dash-mobile-header">
             <div style="display:flex; align-items:center; gap:15px;">
@@ -177,10 +183,7 @@
         </div>
 
         <div class="dash-sidebar" id="dashSidebar">
-            <div class="dash-brand">
-                <i class="fa-solid fa-skull"></i>
-            </div>
-            
+            <div class="dash-brand"><i class="fa-solid fa-skull"></i></div>
             <div class="dash-user-card">
                 <div class="dash-avatar"><i class="fa-solid fa-user-secret"></i></div>
                 <div class="dash-info">
@@ -188,7 +191,6 @@
                     <small id="dashRole">Гість</small>
                 </div>
             </div>
-
             <nav class="dash-nav">
                 <div class="nav-section-label">Особисте</div>
                 <button class="active" onclick="switchDashTab('profile')"><i class="fa-regular fa-id-card"></i> Профіль</button>
@@ -210,14 +212,13 @@
                     <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> Системні логи</button>
                 </div>
             </nav>
-
             <button id="logoutBtn" class="btn btn-logout"><i class="fa-solid fa-power-off"></i> ЗАВЕРШИТИ СЕАНС</button>
         </div>
 
         <div class="dash-sidebar-overlay" id="dashOverlay"></div>
 
         <div class="dash-content">
-            <div id="tab-profile" class="dash-view active">
+             <div id="tab-profile" class="dash-view active">
                 <div class="dash-header">
                     <h2>Особистий кабінет</h2>
                     <div style="font-size:12px; color:#666;">SECURE CONNECTION ESTABLISHED</div>
@@ -263,11 +264,9 @@
             <div id="tab-apply" class="dash-view">
                 <div class="dash-header"><h2>Подача заявки</h2></div>
                 <div id="applyStatusContainer" class="status-box" style="display:none; max-width: 500px; margin: 0 auto;"></div>
-                
                 <div class="compact-square-container">
                     <form id="dashAppForm" class="modern-form glass-panel" style="padding: 30px;">
                         <h3 style="text-align:center; margin-top:0; margin-bottom:20px; letter-spacing:2px; font-size:16px;">АНКЕТА</h3>
-                        
                         <div class="form-row">
                             <div style="display:flex; flex-direction:column;">
                                 <label style="font-size:11px; color:#888; margin-bottom:5px;">1. Ваше реальне ім'я</label>
@@ -278,19 +277,14 @@
                                 <input type="number" id="appAge" required placeholder="Вік">
                             </div>
                         </div>
-
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">3. Середній онлайн (годин)</label>
                         <input type="text" id="appOnline" required placeholder="Наприклад: 5+ годин">
-
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">4. В яких сім'ях бували</label>
                         <input type="text" id="appFamilies" required placeholder="Назви сімей...">
-
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">5. Історія гри на UA/KZ проектах</label>
                         <textarea id="appHistory" required rows="3" placeholder="Де грали, чого досягли..."></textarea>
-                        
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Коментар або посилання (відео/імгур)</label>
                         <textarea id="appNote" required rows="2" placeholder="Вставте посилання або напишіть коментар..."></textarea>
-                        
                         <button type="submit" class="btn btn-primary full-width" style="margin-top:10px;">ВІДПРАВИТИ</button>
                     </form>
                 </div>
@@ -442,7 +436,6 @@
           <div class="corner c-tr"></div>
           <div class="corner c-bl"></div>
           <div class="corner c-br"></div>
-
           <div class="cyber-header">
               <div class="header-line"></div>
               <h3 id="cyberModalTitle">SYSTEM MESSAGE</h3>
@@ -450,9 +443,7 @@
                   <i class="fa-solid fa-xmark"></i>
               </button>
           </div>
-
           <div class="cyber-content" id="cyberModalContent"></div>
-
           <div class="cyber-footer" id="cyberModalFooter">
               <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>
           </div>

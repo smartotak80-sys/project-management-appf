@@ -311,53 +311,56 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
-  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ADMIN SIDE - ULTRA DESIGN) ---
+  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ULTRA GRID DESIGN) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       
-      // Скидаємо Grid стилі, щоб вони йшли списком (як на скріні)
+      // Вмикаємо відображення блоками (щоб картки йшли одна за одною)
       list.style.display = 'block'; 
 
       const apps = await apiFetch('/api/applications');
       
       if(!apps || !apps.length) { 
-          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444;">НЕМАЄ АКТИВНИХ ЗАЯВОК</div>'; 
+          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444; font-family:var(--font-main);">НЕМАЄ АКТИВНИХ ЗАЯВОК</div>'; 
           return; 
       }
       
-      // Генерація HTML у новому стилі
+      // Генеруємо HTML карток
       list.innerHTML = apps.map((a, index) => {
-          // Симулюємо "Shark" іконку, якщо немає зображення
-          const agentIcon = `<i class="fa-solid fa-user-secret" style="color: #8899a6; margin-left:5px;"></i>`; 
+          // Іконки агентів (декор)
+          const agentIcons = `<i class="fa-solid fa-user-secret" style="color: #ccc; margin-left:8px;"></i>`; 
           
           return `
             <div class="app-card-ultra animate-hidden">
                 <span class="app-id-badge">${index + 1}</span>
                 
                 <div class="ultra-row">
-                    <span class="ultra-label ultra-highlight">ВІК: ${a.age}</span>
+                    <span class="ultra-highlight" style="min-width: 60px;">ВІК: ${a.age}</span>
                 </div>
 
                 <div class="ultra-row">
-                    <span class="ultra-label">АГЕНТ:</span> ${a.submittedBy} ${agentIcon}
+                    <span class="ultra-label">АГЕНТ:</span> 
+                    <span style="color:#fff; font-weight:700;">${a.submittedBy}</span> 
+                    ${agentIcons}
                 </div>
 
                 <div class="ultra-row">
-                    <span class="ultra-label">ОЧІК:</span> <span style="color:#666">PENDING...</span>
+                    <span class="ultra-label">ОЧІК:</span> 
+                    <span style="color:#444; text-transform:uppercase;">${a.status}...</span>
                 </div>
                 
-                <div style="height: 20px;"></div> <div class="ultra-row">
+                <div style="height: 15px;"></div> <div class="ultra-row">
                     <span class="ultra-label">ОНЛАЙН:</span> ${a.onlineTime}
                 </div>
                 <div class="ultra-row">
-                    <span class="ultra-label">СІМ'Ї:</span> ${a.prevFamilies || 'Немає'}
+                    <span class="ultra-label">СІМ'Ї:</span> ${a.prevFamilies || 'Не вказано'}
                 </div>
                 <div class="ultra-row">
                     <span class="ultra-label">ВІДКАТ:</span> 
                     <a href="${a.shootingVideo}" target="_blank" class="ultra-link">ВІДКРИТИ ВІДЕО</a>
                 </div>
 
-                <div class="ultra-row" style="margin-top:10px;">
+                <div class="ultra-row" style="margin-top:15px;">
                     <span class="ultra-label">ІСТОРІЯ:</span>
                 </div>
                 <div class="ultra-history">
@@ -369,21 +372,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар...">
                     
                     <div class="ultra-actions">
-                        <button class="btn-icon-square approve" title="Схвалити" onclick="window.updateAppStatus('${a.id}','approved')">
+                        <button class="btn-icon-square approve" title="СХВАЛИТИ" onclick="window.updateAppStatus('${a.id}','approved')">
                             <i class="fa-solid fa-check"></i>
                         </button>
-                        <button class="btn-icon-square reject" title="Відхилити" onclick="window.updateAppStatus('${a.id}','rejected')">
+                        <button class="btn-icon-square reject" title="ВІДХИЛИТИ" onclick="window.updateAppStatus('${a.id}','rejected')">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
-                        <button class="btn-icon-square" title="Видалити" onclick="window.deleteApp('${a.id}')">
+                        <button class="btn-icon-square delete" title="ВИДАЛИТИ" onclick="window.deleteApp('${a.id}')">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
                 </div>
                 ` : `
-                <div style="margin-top:20px; border-top:1px solid #222; padding-top:10px;">
-                    <span class="status-tag ${a.status}" style="font-size:12px;">${a.status.toUpperCase()}</span>
-                    <button class="btn-icon-square" style="float:right;" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
+                <div style="margin-top:20px; border-top:1px solid #222; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span class="status-tag ${a.status}" style="font-size:12px; font-weight:bold; color:${a.status==='approved'?'#2ecc71':'#e74c3c'}">${a.status.toUpperCase()}</span>
+                    <button class="btn-icon-square delete" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
                 </div>
                 `}
             </div>

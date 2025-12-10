@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }, { threshold: 0.1 });
 
-      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .app-card-ultra, .cyber-app-card, .reveal-on-scroll');
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .app-card-ultra, .ticket-card-ultra, .reveal-on-scroll');
       
       elements.forEach((el) => {
           if (!el.classList.contains('reveal-on-scroll')) {
@@ -314,8 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
       if(!list) return;
-      
-      list.style.display = 'block'; // Вимикаємо старий grid, щоб картки йшли одна під одною
+      list.style.display = 'block'; 
       const apps = await apiFetch('/api/applications');
       
       if(!apps || !apps.length) { 
@@ -327,18 +326,15 @@ document.addEventListener('DOMContentLoaded', () => {
           return `
             <div class="app-card-ultra animate-hidden">
                 <span class="app-id-badge">#${index + 1}</span>
-                
                 <div class="ultra-row">
                     <span class="ultra-label">КАНДИДАТ</span>
                     <span class="ultra-highlight">${a.rlName} <span style="font-size:14px; color:#666; font-weight:400;">(${a.age} р.)</span></span>
                 </div>
-
                 <div class="ultra-row">
                     <span class="ultra-label">АГЕНТ</span> 
                     <span style="color:#fff; font-weight:700;">${a.submittedBy}</span> 
                     <i class="fa-solid fa-user-secret" style="color:#444; margin-left:5px;"></i>
                 </div>
-                
                 <div class="ultra-row">
                     <span class="ultra-label">ОНЛАЙН</span> <span style="color:#ccc;">${a.onlineTime}</span>
                 </div>
@@ -349,10 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="ultra-label">ВІДЕО</span> 
                     <a href="${a.shootingVideo}" target="_blank" class="ultra-link"><i class="fa-brands fa-youtube"></i> ВІДКРИТИ ВІДКАТ</a>
                 </div>
-
                 <div style="margin-top:15px; font-size:10px; color:#666; font-weight:800; letter-spacing:1px;">ІСТОРІЯ ГРАВЦЯ:</div>
                 <div class="ultra-history">${a.history}</div>
-
                 ${a.status === 'pending' ? `
                 <div class="ultra-input-group">
                     <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар адміністратора...">
@@ -393,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
       );
   };
 
-  // --- TICKETS ---
+  // --- TICKETS (ULTRA REDESIGN) ---
   document.getElementById('createTicketForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const body = { author: currentUser.username, title: document.getElementById('ticketTitle').value, messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }] };
@@ -403,14 +397,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadMyTickets() {
       const list = document.getElementById('myTicketsList');
+      if(!list) return;
       const all = await apiFetch('/api/tickets');
       const my = all ? all.filter(t => t.author === currentUser.username) : [];
-      list.innerHTML = my.length ? my.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><span>${t.status}</span></div>`).join('') : '<div class="empty">Немає тікетів</div>';
+      
+      if(!my.length) { list.innerHTML = '<div class="empty" style="text-align:center; color:#555;">НЕМАЄ ТІКЕТІВ</div>'; return; }
+
+      // ВИКОРИСТАННЯ ULTRA CARD ДИЗАЙНУ ДЛЯ СПИСКУ
+      list.innerHTML = my.map(t => `
+        <div class="ticket-card-ultra ${t.status}" onclick="window.openTicket('${t.id}')">
+            <div class="ultra-row">
+                <span class="ultra-label">ТЕМА</span>
+                <span style="color:#fff; font-weight:bold;">${t.title}</span>
+            </div>
+            <div class="ultra-row">
+                <span class="ultra-label">СТАТУС</span>
+                <span class="status-tag ${t.status}">${t.status.toUpperCase()}</span>
+            </div>
+            <div style="margin-top:10px; font-size:11px; color:#666;">Натисніть, щоб відкрити чат <i class="fa-solid fa-arrow-right"></i></div>
+        </div>
+      `).join('');
   }
+
   async function loadAllTickets() {
       const list = document.getElementById('allTicketsList');
+      if(!list) return;
+      list.style.display = 'block';
       const all = await apiFetch('/api/tickets');
-      list.innerHTML = all && all.length ? all.map(t => `<div onclick="window.openTicket('${t.id}')" class="ticket-item ${t.status}"><b>${t.title}</b><small>${t.author}</small><span>${t.status}</span></div>`).join('') : '<div class="empty">Немає тікетів</div>';
+      
+      if(!all || !all.length) { list.innerHTML = '<div class="empty" style="text-align:center;">НЕМАЄ ТІКЕТІВ</div>'; return; }
+
+      list.innerHTML = all.map((t, index) => `
+        <div class="ticket-card-ultra animate-hidden ${t.status}">
+            <span class="app-id-badge" style="font-size:32px;">#${index+1}</span>
+            <div class="ultra-row">
+                <span class="ultra-label">АВТОР</span>
+                <span class="ultra-highlight" style="color:#fff; font-size:16px;">${t.author}</span>
+            </div>
+            <div class="ultra-row">
+                <span class="ultra-label">ПРОБЛЕМА</span>
+                <span style="color:#ccc;">${t.title}</span>
+            </div>
+             <div class="ultra-row">
+                <span class="ultra-label">СТАТУС</span>
+                <span class="status-tag ${t.status}">${t.status.toUpperCase()}</span>
+            </div>
+            <div class="ultra-actions" style="margin-top:15px;">
+                <button class="btn-icon-square open-ticket" onclick="window.openTicket('${t.id}')" title="Відкрити чат"><i class="fa-regular fa-comments"></i></button>
+            </div>
+        </div>
+      `).join('');
+      activateScrollAnimations();
   }
 
   let currentTicketId = null;
@@ -424,19 +461,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const chat = document.getElementById('tmMessages');
       chat.innerHTML = t.messages.map(m => `<div class="msg ${m.sender===currentUser.username?'me':'other'} ${m.isStaff?'staff':''}"><div class="sender">${m.sender}</div>${m.text}</div>`).join('');
       chat.scrollTop = chat.scrollHeight;
-      document.getElementById('tmCloseTicketBtn').style.display = t.status === 'closed' ? 'none' : 'block';
+      
+      // Логіка кнопки закриття
+      const closeBtn = document.getElementById('tmCloseTicketBtn');
+      if(t.status === 'closed') {
+          closeBtn.style.display = 'none';
+      } else {
+          closeBtn.style.display = 'inline-block';
+          // Додаємо підтвердження через CYBER MODAL
+          closeBtn.onclick = () => {
+              openCyberModal(
+                  'ЗАКРИТТЯ ЗАПИТУ',
+                  '<p style="color:#ccc;">Ви впевнені, що проблема вирішена і тікет можна закрити?</p>',
+                  async () => {
+                       await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ status: 'closed' }) });
+                       document.getElementById('ticketModal').classList.remove('show');
+                       showToast('ТІКЕТ ЗАКРИТО');
+                       loadMyTickets(); loadAllTickets();
+                  }
+              );
+          };
+      }
   };
+
   document.getElementById('tmSendBtn')?.addEventListener('click', async () => {
       if(!currentTicketId) return;
       const txt = document.getElementById('tmInput').value; if(!txt) return;
       const isStaff = ['admin', 'moderator', 'support'].includes(currentUser.role);
       await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ message: { sender: currentUser.username, text: txt, isStaff } }) });
       document.getElementById('tmInput').value = ''; window.openTicket(currentTicketId);
-  });
-  document.getElementById('tmCloseTicketBtn')?.addEventListener('click', async () => {
-      await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ status: 'closed' }) });
-      document.getElementById('ticketModal').classList.remove('show');
-      loadMyTickets(); loadAllTickets();
   });
 
   // --- AUTH UI UPDATE ---

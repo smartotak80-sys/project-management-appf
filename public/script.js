@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Користувача видалено'); loadUsersAdmin(); }
   });
 
-  // --- APPLICATIONS (Оновлено для нових полів) ---
+  // --- APPLICATIONS ---
   document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const body = {
@@ -260,17 +260,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
 
-  // --- ПЕРЕВІРКА ЗАЯВКИ (USER SIDE) ---
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
       const myApp = apps ? apps.filter(a => a.submittedBy === currentUser.username).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0] : null;
       
       const form = document.getElementById('dashAppForm');
       const statusBox = document.getElementById('applyStatusContainer');
-      const container = document.querySelector('.compact-square-container'); // Для приховування форми
+      const container = document.querySelector('.compact-square-container'); 
 
       if(myApp) {
-          if(container) container.style.display = 'none'; // Ховаємо всю форму
+          if(container) container.style.display = 'none'; 
           if(form) form.style.display = 'none';
           statusBox.style.display = 'block';
           
@@ -311,88 +310,67 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
-  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ULTRA GRID DESIGN) ---
+  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ULTRA REDESIGN) ---
   async function loadApplicationsStaff() {
       const list = document.getElementById('applicationsList');
+      if(!list) return;
       
-      // Вмикаємо відображення блоками (щоб картки йшли одна за одною)
-      list.style.display = 'block'; 
-
+      list.style.display = 'block'; // Вимикаємо старий grid, щоб картки йшли одна під одною
       const apps = await apiFetch('/api/applications');
       
       if(!apps || !apps.length) { 
-          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444; font-family:var(--font-main);">НЕМАЄ АКТИВНИХ ЗАЯВОК</div>'; 
+          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444; font-family:var(--font-main);">DATABASE EMPTY / НЕМАЄ ЗАЯВОК</div>'; 
           return; 
       }
       
-      // Генеруємо HTML карток
       list.innerHTML = apps.map((a, index) => {
-          // Іконки агентів (декор)
-          const agentIcons = `<i class="fa-solid fa-user-secret" style="color: #ccc; margin-left:8px;"></i>`; 
-          
           return `
             <div class="app-card-ultra animate-hidden">
-                <span class="app-id-badge">${index + 1}</span>
+                <span class="app-id-badge">#${index + 1}</span>
                 
                 <div class="ultra-row">
-                    <span class="ultra-highlight" style="min-width: 60px;">ВІК: ${a.age}</span>
+                    <span class="ultra-label">КАНДИДАТ</span>
+                    <span class="ultra-highlight">${a.rlName} <span style="font-size:14px; color:#666; font-weight:400;">(${a.age} р.)</span></span>
                 </div>
 
                 <div class="ultra-row">
-                    <span class="ultra-label">АГЕНТ:</span> 
+                    <span class="ultra-label">АГЕНТ</span> 
                     <span style="color:#fff; font-weight:700;">${a.submittedBy}</span> 
-                    ${agentIcons}
-                </div>
-
-                <div class="ultra-row">
-                    <span class="ultra-label">ОЧІК:</span> 
-                    <span style="color:#444; text-transform:uppercase;">${a.status}...</span>
+                    <i class="fa-solid fa-user-secret" style="color:#444; margin-left:5px;"></i>
                 </div>
                 
-                <div style="height: 15px;"></div> <div class="ultra-row">
-                    <span class="ultra-label">ОНЛАЙН:</span> ${a.onlineTime}
+                <div class="ultra-row">
+                    <span class="ultra-label">ОНЛАЙН</span> <span style="color:#ccc;">${a.onlineTime}</span>
+                </div>
+                 <div class="ultra-row">
+                    <span class="ultra-label">СІМ'Ї</span> <span style="color:#ccc;">${a.prevFamilies}</span>
                 </div>
                 <div class="ultra-row">
-                    <span class="ultra-label">СІМ'Ї:</span> ${a.prevFamilies || 'Не вказано'}
-                </div>
-                <div class="ultra-row">
-                    <span class="ultra-label">ВІДКАТ:</span> 
-                    <a href="${a.shootingVideo}" target="_blank" class="ultra-link">ВІДКРИТИ ВІДЕО</a>
+                    <span class="ultra-label">ВІДЕО</span> 
+                    <a href="${a.shootingVideo}" target="_blank" class="ultra-link"><i class="fa-brands fa-youtube"></i> ВІДКРИТИ ВІДКАТ</a>
                 </div>
 
-                <div class="ultra-row" style="margin-top:15px;">
-                    <span class="ultra-label">ІСТОРІЯ:</span>
-                </div>
-                <div class="ultra-history">
-                    ${a.history}
-                </div>
+                <div style="margin-top:15px; font-size:10px; color:#666; font-weight:800; letter-spacing:1px;">ІСТОРІЯ ГРАВЦЯ:</div>
+                <div class="ultra-history">${a.history}</div>
 
                 ${a.status === 'pending' ? `
                 <div class="ultra-input-group">
-                    <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар...">
-                    
+                    <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар адміністратора...">
                     <div class="ultra-actions">
-                        <button class="btn-icon-square approve" title="СХВАЛИТИ" onclick="window.updateAppStatus('${a.id}','approved')">
-                            <i class="fa-solid fa-check"></i>
-                        </button>
-                        <button class="btn-icon-square reject" title="ВІДХИЛИТИ" onclick="window.updateAppStatus('${a.id}','rejected')">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                        <button class="btn-icon-square delete" title="ВИДАЛИТИ" onclick="window.deleteApp('${a.id}')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                        <button class="btn-icon-square approve" title="СХВАЛИТИ" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i></button>
+                        <button class="btn-icon-square reject" title="ВІДХИЛИТИ" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i></button>
+                        <button class="btn-icon-square delete" title="ВИДАЛИТИ" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
                 ` : `
-                <div style="margin-top:20px; border-top:1px solid #222; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span class="status-tag ${a.status}" style="font-size:12px; font-weight:bold; color:${a.status==='approved'?'#2ecc71':'#e74c3c'}">${a.status.toUpperCase()}</span>
+                <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span class="status-tag" style="color:${a.status==='approved'?'#2ecc71':'#e74c3c'}; border-color:${a.status==='approved'?'#2ecc71':'#e74c3c'};">СТАТУС: ${a.status.toUpperCase()}</span>
                     <button class="btn-icon-square delete" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
                 </div>
                 `}
             </div>
           `;
       }).join('');
-      
       activateScrollAnimations();
   }
   
@@ -403,13 +381,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   window.deleteApp = async (id) => {
-      // ВИКОРИСТАННЯ НОВОГО CYBER MODAL ДЛЯ ПІДТВЕРДЖЕННЯ
       openCyberModal(
-          'ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ',
-          `<p style="color:#aaa;">Ви дійсно бажаєте безповоротно видалити цю заявку з бази даних? Цю дію неможливо скасувати.</p>`,
+          'УВАГА: ВИДАЛЕННЯ ДАНИХ',
+          `<p style="color:#aaa;">Ви ініціювали видалення анкети з бази даних. Ця дія є незворотньою і файл не підлягає відновленню.</p>
+           <p style="color:#fff; font-weight:bold;">Підтвердити знищення даних?</p>`,
           async () => {
               await apiFetch(`/api/applications/${id}`, { method: 'DELETE' });
-              showToast('ЗАЯВКУ ВИДАЛЕНО');
+              showToast('ФАЙЛ ЗНИЩЕНО');
               loadApplicationsStaff();
           }
       );
@@ -574,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
   
   // ============================================
-  // --- ULTRA CYBER MODAL LOGIC (FULL CODE) ---
+  // --- ULTRA CYBER MODAL LOGIC (GLOBAL) ---
   // ============================================
 
   window.openCyberModal = (title, htmlContent, onConfirm = null) => {
@@ -585,18 +563,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!modal || !titleEl || !contentEl || !footerEl) return;
 
-      // 1. Встановлюємо контент
       titleEl.textContent = title || 'SYSTEM ALERT';
       contentEl.innerHTML = htmlContent || '<p>No data received.</p>';
 
-      // 2. Налаштовуємо кнопки
       if (onConfirm && typeof onConfirm === 'function') {
-          // Режим підтвердження
           footerEl.innerHTML = `
               <button class="btn btn-outline" onclick="closeCyberModal()">СКАСУВАТИ</button>
               <button id="cyberConfirmBtn" class="btn btn-primary">ПІДТВЕРДИТИ</button>
           `;
-          
           setTimeout(() => {
               const confirmBtn = document.getElementById('cyberConfirmBtn');
               if (confirmBtn) {
@@ -607,24 +581,18 @@ document.addEventListener('DOMContentLoaded', () => {
               }
           }, 50);
       } else {
-          // Інформаційний режим
           footerEl.innerHTML = `
               <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>
           `;
       }
-
-      // 3. Відкриваємо вікно
       modal.classList.add('active');
   };
 
   window.closeCyberModal = () => {
       const modal = document.getElementById('cyberModal');
-      if (modal) {
-          modal.classList.remove('active');
-      }
+      if (modal) modal.classList.remove('active');
   };
 
-  // --- Слухачі подій ---
   const cyberModal = document.getElementById('cyberModal');
   if (cyberModal) {
       cyberModal.addEventListener('click', (e) => {

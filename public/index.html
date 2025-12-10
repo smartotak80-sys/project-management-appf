@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Barracuda Family</title>
+  <title>Barracuda Family — System</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -31,46 +31,72 @@
           <div class="logo"></div>
           <div class="brand-text">
             <div class="title">Barracuda</div>
-          </div>
+            </div>
         </a>
-        
+        <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
         <nav class="site-nav" id="mainNav">
           <ul>
             <li><a href="#home" data-lang="home">ГОЛОВНА</a></li>
             <li><a href="#about" data-lang="about">ІНФО</a></li>
             <li><a href="#members" data-lang="members">СКЛАД</a></li>
             <li><a href="#gallery" data-lang="media">МЕДІА</a></li>
-            <li><a href="#apply" class="primary-link" data-lang="apply">ВСТУП</a></li>
-          </ul>
-        </nav>
-
-        <div class="header-actions">
-            <button id="openAuthBtn" class="btn btn-login">
+            
+            <li class="auth-li">
+              <button id="openAuthBtn" class="btn btn-login">
                 <i class="fa-solid fa-user-secret"></i> <span id="authBtnText" data-lang="login">ВХІД</span>
-            </button>
+              </button>
+            </li>
 
-            <div class="lang-custom-wrapper">
-                <button id="langTrigger" class="lang-trigger-btn">
-                    <div style="display:flex; align-items:center; gap:8px;">
+            <li class="lang-li" style="margin-left: 15px;">
+                <div class="lang-custom-wrapper">
+                    <button id="langTrigger" class="lang-trigger-btn">
                         <img id="currentFlagImg" src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon" alt="flag">
                         <span id="currentLangLabel">UKR</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 8px; opacity: 0.7;"></i>
-                </button>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 5px; opacity: 0.7;"></i>
+                    </button>
 
-                <div id="langDropdown" class="lang-dropdown-grid">
-                    <div class="lang-option" data-lang="en"><img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon"><span>ENGLISH</span></div>
-                    <div class="lang-option" data-lang="de"><img src="https://flagcdn.com/w40/de.png" class="lang-flag-icon"><span>DEUTSCH</span></div>
-                    <div class="lang-option" data-lang="es"><img src="https://flagcdn.com/w40/es.png" class="lang-flag-icon"><span>ESPAÑOL</span></div>
-                    <div class="lang-option" data-lang="pt"><img src="https://flagcdn.com/w40/br.png" class="lang-flag-icon"><span>PORTUGUÊS</span></div>
-                    <div class="lang-option" data-lang="pl"><img src="https://flagcdn.com/w40/pl.png" class="lang-flag-icon"><span>POLSKI</span></div>
-                    <div class="lang-option" data-lang="ru"><img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon"><span>РУССКИЙ</span></div>
-                    <div class="lang-option active" data-lang="ua" style="grid-column: 1 / -1; background: rgba(255,255,255,0.08);"><img src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon"><span>УКРАЇНСЬКА</span></div>
+                    <div id="langDropdown" class="lang-dropdown-grid">
+                        
+                        <div class="lang-option" data-lang="en">
+                            <img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon">
+                            <span>ENGLISH</span>
+                        </div>
+
+                        <div class="lang-option" data-lang="de">
+                            <img src="https://flagcdn.com/w40/de.png" class="lang-flag-icon">
+                            <span>DEUTSCH</span>
+                        </div>
+
+                        <div class="lang-option" data-lang="es">
+                            <img src="https://flagcdn.com/w40/es.png" class="lang-flag-icon">
+                            <span>ESPAÑOL</span>
+                        </div>
+
+                        <div class="lang-option" data-lang="pt">
+                            <img src="https://flagcdn.com/w40/br.png" class="lang-flag-icon">
+                            <span>PORTUGUÊS</span>
+                        </div>
+
+                        <div class="lang-option" data-lang="pl">
+                            <img src="https://flagcdn.com/w40/pl.png" class="lang-flag-icon">
+                            <span>POLSKI</span>
+                        </div>
+
+                        <div class="lang-option" data-lang="ru">
+                            <img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon">
+                            <span>РУССКИЙ</span>
+                        </div>
+
+                        <div class="lang-option active" data-lang="ua" style="grid-column: 1 / -1; background: rgba(255,255,255,0.08);">
+                            <img src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon">
+                            <span>УКРАЇНСЬКА</span>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
-            
-            <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
-        </div>
+            </li>
+          </ul>
+        </nav>
       </div>
     </header>
 
@@ -95,6 +121,7 @@
           <div class="section-header">
               <h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2>
           </div>
+          
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div>
@@ -154,6 +181,7 @@
         <div class="container center-text">
           <h2 class="neon-title" data-lang="join_system_title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
           <p id="applyText" class="apply-desc" data-lang="join_system_desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
+          
           <div class="action-buttons">
               <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large">
                   <i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">ДОСТУП ДО ТЕРМІНАЛУ</span>
@@ -173,6 +201,7 @@
 
   <div id="dashboardModal" class="dashboard-modal">
     <button id="closeDashBtn" class="dash-close-global" title="Закрити панель"><i class="fa-solid fa-xmark"></i></button>
+    
     <div class="dashboard-window">
         <div class="dash-mobile-header">
             <div style="display:flex; align-items:center; gap:15px;">
@@ -180,10 +209,12 @@
                 <span class="dash-mobile-title" style="font-weight:bold; letter-spacing:1px;">PANEL v3.0</span>
             </div>
         </div>
+
         <div class="dash-sidebar" id="dashSidebar">
             <div class="dash-brand">
                 <i class="fa-solid fa-skull"></i>
             </div>
+            
             <div class="dash-user-card">
                 <div class="dash-avatar"><i class="fa-solid fa-user-secret"></i></div>
                 <div class="dash-info">
@@ -191,17 +222,20 @@
                     <small id="dashRole">Гість</small>
                 </div>
             </div>
+
             <nav class="dash-nav">
                 <div class="nav-section-label">Особисте</div>
                 <button class="active" onclick="switchDashTab('profile')"><i class="fa-regular fa-id-card"></i> Профіль</button>
                 <button onclick="switchDashTab('my-member')"><i class="fa-solid fa-user-secret"></i> Мій Персонаж</button>
                 <button onclick="switchDashTab('apply')"><i class="fa-solid fa-paper-plane"></i> Заявка в сім'ю</button>
                 <button onclick="switchDashTab('support-user')"><i class="fa-solid fa-headset"></i> Техпідтримка</button>
+                
                 <div class="staff-only-nav" style="display:none;">
                     <div class="nav-section-label">Персонал</div>
                     <button id="navAppsBtn" onclick="switchDashTab('applications')"><i class="fa-solid fa-folder-tree"></i> Розгляд заявок</button>
                     <button id="navTicketsBtn" onclick="switchDashTab('support-staff')"><i class="fa-solid fa-clipboard-list"></i> Всі тікети</button>
                 </div>
+                
                 <div class="admin-only-nav" style="display:none;">
                     <div class="nav-section-label">Адміністратор</div>
                     <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> Керування ролями</button>
@@ -210,10 +244,14 @@
                     <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> Системні логи</button>
                 </div>
             </nav>
+
             <button id="logoutBtn" class="btn btn-logout"><i class="fa-solid fa-power-off"></i> ЗАВЕРШИТИ СЕАНС</button>
         </div>
+
         <div class="dash-sidebar-overlay" id="dashOverlay"></div>
+
         <div class="dash-content">
+            
             <div id="tab-profile" class="dash-view active">
                 <div class="dash-header">
                     <h2>Особистий кабінет</h2>
@@ -240,6 +278,7 @@
                     <p style="color:#aaa;">Всі системи працюють у штатному режимі. Доступ до функцій дозволено згідно з вашим рангом.</p>
                 </div>
             </div>
+
             <div id="tab-my-member" class="dash-view">
                 <div class="dash-header"><h2>Налаштування персонажа</h2></div>
                 <div id="myMemberContainer" class="glass-panel"></div>
@@ -255,12 +294,15 @@
                     </div>
                 </div>
             </div>
+
             <div id="tab-apply" class="dash-view">
                 <div class="dash-header"><h2>Подача заявки</h2></div>
                 <div id="applyStatusContainer" class="status-box" style="display:none; max-width: 500px; margin: 0 auto;"></div>
+                
                 <div class="compact-square-container">
                     <form id="dashAppForm" class="modern-form glass-panel" style="padding: 30px;">
                         <h3 style="text-align:center; margin-top:0; margin-bottom:20px; letter-spacing:2px; font-size:16px;">АНКЕТА</h3>
+                        
                         <div class="form-row">
                             <div style="display:flex; flex-direction:column;">
                                 <label style="font-size:11px; color:#888; margin-bottom:5px;">1. Ваше реальне ім'я</label>
@@ -271,18 +313,24 @@
                                 <input type="number" id="appAge" required placeholder="Вік">
                             </div>
                         </div>
+
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">3. Середній онлайн (годин)</label>
                         <input type="text" id="appOnline" required placeholder="Наприклад: 5+ годин">
+
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">4. В яких сім'ях бували</label>
                         <input type="text" id="appFamilies" required placeholder="Назви сімей...">
+
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">5. Історія гри на UA/KZ проектах</label>
                         <textarea id="appHistory" required rows="3" placeholder="Де грали, чого досягли..."></textarea>
-                        <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Посилання на відкат стрільби / Коментар</label>
-                        <input type="text" id="appNote" required placeholder="YouTube link або ваш коментар">
+                        
+                        <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Посилання на відкат стрільби</label>
+                        <input type="text" id="appVideo" required placeholder="YouTube / Imgur link">
+                        
                         <button type="submit" class="btn btn-primary full-width" style="margin-top:10px;">ВІДПРАВИТИ</button>
                     </form>
                 </div>
             </div>
+
             <div id="tab-support-user" class="dash-view">
                 <div class="dash-header"><h2>Технічна підтримка</h2></div>
                 <div class="form-row">
@@ -300,18 +348,22 @@
                     </div>
                 </div>
             </div>
+
             <div id="tab-applications" class="dash-view">
                 <div class="dash-header"><h2>Вхідні заявки (Staff)</h2></div>
                 <div id="applicationsList" class="grid-list" style="display:grid; gap:15px;"></div>
             </div>
+
             <div id="tab-support-staff" class="dash-view">
                 <div class="dash-header"><h2>Управління тікетами</h2></div>
                 <div id="allTicketsList" class="grid-list" style="display:grid; gap:10px;"></div>
             </div>
+
             <div id="tab-users" class="dash-view">
                 <div class="dash-header"><h2>Користувачі та Ролі</h2></div>
                 <div id="adminUsersList" class="compact-list"></div>
             </div>
+
             <div id="tab-accounts-data" class="dash-view">
                 <div class="dash-header">
                     <h2 style="color:#ff6b6b;"><i class="fa-solid fa-database"></i> USERS DATABASE</h2>
@@ -332,6 +384,7 @@
                     </table>
                 </div>
             </div>
+
             <div id="tab-admin-members" class="dash-view">
                 <div class="dash-header">
                     <h2>Редагування складу</h2>
@@ -353,6 +406,7 @@
                 </div>
                 <div id="adminMembersList" class="compact-list" style="margin-top:20px;"></div>
             </div>
+
             <div id="tab-logs" class="dash-view">
                 <div class="dash-header">
                     <h2>Системні логи</h2>
@@ -432,7 +486,8 @@
               </button>
           </div>
 
-          <div class="cyber-content" id="cyberModalContent"></div>
+          <div class="cyber-content" id="cyberModalContent">
+              </div>
 
           <div class="cyber-footer" id="cyberModalFooter">
               <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>

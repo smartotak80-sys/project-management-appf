@@ -137,7 +137,7 @@ app.post('/api/applications', async (req, res) => { try { await new Application(
 app.get('/api/applications', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });
 app.get('/api/applications/my', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });
 app.put('/api/applications/:id', async (req, res) => { try { const { status, adminComment } = req.body; await Application.findByIdAndUpdate(req.params.id, { status, adminComment }); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
-app.delete('/api/applications/:id', async (req, res) => { try { await Application.findByIdAndDelete(req.params.id); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } }); // --- НОВИЙ МАРШРУТ ---
+app.delete('/api/applications/:id', async (req, res) => { try { await Application.findByIdAndDelete(req.params.id); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 
 app.post('/api/tickets', async (req, res) => { try { await new Ticket(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 app.get('/api/tickets', async (req, res) => { const tickets = await Ticket.find().sort({ createdAt: -1 }); res.json(tickets.map(t => ({ ...t._doc, id: t._id }))); });

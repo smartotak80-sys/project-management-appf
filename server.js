@@ -50,8 +50,14 @@ const News = mongoose.model('News', NewsSchema);
 const GallerySchema = new mongoose.Schema({ url: String, createdAt: { type: Date, default: Date.now } });
 const Gallery = mongoose.model('Gallery', GallerySchema);
 
+// --- ОНОВЛЕНА СХЕМА ЗАЯВОК (6 пунктів) ---
 const ApplicationSchema = new mongoose.Schema({
-    rlNameAge: String, onlineTime: String, history: String, shootingVideo: String,
+    rlName: String,       // 1. Ім'я
+    age: String,          // 2. Вік
+    onlineTime: String,   // 3. Онлайн
+    prevFamilies: String, // 4. Сім'ї
+    history: String,      // 5. Історія
+    shootingVideo: String,// 6. Відкат
     status: { type: String, default: 'pending' }, 
     submittedBy: String, 
     adminComment: String,

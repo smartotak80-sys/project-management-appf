@@ -73,7 +73,6 @@
               <h2><span class="highlight">ХТО</span> МИ Є</h2>
           </div>
           
-         
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div>
@@ -421,6 +420,30 @@
   <div id="lightbox" class="custom-modal lightbox">
     <span id="lightboxCloseBtn" class="close-modal">&times;</span>
     <img id="lightboxImage" src="">
+  </div>
+
+  <div id="cyberModal" class="cyber-modal-overlay">
+      <div class="cyber-modal-window">
+          <div class="corner c-tl"></div>
+          <div class="corner c-tr"></div>
+          <div class="corner c-bl"></div>
+          <div class="corner c-br"></div>
+
+          <div class="cyber-header">
+              <div class="header-line"></div>
+              <h3 id="cyberModalTitle">SYSTEM MESSAGE</h3>
+              <button class="cyber-close-btn" onclick="closeCyberModal()" title="Закрити">
+                  <i class="fa-solid fa-xmark"></i>
+              </button>
+          </div>
+
+          <div class="cyber-content" id="cyberModalContent">
+              </div>
+
+          <div class="cyber-footer" id="cyberModalFooter">
+              <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>
+          </div>
+      </div>
   </div>
 
   <script src="script.js"></script>

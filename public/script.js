@@ -310,21 +310,37 @@ document.addEventListener('DOMContentLoaded', () => {
                <div class="app-item"><label>ВІДЕО</label><div><a href="${a.shootingVideo}" target="_blank" class="app-video-link">ПЕРЕГЛЯД</a></div></div>
                <div class="app-item full"><label>ІСТОРІЯ</label><div>${a.history}</div></div>
            </div>
-           ${a.status==='pending' ? `
            <div class="app-controls">
+                ${a.status==='pending' ? `
                 <input type="text" id="reason-${a.id}" placeholder="Коментар...">
                 <div class="app-btns">
                     <button class="btn btn-primary" onclick="window.updateAppStatus('${a.id}','approved')">СХВАЛИТИ</button>
                     <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.updateAppStatus('${a.id}','rejected')">ВІДХИЛИТИ</button>
-                </div>
-           </div>` : ''}
+                    <button class="btn btn-outline" style="color:#aaa; border-color:#555;" onclick="window.deleteApp('${a.id}')" title="Видалити назавжди"><i class="fa-solid fa-trash"></i></button>
+                </div>` 
+                : 
+                `<div class="app-btns">
+                    <button class="btn btn-outline full-width" style="color:#aaa; border-color:#555;" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i> ВИДАЛИТИ ЗАЯВКУ</button>
+                </div>`}
+           </div>
         </div>`).join('');
       activateScrollAnimations();
   }
+  
   window.updateAppStatus = async (id, status) => {
       const input = document.getElementById(`reason-${id}`);
       await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: input ? input.value : ''})});
       showToast('ОНОВЛЕНО'); loadApplicationsStaff();
+  };
+  
+  window.deleteApp = async (id) => {
+      customConfirm('ВИДАЛИТИ ЗАЯВКУ НАЗАВЖДИ?', async (r) => {
+          if(r) {
+              await apiFetch(`/api/applications/${id}`, { method: 'DELETE' });
+              showToast('ЗАЯВКУ ВИДАЛЕНО');
+              loadApplicationsStaff();
+          }
+      });
   };
 
   // --- TICKETS ---
@@ -387,7 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
-              // --- ТУТ ЗМІНЕНО ---
               applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ПОДАТИ ЗАЯВКУ'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
@@ -397,7 +412,6 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
           if(applyBtn) { 
-              // --- ТУТ ЗМІНЕНО ---
               applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ДОСТУП ДО ТЕРМІНАЛУ'; 
               applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
           }

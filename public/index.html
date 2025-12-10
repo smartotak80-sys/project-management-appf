@@ -33,7 +33,9 @@
             <div class="title">Barracuda</div>
             </div>
         </a>
+        
         <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
+        
         <nav class="site-nav" id="mainNav">
           <ul>
             <li><a href="#home" data-lang="home">ГОЛОВНА</a></li>
@@ -48,12 +50,14 @@
               </button>
             </li>
 
-            <li class="lang-li" style="margin-left: 15px;">
+            <li class="lang-li">
                 <div class="lang-custom-wrapper">
                     <button id="langTrigger" class="lang-trigger-btn">
-                        <img id="currentFlagImg" src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon" alt="flag">
-                        <span id="currentLangLabel">UKR</span>
-                        <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 5px; opacity: 0.7;"></i>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <img id="currentFlagImg" src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon" alt="flag">
+                            <span id="currentLangLabel">UKR</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 8px; opacity: 0.7;"></i>
                     </button>
 
                     <div id="langDropdown" class="lang-dropdown-grid">
@@ -114,7 +118,6 @@
           <div class="section-header">
               <h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2>
           </div>
-          
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div>
@@ -174,7 +177,6 @@
         <div class="container center-text">
           <h2 class="neon-title" data-lang="join_system_title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
           <p id="applyText" class="apply-desc" data-lang="join_system_desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
-          
           <div class="action-buttons">
               <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large">
                   <i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">ДОСТУП ДО ТЕРМІНАЛУ</span>
@@ -276,11 +278,9 @@
                     </div>
                 </div>
             </div>
-
             <div id="tab-apply" class="dash-view">
                 <div class="dash-header"><h2>Подача заявки</h2></div>
                 <div id="applyStatusContainer" class="status-box" style="display:none; max-width: 500px; margin: 0 auto;"></div>
-                
                 <div class="compact-square-container">
                     <form id="dashAppForm" class="modern-form glass-panel" style="padding: 30px;">
                         <h3 style="text-align:center; margin-top:0; margin-bottom:20px; letter-spacing:2px; font-size:16px;">АНКЕТА</h3>
@@ -300,13 +300,12 @@
                         <input type="text" id="appFamilies" required placeholder="Назви сімей...">
                         <label style="font-size:11px; color:#888; margin-bottom:5px;">5. Історія гри на UA/KZ проектах</label>
                         <textarea id="appHistory" required rows="3" placeholder="Де грали, чого досягли..."></textarea>
-                        <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Посилання на відкат стрільби / Коментар</label>
-                        <input type="text" id="appNote" required placeholder="YouTube link або ваш коментар">
+                        <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Посилання на відкат стрільби</label>
+                        <input type="text" id="appNote" required placeholder="YouTube / Imgur link">
                         <button type="submit" class="btn btn-primary full-width" style="margin-top:10px;">ВІДПРАВИТИ</button>
                     </form>
                 </div>
             </div>
-
             <div id="tab-support-user" class="dash-view">
                 <div class="dash-header"><h2>Технічна підтримка</h2></div>
                 <div class="form-row">
@@ -324,22 +323,18 @@
                     </div>
                 </div>
             </div>
-
             <div id="tab-applications" class="dash-view">
                 <div class="dash-header"><h2>Вхідні заявки (Staff)</h2></div>
                 <div id="applicationsList" class="grid-list" style="display:grid; gap:15px;"></div>
             </div>
-
             <div id="tab-support-staff" class="dash-view">
                 <div class="dash-header"><h2>Управління тікетами</h2></div>
                 <div id="allTicketsList" class="grid-list" style="display:grid; gap:10px;"></div>
             </div>
-
             <div id="tab-users" class="dash-view">
                 <div class="dash-header"><h2>Користувачі та Ролі</h2></div>
                 <div id="adminUsersList" class="compact-list"></div>
             </div>
-
             <div id="tab-accounts-data" class="dash-view">
                 <div class="dash-header">
                     <h2 style="color:#ff6b6b;"><i class="fa-solid fa-database"></i> USERS DATABASE</h2>
@@ -360,7 +355,6 @@
                     </table>
                 </div>
             </div>
-
             <div id="tab-admin-members" class="dash-view">
                 <div class="dash-header">
                     <h2>Редагування складу</h2>
@@ -382,7 +376,6 @@
                 </div>
                 <div id="adminMembersList" class="compact-list" style="margin-top:20px;"></div>
             </div>
-
             <div id="tab-logs" class="dash-view">
                 <div class="dash-header">
                     <h2>Системні логи</h2>
@@ -462,8 +455,7 @@
               </button>
           </div>
 
-          <div class="cyber-content" id="cyberModalContent">
-              </div>
+          <div class="cyber-content" id="cyberModalContent"></div>
 
           <div class="cyber-footer" id="cyberModalFooter">
               <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>

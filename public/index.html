@@ -27,27 +27,42 @@
   <div class="site">
     <header class="site-header">
       <div class="container header-inner">
+        
         <a class="brand" href="#home">
           <div class="logo"></div>
           <div class="brand-text">
             <div class="title">Barracuda</div>
-            </div>
+          </div>
         </a>
-        <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
+
         <nav class="site-nav" id="mainNav">
           <ul>
-            <li><a href="#home">ГОЛОВНА</a></li>
-            <li><a href="#about">ІНФО</a></li>
-            <li><a href="#members">СКЛАД</a></li>
-            <li><a href="#gallery">МЕДІА</a></li>
-            <li><a href="#apply" class="primary-link">ВСТУП</a></li>
-            <li class="auth-li">
-              <button id="openAuthBtn" class="btn btn-login">
-                <i class="fa-solid fa-user-secret"></i> <span id="authBtnText">ВХІД</span>
-              </button>
-            </li>
+            <li><a href="#home" data-lang="home">ГОЛОВНА</a></li>
+            <li><a href="#about" data-lang="about">ІНФО</a></li>
+            <li><a href="#members" data-lang="members">СКЛАД</a></li>
+            <li><a href="#gallery" data-lang="media">МЕДІА</a></li>
+            <li><a href="#apply" class="primary-link" data-lang="apply">ВСТУП</a></li>
           </ul>
         </nav>
+
+        <div class="header-actions">
+          
+          <button id="openAuthBtn" class="btn btn-login">
+            <i class="fa-solid fa-user-secret"></i> <span id="authBtnText" data-lang="login">ВХІД</span>
+          </button>
+
+          <div class="lang-dropdown">
+            <select id="languageSelect">
+              <option value="ua">🇺🇦 UA</option>
+              <option value="en">🇺🇸 EN</option>
+              <option value="pl">🇵🇱 PL</option>
+              <option value="de">🇩🇪 DE</option>
+            </select>
+          </div>
+
+          <button id="navToggle" class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
+        </div>
+
       </div>
     </header>
 
@@ -60,8 +75,8 @@
                 </div>
                 <p class="lead"></p>
                 <div class="hero-buttons">
-                    <a href="#apply" class="btn btn-primary btn-large glow-effect">ПРИЄДНАТИСЬ</a>
-                    <a href="#members" class="btn btn-outline btn-large">СКЛАД</a>
+                    <a href="#apply" class="btn btn-primary btn-large glow-effect" data-lang="hero_btn">ПРИЄДНАТИСЬ</a>
+                    <a href="#members" class="btn btn-outline btn-large" data-lang="hero_members">СКЛАД</a>
                 </div>
             </div>
         </div>
@@ -70,24 +85,24 @@
       <section id="about" class="section">
         <div class="container">
           <div class="section-header">
-              <h2><span class="highlight">ХТО</span> МИ Є</h2>
+              <h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2>
           </div>
           
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div>
-                <h3>МІСІЯ</h3>
-                <p>Створення унікального RP досвіду та домінування в сферах впливу.</p>
+                <h3 data-lang="card_mission">МІСІЯ</h3>
+                <p data-lang="card_mission_desc">Створення унікального RP досвіду та домінування в сферах впливу.</p>
             </article>
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                <h3>ЗАХИСТ</h3>
-                <p>Ми стоїмо один за одного. Сім'я — це непорушна фортеця.</p>
+                <h3 data-lang="card_protection">ЗАХИСТ</h3>
+                <p data-lang="card_protection_desc">Ми стоїмо один за одного. Сім'я — це непорушна фортеця.</p>
             </article>
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-sack-dollar"></i></div>
-                <h3>РЕСУРСИ</h3>
-                <p>Забезпечення кожного учасника усім необхідним для комфортної гри.</p>
+                <h3 data-lang="card_resources">РЕСУРСИ</h3>
+                <p data-lang="card_resources_desc">Забезпечення кожного учасника усім необхідним для комфортної гри.</p>
             </article>
           </div>
         </div>
@@ -95,7 +110,7 @@
 
       <section id="members" class="section">
         <div class="container">
-          <div class="section-header"><h2><span class="highlight">НАШ</span> СКЛАД</h2></div>
+          <div class="section-header"><h2><span class="highlight" data-lang="members_title_span">НАШ</span> <span data-lang="members_title">СКЛАД</span></h2></div>
           <div class="members-controls glass">
             <i class="fa-solid fa-search"></i>
             <input id="memberSearch" placeholder="Пошук агента...">
@@ -106,7 +121,7 @@
 
       <section id="events" class="section">
         <div class="container">
-          <div class="section-header"><h2>СТРІЧКА <span class="highlight">НОВИН</span></h2></div>
+          <div class="section-header"><h2><span data-lang="news_title">СТРІЧКА</span> <span class="highlight" data-lang="news_title_span">НОВИН</span></h2></div>
           <div class="events-controls admin-only glass">
             <input id="newsTitle" placeholder="Заголовок">
             <input id="newsDate" type="date">
@@ -119,7 +134,7 @@
 
       <section id="gallery" class="section">
         <div class="container">
-          <div class="section-header"><h2>ГАЛЕРЕЯ</h2></div>
+          <div class="section-header"><h2 data-lang="gallery_title">ГАЛЕРЕЯ</h2></div>
           <div class="gallery-controls admin-only glass">
             <input id="galleryUrl" placeholder="Посилання на фото (URL)">
             <button id="addGalleryBtn" class="btn btn-primary">ДОДАТИ ФОТО</button>
@@ -130,12 +145,12 @@
 
       <section id="apply" class="section footer-section">
         <div class="container center-text">
-          <h2 class="neon-title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
-          <p id="applyText" class="apply-desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
+          <h2 class="neon-title" data-lang="join_system_title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
+          <p id="applyText" class="apply-desc" data-lang="join_system_desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
           
           <div class="action-buttons">
               <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large">
-                  <i class="fa-solid fa-file-signature"></i> ДОСТУП ДО ТЕРМІНАЛУ
+                  <i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">ДОСТУП ДО ТЕРМІНАЛУ</span>
               </button>
               <a href="https://discord.gg/CxYnyKeb" target="_blank" class="btn btn-discord btn-large">
                   <i class="fa-brands fa-discord"></i> DISCORD
@@ -146,7 +161,7 @@
     </main>
     
     <footer>
-      <div class="container"><p>© <span id="year"></span> BARRACUDA FAMILY. STAKE RP.</p></div>
+      <div class="container"><p>© <span id="year"></span> <span data-lang="footer">BARRACUDA FAMILY. STAKE RP.</span></p></div>
     </footer>
   </div>
 
@@ -202,7 +217,6 @@
         <div class="dash-sidebar-overlay" id="dashOverlay"></div>
 
         <div class="dash-content">
-            
             <div id="tab-profile" class="dash-view active">
                 <div class="dash-header">
                     <h2>Особистий кабінет</h2>
@@ -437,8 +451,7 @@
               </button>
           </div>
 
-          <div class="cyber-content" id="cyberModalContent">
-              </div>
+          <div class="cyber-content" id="cyberModalContent"></div>
 
           <div class="cyber-footer" id="cyberModalFooter">
               <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>

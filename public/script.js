@@ -512,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "ГАЛЕРЕЯ",
         join_system_title: "ПРИЄДНУЙСЯ ДО СИСТЕМИ", join_system_desc: "Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.",
         access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ",
-        footer: "BARRACUDA FAMILY. STAKE RP."
+        footer: "BARRACUDA FAMILY. RP."
     },
     ru: {
         flag: "🇷🇺", label: "RUS",
@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "ГАЛЕРЕЯ",
         join_system_title: "ПРИСОЕДИНЯЙСЯ К СИСТЕМЕ", join_system_desc: "Авторизуйтесь, чтобы получить доступ к закрытому разделу подачи заявок.",
         access_terminal: "ДОСТУП К ТЕРМИНАЛУ",
-        footer: "BARRACUDA FAMILY. STAKE RP."
+        footer: "BARRACUDA FAMILY. RP."
     },
     en: {
         flag: "🇬🇧", label: "ENG",
@@ -542,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALLERY",
         join_system_title: "JOIN THE SYSTEM", join_system_desc: "Authorize to access the restricted application section.",
         access_terminal: "ACCESS TERMINAL",
-        footer: "BARRACUDA FAMILY. STAKE RP."
+        footer: "BARRACUDA FAMILY. RP."
     },
     pl: {
         flag: "🇵🇱", label: "POL",
@@ -557,7 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERIA",
         join_system_title: "DOŁĄCZ DO SYSTEMU", join_system_desc: "Zaloguj się, aby uzyskać dostęp do sekcji rekrutacji.",
         access_terminal: "DOSTĘP DO TERMINALA",
-        footer: "RODZINA BARRACUDA. STAKE RP."
+        footer: "RODZINA BARRACUDA. RP."
     },
     de: {
         flag: "🇩🇪", label: "DEU",
@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERIE",
         join_system_title: "TRITT DEM SYSTEM BEI", join_system_desc: "Melden Sie sich an, um Zugang zum Bewerbungsbereich zu erhalten.",
         access_terminal: "TERMINAL ZUGRIFF",
-        footer: "BARRACUDA FAMILIE. STAKE RP."
+        footer: "BARRACUDA FAMILIE. RP."
     },
     es: {
         flag: "🇪🇸", label: "ESP",
@@ -587,7 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERÍA",
         join_system_title: "ÚNETE AL SISTEMA", join_system_desc: "Inicia sesión para acceder a la sección de solicitudes restringidas.",
         access_terminal: "ACCESO TERMINAL",
-        footer: "FAMILIA BARRACUDA. STAKE RP."
+        footer: "FAMILIA BARRACUDA. RP."
     },
     pt: {
         flag: "🇧🇷", label: "POR",
@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERIA",
         join_system_title: "JUNTE-SE AO SISTEMA", join_system_desc: "Faça login para acessar a seção de aplicativos restrita.",
         access_terminal: "ACESSO TERMINAL",
-        footer: "FAMÍLIA BARRACUDA. STAKE RP."
+        footer: "FAMÍLIA BARRACUDA. RP."
     }
   };
 

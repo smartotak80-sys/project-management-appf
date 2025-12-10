@@ -648,8 +648,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.lang-option').forEach(opt => {
           opt.addEventListener('click', () => {
               const selectedLang = opt.getAttribute('data-lang');
-              changeLanguage(selectedLang);
-              langDropdown.classList.remove('show');
+              // Зберігаємо мову
+              localStorage.setItem('barracuda_lang', selectedLang);
+              // ОНОВЛЮЄМО САЙТ
+              location.reload();
           });
       });
 

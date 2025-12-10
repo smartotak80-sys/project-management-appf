@@ -500,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const translations = {
     ua: {
-        flag: "🇺🇦", label: "UKR",
+        flag: "ua", label: "UKR",
         home: "ГОЛОВНА", about: "ІНФО", members: "СКЛАД", media: "МЕДІА", apply: "ВСТУП",
         login: "ВХІД", account: "АКАУНТ", hero_btn: "ПРИЄДНАТИСЬ", hero_members: "СКЛАД",
         about_title_span: "ХТО", about_title: "МИ Є",
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
         footer: "BARRACUDA FAMILY. RP."
     },
     ru: {
-        flag: "🇷🇺", label: "RUS",
+        flag: "ru", label: "RUS",
         home: "ГЛАВНАЯ", about: "ИНФО", members: "СОСТАВ", media: "МЕДИА", apply: "ВСТУПИТЬ",
         login: "ВХОД", account: "АККАУНТ", hero_btn: "ПРИСОЕДИНИТЬСЯ", hero_members: "СОСТАВ",
         about_title_span: "КТО", about_title: "МЫ ЕСТЬ",
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
         footer: "BARRACUDA FAMILY. RP."
     },
     en: {
-        flag: "🇬🇧", label: "ENG",
+        flag: "gb", label: "ENG",
         home: "HOME", about: "INFO", members: "ROSTER", media: "MEDIA", apply: "APPLY",
         login: "LOGIN", account: "ACCOUNT", hero_btn: "JOIN US", hero_members: "ROSTER",
         about_title_span: "WHO", about_title: "WE ARE",
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
         footer: "BARRACUDA FAMILY. RP."
     },
     pl: {
-        flag: "🇵🇱", label: "POL",
+        flag: "pl", label: "POL",
         home: "GŁÓWNA", about: "INFO", members: "EKIPA", media: "MEDIA", apply: "REKRUTACJA",
         login: "WEJŚCIE", account: "KONTO", hero_btn: "DOŁĄCZ", hero_members: "EKIPA",
         about_title_span: "KIM", about_title: "JESTEŚMY",
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
         footer: "RODZINA BARRACUDA. RP."
     },
     de: {
-        flag: "🇩🇪", label: "DEU",
+        flag: "de", label: "DEU",
         home: "HOME", about: "INFO", members: "MITGLIEDER", media: "MEDIEN", apply: "BEWERBEN",
         login: "LOGIN", account: "KONTO", hero_btn: "BEITRETEN", hero_members: "MITGLIEDER",
         about_title_span: "WER", about_title: "WIR SIND",
@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
         footer: "BARRACUDA FAMILIE. RP."
     },
     es: {
-        flag: "🇪🇸", label: "ESP",
+        flag: "es", label: "ESP",
         home: "INICIO", about: "INFO", members: "MIEMBROS", media: "MEDIOS", apply: "APLICAR",
         login: "ACCESO", account: "CUENTA", hero_btn: "ÚNETE", hero_members: "MIEMBROS",
         about_title_span: "QUIÉNES", about_title: "SOMOS",
@@ -590,7 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
         footer: "FAMILIA BARRACUDA. RP."
     },
     pt: {
-        flag: "🇧🇷", label: "POR",
+        flag: "br", label: "POR",
         home: "INÍCIO", about: "INFO", members: "MEMBROS", media: "MÍDIA", apply: "APLICAR",
         login: "LOGIN", account: "CONTA", hero_btn: "JUNTAR-SE", hero_members: "MEMBROS",
         about_title_span: "QUEM", about_title: "SOMOS",
@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const langTrigger = document.getElementById('langTrigger');
   const langDropdown = document.getElementById('langDropdown');
-  const currentFlag = document.getElementById('currentFlag');
+  const currentFlagImg = document.getElementById('currentFlagImg');
   const currentLangLabel = document.getElementById('currentLangLabel');
 
   function changeLanguage(lang) {
@@ -627,7 +627,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       if(translations[lang]) {
-        currentFlag.textContent = translations[lang].flag;
+        // Оновлюємо прапорець на кнопці (використовуючи код країни з перекладів)
+        const flagCode = translations[lang].flag; 
+        currentFlagImg.src = `https://flagcdn.com/w40/${flagCode}.png`;
         currentLangLabel.textContent = translations[lang].label;
       }
 

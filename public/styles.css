@@ -4,6 +4,7 @@
   --accent: #ff2a2a;       
   --accent-dim: rgba(255, 42, 42, 0.1);
   --accent-glow: rgba(255, 42, 42, 0.5);
+  --accent-blue: #3498db; /* Колір для тікетів */
   --text-main: #ffffff;
   --text-muted: #94a3b8;
   --glass-border: rgba(255, 255, 255, 0.1);
@@ -174,7 +175,7 @@ main { flex: 1; }
 /* --- CARDS & INTERACTIVITY --- */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
 
-.card, .member, .app-card {
+.card, .member {
     background: var(--bg-panel); padding: 30px; border-radius: 16px; 
     border: 1px solid var(--glass-border); position: relative; overflow: hidden;
     backdrop-filter: blur(10px); z-index: 1;
@@ -374,6 +375,7 @@ input:focus, textarea:focus, select:focus {
 .msg .sender { font-size: 10px; font-weight: 800; margin-bottom: 4px; opacity: 0.7; }
 .msg.me { background: var(--accent); color: #fff; margin-left: auto; border-bottom-right-radius: 2px; }
 .msg.other { background: #222; color: #ddd; margin-right: auto; border-bottom-left-radius: 2px; }
+.msg.staff { border: 1px solid #e67e22; background: rgba(230, 126, 34, 0.1); color: #e67e22; }
 .terminal-view { background: #000; font-family: 'Courier New', monospace; padding: 20px; border-radius: 8px; border: 1px solid #333; height: 400px; overflow-y: auto; color: #2ecc71; font-size: 13px; }
 
 /* Auth Modal */
@@ -395,6 +397,19 @@ input:focus, textarea:focus, select:focus {
 .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
 .custom-modal.show { display: flex; }
 .custom-modal-content { background: #09090b; padding: 35px; border-radius: 16px; width: 100%; max-width: 400px; border: 1px solid var(--accent); box-shadow: 0 0 40px rgba(255,42,42,0.15); animation: popOut 0.3s forwards; }
+
+/* TICKET MODAL DESIGN (UPDATED) */
+.ticket-modal-content {
+    background: #050505;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    border: 1px solid #333; max-width: 600px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    border-top: 2px solid var(--accent-blue);
+}
+.ticket-header h3 { color: var(--accent-blue); letter-spacing: 2px; }
 
 .u-row { background: rgba(255,255,255,0.02); padding: 15px 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; }
 
@@ -432,7 +447,7 @@ input:focus, textarea:focus, select:focus {
 .status-icon-box { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px); }
 
 /* ================================================= */
-/* ULTRA CYBER MODAL STYLES (NEW)                    */
+/* ULTRA CYBER MODAL STYLES (GLOBAL)                 */
 /* ================================================= */
 
 /* 1. Затемнення фону */
@@ -493,10 +508,10 @@ input:focus, textarea:focus, select:focus {
 .cyber-close-btn:hover { border-color: var(--accent); color: var(--accent); transform: rotate(90deg); }
 
 /* ================================================= */
-/* ULTRA GRID CARD DESIGN (Заявки)                   */
+/* ULTRA GRID CARD DESIGN (Заявки & Тікети)          */
 /* ================================================= */
 
-.app-card-ultra {
+.app-card-ultra, .ticket-card-ultra {
     background: linear-gradient(135deg, rgba(20, 20, 20, 0.6), rgba(10, 10, 10, 0.8));
     padding: 25px 30px; 
     border: 1px solid rgba(255,255,255,0.05);
@@ -505,10 +520,12 @@ input:focus, textarea:focus, select:focus {
     backdrop-filter: blur(10px);
     transition: transform 0.3s;
 }
-.app-card-ultra:hover { transform: translateX(5px); border-color: rgba(255,255,255,0.1); }
+.ticket-card-ultra { border-left-color: var(--accent-blue); }
+
+.app-card-ultra:hover, .ticket-card-ultra:hover { transform: translateX(5px); border-color: rgba(255,255,255,0.1); }
 
 /* Ефект сканування фону */
-.app-card-ultra::after {
+.app-card-ultra::after, .ticket-card-ultra::after {
     content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 20px 20px;
     opacity: 0.5; pointer-events: none; z-index: 0;
@@ -548,5 +565,8 @@ input:focus, textarea:focus, select:focus {
 .btn-icon-square.approve:hover { border-color: #2ecc71; color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
 .btn-icon-square.reject:hover { border-color: #e74c3c; color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
 .btn-icon-square.delete:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); }
+.btn-icon-square.open-ticket:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(52, 152, 219, 0.1); }
 
 .status-tag { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 800; border: 1px solid transparent; background: rgba(255,255,255,0.05); }
+.status-tag.open { color: #2ecc71; border-color: #2ecc71; }
+.status-tag.closed { color: #95a5a6; border-color: #7f8c8d; }

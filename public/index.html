@@ -249,26 +249,38 @@
 
             <div id="tab-apply" class="dash-view">
                 <div class="dash-header"><h2>Подача заявки</h2></div>
-                <div id="applyStatusContainer" class="status-box" style="display:none; padding:20px; border:1px solid #333; border-radius:10px; margin-bottom:20px;"></div>
-                <form id="dashAppForm" class="modern-form glass-panel">
-                    <div class="form-row">
-                        <div style="display:flex; flex-direction:column;">
-                            <label style="font-size:12px; color:#888; margin-bottom:5px;">Ваше реальне ім'я та вік</label>
-                            <input type="text" id="appRlNameAge" required placeholder="Наприклад: Андрій, 18">
+                <div id="applyStatusContainer" class="status-box" style="display:none; max-width: 500px; margin: 0 auto;"></div>
+                
+                <div class="compact-square-container">
+                    <form id="dashAppForm" class="modern-form glass-panel" style="padding: 30px;">
+                        <h3 style="text-align:center; margin-top:0; margin-bottom:20px; letter-spacing:2px; font-size:16px;">АНКЕТА</h3>
+                        
+                        <div class="form-row">
+                            <div style="display:flex; flex-direction:column;">
+                                <label style="font-size:11px; color:#888; margin-bottom:5px;">1. Ваше реальне ім'я</label>
+                                <input type="text" id="appRlName" required placeholder="Ім'я">
+                            </div>
+                            <div style="display:flex; flex-direction:column;">
+                                <label style="font-size:11px; color:#888; margin-bottom:5px;">2. Ваш вік</label>
+                                <input type="number" id="appAge" required placeholder="Вік">
+                            </div>
                         </div>
-                        <div style="display:flex; flex-direction:column;">
-                            <label style="font-size:12px; color:#888; margin-bottom:5px;">Середній онлайн (годин)</label>
-                            <input type="text" id="appOnline" required placeholder="Наприклад: 4-5 годин">
-                        </div>
-                    </div>
-                    <label style="font-size:12px; color:#888; margin-bottom:5px;">Історія гри на RP проектах</label>
-                    <textarea id="appHistory" required rows="4" placeholder="Напишіть де грали раніше та чого досягли..."></textarea>
-                    
-                    <label style="font-size:12px; color:#888; margin-bottom:5px;">Посилання на відкат стрільби (YouTube/Imgur)</label>
-                    <input type="text" id="appVideo" required placeholder="https://...">
-                    
-                    <button type="submit" class="btn btn-primary full-width">ВІДПРАВИТИ НА ПЕРЕВІРКУ</button>
-                </form>
+
+                        <label style="font-size:11px; color:#888; margin-bottom:5px;">3. Середній онлайн (годин)</label>
+                        <input type="text" id="appOnline" required placeholder="Наприклад: 5+ годин">
+
+                        <label style="font-size:11px; color:#888; margin-bottom:5px;">4. В яких сім'ях бували</label>
+                        <input type="text" id="appFamilies" required placeholder="Назви сімей...">
+
+                        <label style="font-size:11px; color:#888; margin-bottom:5px;">5. Історія гри на UA/KZ проектах</label>
+                        <textarea id="appHistory" required rows="3" placeholder="Де грали, чого досягли..."></textarea>
+                        
+                        <label style="font-size:11px; color:#888; margin-bottom:5px;">6. Посилання на відкат стрільби</label>
+                        <input type="text" id="appVideo" required placeholder="YouTube / Imgur link">
+                        
+                        <button type="submit" class="btn btn-primary full-width" style="margin-top:10px;">ВІДПРАВИТИ</button>
+                    </form>
+                </div>
             </div>
 
             <div id="tab-support-user" class="dash-view">

@@ -496,30 +496,178 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('tmInput').value = ''; window.openTicket(currentTicketId);
   });
 
-  // --- AUTH UI UPDATE ---
+  // --- LANGUAGE SYSTEM & AUTH UI UPDATE ---
+  
+  const translations = {
+    ua: {
+        home: "ГОЛОВНА",
+        about: "ІНФО",
+        members: "СКЛАД",
+        media: "МЕДІА",
+        apply: "ВСТУП",
+        login: "ВХІД",
+        account: "АКАУНТ",
+        hero_btn: "ПРИЄДНАТИСЬ",
+        hero_members: "СКЛАД",
+        about_title_span: "ХТО",
+        about_title: "МИ Є",
+        card_mission: "МІСІЯ",
+        card_mission_desc: "Створення унікального RP досвіду та домінування в сферах впливу.",
+        card_protection: "ЗАХИСТ",
+        card_protection_desc: "Ми стоїмо один за одного. Сім'я — це непорушна фортеця.",
+        card_resources: "РЕСУРСИ",
+        card_resources_desc: "Забезпечення кожного учасника усім необхідним для комфортної гри.",
+        members_title_span: "НАШ",
+        members_title: "СКЛАД",
+        news_title: "СТРІЧКА",
+        news_title_span: "НОВИН",
+        gallery_title: "ГАЛЕРЕЯ",
+        join_system_title: "ПРИЄДНУЙСЯ ДО СИСТЕМИ",
+        join_system_desc: "Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.",
+        access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ",
+        footer: "BARRACUDA FAMILY. STAKE RP."
+    },
+    en: {
+        home: "HOME",
+        about: "INFO",
+        members: "ROSTER",
+        media: "MEDIA",
+        apply: "APPLY",
+        login: "LOGIN",
+        account: "ACCOUNT",
+        hero_btn: "JOIN US",
+        hero_members: "ROSTER",
+        about_title_span: "WHO",
+        about_title: "WE ARE",
+        card_mission: "MISSION",
+        card_mission_desc: "Creating a unique RP experience and dominating spheres of influence.",
+        card_protection: "PROTECTION",
+        card_protection_desc: "We stand for each other. The family is an unshakeable fortress.",
+        card_resources: "RESOURCES",
+        card_resources_desc: "Providing every member with everything needed for comfortable gameplay.",
+        members_title_span: "OUR",
+        members_title: "ROSTER",
+        news_title: "NEWS",
+        news_title_span: "FEED",
+        gallery_title: "GALLERY",
+        join_system_title: "JOIN THE SYSTEM",
+        join_system_desc: "Authorize to access the restricted application section.",
+        access_terminal: "ACCESS TERMINAL",
+        footer: "BARRACUDA FAMILY. STAKE RP."
+    },
+    pl: {
+        home: "GŁÓWNA",
+        about: "INFO",
+        members: "EKIPA",
+        media: "MEDIA",
+        apply: "REKRUTACJA",
+        login: "WEJŚCIE",
+        account: "KONTO",
+        hero_btn: "DOŁĄCZ",
+        hero_members: "EKIPA",
+        about_title_span: "KIM",
+        about_title: "JESTEŚMY",
+        card_mission: "MISJA",
+        card_mission_desc: "Tworzenie unikalnego doświadczenia RP i dominacja w strefach wpływów.",
+        card_protection: "OCHRONA",
+        card_protection_desc: "Stoimy za sobą murem. Rodzina to nienaruszalna twierdza.",
+        card_resources: "ZASOBY",
+        card_resources_desc: "Zapewnienie każdemu członkowi wszystkiego, co niezbędne do gry.",
+        members_title_span: "NASZA",
+        members_title: "EKIPA",
+        news_title: "WIADOMOŚCI",
+        news_title_span: "I NEWSY",
+        gallery_title: "GALERIA",
+        join_system_title: "DOŁĄCZ DO SYSTEMU",
+        join_system_desc: "Zaloguj się, aby uzyskać dostęp do sekcji rekrutacji.",
+        access_terminal: "DOSTĘP DO TERMINALA",
+        footer: "RODZINA BARRACUDA. STAKE RP."
+    },
+    de: {
+        home: "HOME",
+        about: "INFO",
+        members: "MITGLIEDER",
+        media: "MEDIEN",
+        apply: "BEWERBEN",
+        login: "LOGIN",
+        account: "KONTO",
+        hero_btn: "BEITRETEN",
+        hero_members: "MITGLIEDER",
+        about_title_span: "WER",
+        about_title: "WIR SIND",
+        card_mission: "MISSION",
+        card_mission_desc: "Schaffung eines einzigartigen RP-Erlebnisses und Dominanz in Einflussbereichen.",
+        card_protection: "SCHUTZ",
+        card_protection_desc: "Wir stehen füreinander ein. Die Familie ist eine unerschütterliche Festung.",
+        card_resources: "RESSOURCEN",
+        card_resources_desc: "Bereitstellung aller notwendigen Mittel für ein komfortables Spiel.",
+        members_title_span: "UNSERE",
+        members_title: "MITGLIEDER",
+        news_title: "NACHRICHTEN",
+        news_title_span: "FEED",
+        gallery_title: "GALERIE",
+        join_system_title: "TRITT DEM SYSTEM BEI",
+        join_system_desc: "Melden Sie sich an, um Zugang zum Bewerbungsbereich zu erhalten.",
+        access_terminal: "TERMINAL ZUGRIFF",
+        footer: "BARRACUDA FAMILIE. STAKE RP."
+    }
+  };
+
+  const langSelect = document.getElementById('languageSelect');
+
+  function changeLanguage(lang) {
+      document.querySelectorAll('[data-lang]').forEach(el => {
+          const key = el.getAttribute('data-lang');
+          if (key === 'login') {
+             // Логіка для кнопки входу оновлюється в updateAuthUI, але тут можна форсувати
+             const textEl = document.getElementById('authBtnText');
+             if(currentUser) {
+                 textEl.textContent = translations[lang]['account'];
+             } else {
+                 textEl.textContent = translations[lang]['login'];
+             }
+          } else if (translations[lang] && translations[lang][key]) {
+              el.textContent = translations[lang][key];
+          }
+      });
+      localStorage.setItem('barracuda_lang', lang);
+  }
+
+  if(langSelect) {
+      langSelect.addEventListener('change', (e) => {
+          changeLanguage(e.target.value);
+      });
+      // Load saved language
+      const savedLang = localStorage.getItem('barracuda_lang') || 'ua';
+      langSelect.value = savedLang;
+      changeLanguage(savedLang);
+  }
+
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
+      const currentLang = localStorage.getItem('barracuda_lang') || 'ua';
+      
       if(currentUser) {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           
-          document.getElementById('authBtnText').textContent = 'АКАУНТ';
+          document.getElementById('authBtnText').textContent = translations[currentLang].account;
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
           
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ПОДАТИ ЗАЯВКУ'; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="apply">' + translations[currentLang].apply + '</span>'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
       } else {
           document.body.classList.remove('is-logged-in','is-admin');
-          document.getElementById('authBtnText').textContent = 'ВХІД';
+          document.getElementById('authBtnText').textContent = translations[currentLang].login;
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ДОСТУП ДО ТЕРМІНАЛУ'; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">' + translations[currentLang].access_terminal + '</span>'; 
               applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
           }
       }

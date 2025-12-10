@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
           onlineTime: document.getElementById('appOnline').value,
           prevFamilies: document.getElementById('appFamilies').value,
           history: document.getElementById('appHistory').value,
-          shootingVideo: document.getElementById('appVideo').value,
+          note: document.getElementById('appNote').value,
           submittedBy: currentUser.username
       };
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
@@ -323,6 +323,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       list.innerHTML = apps.map((a, index) => {
+          // Розпізнавання посилання
+          const noteContent = a.note || a.shootingVideo || 'Не вказано';
+          const isLink = noteContent.startsWith('http') || noteContent.startsWith('www');
+          const displayNote = isLink 
+              ? `<a href="${noteContent}" target="_blank" class="ultra-link"><i class="fa-solid fa-link"></i> ВІДКРИТИ ПОСИЛАННЯ</a>` 
+              : `<span style="color:#ccc;">${noteContent}</span>`;
+
           return `
             <div class="app-card-ultra animate-hidden">
                 <span class="app-id-badge">#${index + 1}</span>
@@ -342,8 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="ultra-label">СІМ'Ї</span> <span style="color:#ccc;">${a.prevFamilies}</span>
                 </div>
                 <div class="ultra-row">
-                    <span class="ultra-label">ВІДЕО</span> 
-                    <a href="${a.shootingVideo}" target="_blank" class="ultra-link"><i class="fa-brands fa-youtube"></i> ВІДКРИТИ ВІДКАТ</a>
+                    <span class="ultra-label">ПРИМІТКА</span> 
+                    ${displayNote}
                 </div>
                 <div style="margin-top:15px; font-size:10px; color:#666; font-weight:800; letter-spacing:1px;">ІСТОРІЯ ГРАВЦЯ:</div>
                 <div class="ultra-history">${a.history}</div>
@@ -403,18 +410,17 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if(!my.length) { list.innerHTML = '<div class="empty" style="text-align:center; color:#555;">НЕМАЄ ТІКЕТІВ</div>'; return; }
 
-      // ВИКОРИСТАННЯ ULTRA CARD ДИЗАЙНУ ДЛЯ СПИСКУ
+      // ULTRA LIST DESIGN
       list.innerHTML = my.map(t => `
-        <div class="ticket-card-ultra ${t.status}" onclick="window.openTicket('${t.id}')">
+        <div class="ticket-card-ultra ${t.status}" onclick="window.openTicket('${t.id}')" style="cursor:pointer; margin-bottom:10px; border-left-color: ${t.status==='open'?'var(--accent-blue)':'#7f8c8d'};">
             <div class="ultra-row">
                 <span class="ultra-label">ТЕМА</span>
                 <span style="color:#fff; font-weight:bold;">${t.title}</span>
             </div>
             <div class="ultra-row">
                 <span class="ultra-label">СТАТУС</span>
-                <span class="status-tag ${t.status}">${t.status.toUpperCase()}</span>
+                <span class="status-tag ${t.status}" style="${t.status==='closed'?'color:#95a5a6; border-color:#95a5a6;':''}">${t.status.toUpperCase()}</span>
             </div>
-            <div style="margin-top:10px; font-size:11px; color:#666;">Натисніть, щоб відкрити чат <i class="fa-solid fa-arrow-right"></i></div>
         </div>
       `).join('');
   }
@@ -440,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
              <div class="ultra-row">
                 <span class="ultra-label">СТАТУС</span>
-                <span class="status-tag ${t.status}">${t.status.toUpperCase()}</span>
+                <span class="status-tag ${t.status}" style="${t.status==='closed'?'color:#95a5a6; border-color:#95a5a6;':''}">${t.status.toUpperCase()}</span>
             </div>
             <div class="ultra-actions" style="margin-top:15px;">
                 <button class="btn-icon-square open-ticket" onclick="window.openTicket('${t.id}')" title="Відкрити чат"><i class="fa-regular fa-comments"></i></button>
@@ -462,13 +468,11 @@ document.addEventListener('DOMContentLoaded', () => {
       chat.innerHTML = t.messages.map(m => `<div class="msg ${m.sender===currentUser.username?'me':'other'} ${m.isStaff?'staff':''}"><div class="sender">${m.sender}</div>${m.text}</div>`).join('');
       chat.scrollTop = chat.scrollHeight;
       
-      // Логіка кнопки закриття
       const closeBtn = document.getElementById('tmCloseTicketBtn');
       if(t.status === 'closed') {
           closeBtn.style.display = 'none';
       } else {
           closeBtn.style.display = 'inline-block';
-          // Додаємо підтвердження через CYBER MODAL
           closeBtn.onclick = () => {
               openCyberModal(
                   'ЗАКРИТТЯ ЗАПИТУ',

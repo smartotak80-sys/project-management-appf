@@ -264,9 +264,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
       if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
   });
+
+  // --- ОНОВЛЕНА ФУНКЦІЯ ПЕРЕВІРКИ ЗАЯВКИ (НОВИЙ ДИЗАЙН) ---
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
-      const myApp = apps ? apps.find(a => a.submittedBy === currentUser.username) : null;
+      // Знаходимо останню заявку користувача
+      const myApp = apps ? apps.filter(a => a.submittedBy === currentUser.username).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0] : null;
+      
       const form = document.getElementById('dashAppForm');
       const statusBox = document.getElementById('applyStatusContainer');
       
@@ -274,17 +278,73 @@ document.addEventListener('DOMContentLoaded', () => {
           form.style.display = 'none';
           statusBox.style.display = 'block';
           
-          let statusText = 'ОЧІКУВАННЯ ПЕРЕВІРКИ...';
-          let color = 'var(--accent)';
-          if(myApp.status === 'approved') { statusText = 'СХВАЛЕНО. ЛАСКАВО ПРОСИМО.'; color = '#2ecc71'; }
-          if(myApp.status === 'rejected') { statusText = 'ВІДХИЛЕНО.'; color = '#ff4757'; }
+          // Базові класи для контейнера
+          statusBox.className = 'glass-panel status-panel';
+          // Додаємо специфічний клас статусу (pending, approved, або rejected)
+          statusBox.classList.add(myApp.status);
           
-          statusBox.innerHTML = `
-            <h3 style="margin-top:0">СТАТУС: <span style="color:${color}">${myApp.status.toUpperCase()}</span></h3>
-            <p>${statusText}</p>
-            ${myApp.adminComment ? `<div style="margin-top:10px; font-size:12px; color:#aaa;">ВІД АДМІНІСТРАЦІЇ: ${myApp.adminComment}</div>` : ''}
+          let icon = '';
+          let title = '';
+          let desc = '';
+          let feedbackLabel = '';
+          let feedbackIcon = '';
+
+          // Налаштування контенту залежно від статусу
+          switch(myApp.status) {
+              case 'approved':
+                  icon = '<i class="fa-solid fa-circle-check"></i>';
+                  title = 'ДОСТУП ДОЗВОЛЕНО';
+                  desc = 'Ласкаво просимо до системи Barracuda Family.';
+                  feedbackLabel = 'ПОВІДОМЛЕННЯ КУРАТОРА';
+                  feedbackIcon = 'fa-solid fa-handshake';
+                  break;
+              case 'rejected':
+                  icon = '<i class="fa-solid fa-circle-xmark"></i>';
+                  title = 'ЗАЯВКУ ВІДХИЛЕНО';
+                  desc = 'У доступі до системи відмовлено.';
+                  feedbackLabel = 'ПРИЧИНА ВІДМОВИ / КОМЕНТАР';
+                  feedbackIcon = 'fa-solid fa-triangle-exclamation';
+                  break;
+              default: // pending
+                  icon = '<i class="fa-solid fa-hourglass-half"></i>';
+                  title = 'ОЧІКУВАННЯ ПЕРЕВІРКИ';
+                  desc = 'Ваші дані обробляються адміністрацією.';
+                  feedbackLabel = 'СИСТЕМНЕ ПОВІДОМЛЕННЯ';
+                  feedbackIcon = 'fa-solid fa-terminal';
+                  break;
+          }
+          
+          // Формуємо новий HTML
+          let htmlContent = `
+            <div class="status-header">
+                <div class="status-icon-box">${icon}</div>
+                <div class="status-title">
+                    <h2>${title}</h2>
+                    <p>${desc}</p>
+                </div>
+            </div>
           `;
-          statusBox.style.borderColor = color;
+
+          // Якщо є коментар адміна АБО якщо заявку відхилено (навіть без коментаря показати блок)
+          if(myApp.adminComment || myApp.status === 'rejected') {
+             const commentText = myApp.adminComment ? myApp.adminComment : (myApp.status === 'rejected' ? 'Причину не вказано. Зв\'яжіться з адміністрацією в Discord.' : '');
+             
+             if(commentText) {
+                 htmlContent += `
+                    <div class="admin-feedback-box animate-visible">
+                        <div class="feedback-label">
+                            <i class="${feedbackIcon}"></i> ${feedbackLabel}
+                        </div>
+                        <div class="feedback-text">
+                            ${commentText}
+                        </div>
+                    </div>
+                 `;
+             }
+          }
+
+          statusBox.innerHTML = htmlContent;
+
       } else {
           form.style.display = 'block';
           statusBox.style.display = 'none';
@@ -403,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
+              // --- ІКОНКА ЗАМІНЕНА ТУТ ---
               applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ПОДАТИ ЗАЯВКУ'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
@@ -412,6 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
           if(applyBtn) { 
+              // --- ІКОНКА ЗАМІНЕНА ТУТ ---
               applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ДОСТУП ДО ТЕРМІНАЛУ'; 
               applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
           }

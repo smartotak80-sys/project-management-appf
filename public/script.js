@@ -400,13 +400,16 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   window.deleteApp = async (id) => {
-      customConfirm('ВИДАЛИТИ ЗАЯВКУ НАЗАВЖДИ?', async (r) => {
-          if(r) {
+      // ВИКОРИСТАННЯ НОВОГО CYBER MODAL ДЛЯ ПІДТВЕРДЖЕННЯ
+      openCyberModal(
+          'ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ',
+          `<p style="color:#aaa;">Ви дійсно бажаєте безповоротно видалити цю заявку з бази даних? Цю дію неможливо скасувати.</p>`,
+          async () => {
               await apiFetch(`/api/applications/${id}`, { method: 'DELETE' });
               showToast('ЗАЯВКУ ВИДАЛЕНО');
               loadApplicationsStaff();
           }
-      });
+      );
   };
 
   // --- TICKETS ---
@@ -566,6 +569,73 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div class="glass animate-hidden" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); activateScrollAnimations(); }
   window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
   window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
+  
+  // ============================================
+  // --- ULTRA CYBER MODAL LOGIC (FULL CODE) ---
+  // ============================================
+
+  window.openCyberModal = (title, htmlContent, onConfirm = null) => {
+      const modal = document.getElementById('cyberModal');
+      const titleEl = document.getElementById('cyberModalTitle');
+      const contentEl = document.getElementById('cyberModalContent');
+      const footerEl = document.getElementById('cyberModalFooter');
+
+      if (!modal || !titleEl || !contentEl || !footerEl) return;
+
+      // 1. Встановлюємо контент
+      titleEl.textContent = title || 'SYSTEM ALERT';
+      contentEl.innerHTML = htmlContent || '<p>No data received.</p>';
+
+      // 2. Налаштовуємо кнопки
+      if (onConfirm && typeof onConfirm === 'function') {
+          // Режим підтвердження
+          footerEl.innerHTML = `
+              <button class="btn btn-outline" onclick="closeCyberModal()">СКАСУВАТИ</button>
+              <button id="cyberConfirmBtn" class="btn btn-primary">ПІДТВЕРДИТИ</button>
+          `;
+          
+          setTimeout(() => {
+              const confirmBtn = document.getElementById('cyberConfirmBtn');
+              if (confirmBtn) {
+                  confirmBtn.onclick = () => {
+                      onConfirm();     
+                      closeCyberModal(); 
+                  };
+              }
+          }, 50);
+      } else {
+          // Інформаційний режим
+          footerEl.innerHTML = `
+              <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>
+          `;
+      }
+
+      // 3. Відкриваємо вікно
+      modal.classList.add('active');
+  };
+
+  window.closeCyberModal = () => {
+      const modal = document.getElementById('cyberModal');
+      if (modal) {
+          modal.classList.remove('active');
+      }
+  };
+
+  // --- Слухачі подій ---
+  const cyberModal = document.getElementById('cyberModal');
+  if (cyberModal) {
+      cyberModal.addEventListener('click', (e) => {
+          if (e.target.classList.contains('cyber-modal-overlay')) {
+              closeCyberModal();
+          }
+      });
+  }
+
+  document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && cyberModal && cyberModal.classList.contains('active')) {
+          closeCyberModal();
+      }
+  });
 
   loadInitialData();
 });

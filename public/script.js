@@ -387,7 +387,8 @@ document.addEventListener('DOMContentLoaded', () => {
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-terminal"></i> ПОДАТИ ЗАЯВКУ'; 
+              // --- ТУТ ЗМІНЕНО ---
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ПОДАТИ ЗАЯВКУ'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
       } else {
@@ -395,7 +396,11 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('authBtnText').textContent = 'ВХІД';
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
-          if(applyBtn) { applyBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ДОСТУП ДО ТЕРМІНАЛУ'; applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); }
+          if(applyBtn) { 
+              // --- ТУТ ЗМІНЕНО ---
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> ДОСТУП ДО ТЕРМІНАЛУ'; 
+              applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
+          }
       }
   }
 

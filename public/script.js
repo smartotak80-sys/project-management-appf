@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ua: {
         flag: "ua", label: "UKR",
         home: "ГОЛОВНА", about: "ІНФО", members: "СКЛАД", 
-        gallery: "ГАЛЕРЕЯ", videos: "МЕДІЙКИ", // ЗМІНЕНО
+        gallery: "ГАЛЕРЕЯ", videos: "МЕДІЙКИ",
         apply: "ВСТУП",
         login: "ВХІД", account: "АКАУНТ", hero_btn: "ПРИЄДНАТИСЬ", hero_members: "СКЛАД",
         about_title_span: "ХТО", about_title: "МИ Є", hero_lead: "ДОМІНУВАННЯ. СТИЛЬ. ДИСЦИПЛІНА.",
@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "ГАЛЕРЕЯ", videos_title: "МЕДІЙКИ",
         join_system_title: "ПРИЄДНУЙСЯ ДО СИСТЕМИ", join_system_desc: "Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.",
         access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ", footer: "BARRACUDA FAMILY. RP.",
-        // ... (reshta перекладів залишається стандартною)
         dash_label_personal: "Особисте", dash_nav_profile: "Профіль", dash_nav_my_member: "Мій Персонаж", dash_nav_apply: "Заявка в сім'ю", dash_nav_support: "Техпідтримка",
         dash_label_staff: "Персонал", dash_nav_apps: "Розгляд заявок", dash_nav_tickets: "Всі тікети",
         dash_label_admin: "Адміністратор", dash_nav_users: "Керування ролями", dash_nav_roster: "Редактор складу", dash_nav_db: "База даних", dash_nav_logs: "Логи", dash_nav_logout: "ЗАВЕРШИТИ СЕАНС",

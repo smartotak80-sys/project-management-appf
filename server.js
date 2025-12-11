@@ -38,7 +38,10 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 
 const MemberSchema = new mongoose.Schema({
-    name: String, role: String, owner: String, 
+    name: String, 
+    role: String, 
+    owner: String, 
+    server: { type: String, default: '' },
     links: { discord: String, youtube: String, tg: String },
     createdAt: { type: Date, default: Date.now }
 });
@@ -49,6 +52,14 @@ const News = mongoose.model('News', NewsSchema);
 
 const GallerySchema = new mongoose.Schema({ url: String, createdAt: { type: Date, default: Date.now } });
 const Gallery = mongoose.model('Gallery', GallerySchema);
+
+const VideoSchema = new mongoose.Schema({ 
+    title: String, 
+    url: String, 
+    author: String,
+    createdAt: { type: Date, default: Date.now } 
+});
+const Video = mongoose.model('Video', VideoSchema);
 
 const ApplicationSchema = new mongoose.Schema({
     rlName: String, age: String, onlineTime: String, prevFamilies: String, history: String, note: String,
@@ -99,12 +110,24 @@ app.put('/api/users/:username/role', async (req, res) => {
     catch(e) { res.status(500).json({ success: false }); }
 });
 
-// MEMBERS & NEWS & GALLERY
-app.post('/api/members', async (req, res) => { try { await new Member(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
+// MEMBERS
+app.post('/api/members', async (req, res) => { 
+    try { 
+        // 🔒 ЛІМІТ: Перевіряємо, чи є вже персонаж у цього користувача
+        const existing = await Member.findOne({ owner: req.body.owner });
+        if (existing) {
+            return res.status(400).json({ success: false, message: 'Ви можете створити тільки 1 персонажа!' });
+        }
+        await new Member(req.body).save(); 
+        res.json({ success: true }); 
+    } catch(e) { res.status(500).json({ success: false }); } 
+});
+
 app.get('/api/members', async (req, res) => { const m = await Member.find().sort({ createdAt: -1 }); res.json(m.map(x => ({ ...x._doc, id: x._id }))); });
 app.put('/api/members/:id', async (req, res) => { await Member.findByIdAndUpdate(req.params.id, req.body); res.json({ success: true }); });
 app.delete('/api/members/:id', async (req, res) => { await Member.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
+// NEWS & GALLERY & VIDEOS
 app.get('/api/news', async (req, res) => { const n = await News.find().sort({ createdAt: -1 }); res.json(n.map(x => ({ ...x._doc, id: x._id }))); });
 app.post('/api/news', async (req, res) => { await new News(req.body).save(); res.json({ success: true }); });
 app.delete('/api/news/:id', async (req, res) => { await News.findByIdAndDelete(req.params.id); res.json({ success: true }); });
@@ -112,6 +135,10 @@ app.delete('/api/news/:id', async (req, res) => { await News.findByIdAndDelete(r
 app.get('/api/gallery', async (req, res) => { const g = await Gallery.find().sort({ createdAt: -1 }); res.json(g.map(x => ({ ...x._doc, id: x._id }))); });
 app.post('/api/gallery', async (req, res) => { await new Gallery(req.body).save(); res.json({ success: true }); });
 app.delete('/api/gallery/:id', async (req, res) => { await Gallery.findByIdAndDelete(req.params.id); res.json({ success: true }); });
+
+app.get('/api/videos', async (req, res) => { const v = await Video.find().sort({ createdAt: -1 }); res.json(v.map(x => ({ ...x._doc, id: x._id }))); });
+app.post('/api/videos', async (req, res) => { await new Video(req.body).save(); res.json({ success: true }); });
+app.delete('/api/videos/:id', async (req, res) => { await Video.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
 // USERS API
 app.get('/api/users', async (req, res) => { 

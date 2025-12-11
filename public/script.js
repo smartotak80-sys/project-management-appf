@@ -1,48 +1,71 @@
-{
-type: uploaded file
-fileName: smartotak80-sys/project-management-appf/project-management-appf-8d935f6abaabdab4fe5107dfa9cdd18238fe4b8f/public/script.js
-fullContent:
 document.addEventListener('DOMContentLoaded', () => {
-  const CURRENT_USER_KEY = 'barakuda_current_user';
-  let members = [];
-  let systemLogs = JSON.parse(localStorage.getItem('barakuda_logs')) || [];
-
-  // --- PRELOADER & ANIMATIONS INIT ---
+  // --- 1. ПРІОРИТЕТНЕ ПРИБИРАННЯ ЗАСТАВКИ (SAFE MODE) ---
+  // Це гарантує, що сайт відкриється навіть при помилках
   setTimeout(() => {
       const p = document.getElementById('preloader');
       if(p) { 
           p.style.opacity = '0'; 
           setTimeout(() => p.style.display='none', 500); 
-          activateScrollAnimations();
+          // Запуск анімацій з перевіркою
+          try { activateScrollAnimations(); } catch(e) { console.log('Animation error', e); }
       }
   }, 2000);
 
+  // --- ЗМІННІ ---
+  const CURRENT_USER_KEY = 'barakuda_current_user';
+  let members = [];
+  
+  // --- 2. БЕЗПЕЧНЕ ЗАВАНТАЖЕННЯ ЛОГІВ ---
+  let systemLogs = [];
+  try {
+      const storedLogs = localStorage.getItem('barakuda_logs');
+      systemLogs = storedLogs ? JSON.parse(storedLogs) : [];
+  } catch(e) {
+      console.warn('LocalStorage blocked or error:', e);
+      systemLogs = [];
+  }
+
   // UTILS
-  function loadCurrentUser(){ try{ return JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); } catch(e){ return null; } }
-  function saveCurrentUser(val){ localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(val)) }
-  function removeCurrentUser(){ localStorage.removeItem(CURRENT_USER_KEY) }
+  function loadCurrentUser(){ 
+      try{ return JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); } 
+      catch(e){ return null; } 
+  }
+  function saveCurrentUser(val){ 
+      try { localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(val)); } catch(e){} 
+  }
+  function removeCurrentUser(){ 
+      try { localStorage.removeItem(CURRENT_USER_KEY); } catch(e){} 
+  }
+  
   window.showToast = (msg, type = 'success') => {
       const c = document.getElementById('toastContainer');
+      if(!c) return;
       const t = document.createElement('div'); t.className = `toast ${type}`;
       t.innerHTML = `<span>${msg}</span>`; c.appendChild(t);
       setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
   };
+  
   function addLog(action) {
       systemLogs.unshift(`[${new Date().toLocaleTimeString()}] ${action}`);
       if(systemLogs.length>50) systemLogs.pop();
-      localStorage.setItem('barakuda_logs', JSON.stringify(systemLogs));
+      try { localStorage.setItem('barakuda_logs', JSON.stringify(systemLogs)); } catch(e){}
       if(document.getElementById('tab-logs')?.classList.contains('active')) renderLogs();
   }
+  
   function customConfirm(msg, cb) {
       const m=document.getElementById('customConfirmModal');
+      if(!m) return; // Захист якщо модалки немає
       document.getElementById('confirmMessage').textContent=msg;
       const ok=document.getElementById('confirmOkBtn');
       m.classList.add('show');
       const clean=(r)=>{ m.classList.remove('show'); ok.onclick=null; if(cb)cb(r); };
-      ok.onclick=()=>clean(true); document.getElementById('confirmCancelBtn').onclick=()=>clean(false);
+      ok.onclick=()=>clean(true); 
+      const cancel = document.getElementById('confirmCancelBtn');
+      if(cancel) cancel.onclick=()=>clean(false);
   }
 
   let currentUser = loadCurrentUser(); 
+  
   async function apiFetch(url, opts={}) {
       try {
           const h={'Content-Type':'application/json', ...(opts.headers||{})};
@@ -54,16 +77,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadInitialData() {
-      const m = await apiFetch('/api/members'); if(m) { members=m; renderPublicMembers(); }
-      const n = await apiFetch('/api/news'); if(n) renderNews(n);
-      const g = await apiFetch('/api/gallery'); if(g) renderGallery(g);
-      updateAuthUI();
-      const yearEl = document.getElementById('year');
-      if(yearEl) yearEl.textContent = new Date().getFullYear();
+      try {
+          const m = await apiFetch('/api/members'); if(m) { members=m; renderPublicMembers(); }
+          const n = await apiFetch('/api/news'); if(n) renderNews(n);
+          const g = await apiFetch('/api/gallery'); if(g) renderGallery(g);
+          updateAuthUI();
+          const yearEl = document.getElementById('year');
+          if(yearEl) yearEl.textContent = new Date().getFullYear();
+      } catch(e) {
+          console.error("Init data load failed:", e);
+      }
   }
 
   // --- АНІМАЦІЇ ---
   function activateScrollAnimations() {
+      if (!window.IntersectionObserver) return; // Захист для старих браузерів
+
       const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
               if (entry.isIntersecting) {
@@ -83,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!el.classList.contains('reveal-on-scroll')) {
               el.classList.add('animate-hidden');
           }
-          if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
+          if(el.parentElement && (el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards'))) {
               const idx = Array.from(el.parentElement.children).indexOf(el);
               el.style.transitionDelay = `${idx * 100}ms`;
           }
@@ -91,33 +120,21 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  document.addEventListener('mousemove', (e) => {
-      document.querySelectorAll('.card, .member, .btn').forEach(card => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          if (x > -50 && x < rect.width + 50 && y > -50 && y < rect.height + 50) {
-            card.style.setProperty('--x', `${x}px`);
-            card.style.setProperty('--y', `${y}px`);
-          }
-      });
-  });
-
   // --- DASHBOARD UI ---
   const dashModal = document.getElementById('dashboardModal');
   const mobileToggle = document.getElementById('dashMobileToggle');
   const sidebar = document.getElementById('dashSidebar');
   const overlay = document.getElementById('dashOverlay');
 
-  if(mobileToggle) {
+  if(mobileToggle && sidebar && overlay) {
       mobileToggle.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
   }
-  if(overlay) {
+  if(overlay && sidebar) {
       overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
   }
   document.querySelectorAll('.dash-nav button').forEach(btn => {
       btn.addEventListener('click', () => {
-          if(window.innerWidth <= 900) { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+          if(window.innerWidth <= 900 && sidebar && overlay) { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
       });
   });
 
@@ -149,11 +166,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.openDashboard = () => {
       if(!currentUser) return;
-      dashModal.classList.add('show');
-      document.getElementById('dashUsername').textContent = currentUser.username;
-      document.getElementById('dashRole').textContent = currentUser.role;
-      document.getElementById('pLogin').textContent = currentUser.username;
-      document.getElementById('pRole').textContent = currentUser.role.toUpperCase();
+      if(dashModal) dashModal.classList.add('show');
+      
+      const elUser = document.getElementById('dashUsername');
+      const elRole = document.getElementById('dashRole');
+      const elPLogin = document.getElementById('pLogin');
+      const elPRole = document.getElementById('pRole');
+      
+      if(elUser) elUser.textContent = currentUser.username;
+      if(elRole) elRole.textContent = currentUser.role;
+      if(elPLogin) elPLogin.textContent = currentUser.username;
+      if(elPRole) elPRole.textContent = currentUser.role.toUpperCase();
 
       const role = currentUser.role;
       const isStaff = ['admin', 'moderator', 'support'].includes(role);
@@ -249,20 +272,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- APPLICATIONS ---
-  document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const body = {
-          rlName: document.getElementById('appRlName').value,
-          age: document.getElementById('appAge').value,
-          onlineTime: document.getElementById('appOnline').value,
-          prevFamilies: document.getElementById('appFamilies').value,
-          history: document.getElementById('appHistory').value,
-          note: document.getElementById('appNote').value,
-          submittedBy: currentUser.username
-      };
-      const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
-      if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
-  });
+  const dashAppForm = document.getElementById('dashAppForm');
+  if(dashAppForm) {
+      dashAppForm.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const body = {
+              rlName: document.getElementById('appRlName').value,
+              age: document.getElementById('appAge').value,
+              onlineTime: document.getElementById('appOnline').value,
+              prevFamilies: document.getElementById('appFamilies').value,
+              history: document.getElementById('appHistory').value,
+              note: document.getElementById('appNote').value,
+              submittedBy: currentUser.username
+          };
+          const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
+          if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); dashAppForm.reset(); checkMyApplication(); updateAuthUI(); }
+      });
+  }
 
   async function checkMyApplication() {
       const apps = await apiFetch('/api/applications/my');
@@ -275,42 +301,44 @@ document.addEventListener('DOMContentLoaded', () => {
       if(myApp) {
           if(container) container.style.display = 'none'; 
           if(form) form.style.display = 'none';
-          statusBox.style.display = 'block';
-          
-          statusBox.className = 'glass-panel status-panel';
-          statusBox.classList.add(myApp.status);
-          
-          let icon = ''; let title = ''; let desc = ''; let feedbackLabel = ''; let feedbackIcon = '';
-          switch(myApp.status) {
-              case 'approved':
-                  icon = '<i class="fa-solid fa-circle-check"></i>'; title = 'ДОСТУП ДОЗВОЛЕНО'; desc = 'Ласкаво просимо до системи Barracuda Family.';
-                  feedbackLabel = 'ПОВІДОМЛЕННЯ КУРАТОРА'; feedbackIcon = 'fa-solid fa-handshake';
-                  break;
-              case 'rejected':
-                  icon = '<i class="fa-solid fa-circle-xmark"></i>'; title = 'ЗАЯВКУ ВІДХИЛЕНО'; desc = 'У доступі до системи відмовлено.';
-                  feedbackLabel = 'ПРИЧИНА ВІДМОВИ / КОМЕНТАР'; feedbackIcon = 'fa-solid fa-triangle-exclamation';
-                  break;
-              default:
-                  icon = '<i class="fa-solid fa-hourglass-half"></i>'; title = 'ОЧІКУВАННЯ ПЕРЕВІРКИ'; desc = 'Ваші дані обробляються адміністрацією.';
-                  feedbackLabel = 'СИСТЕМНЕ ПОВІДОМЛЕННЯ'; feedbackIcon = 'fa-solid fa-terminal';
-                  break;
-          }
-          
-          let htmlContent = `
-            <div class="status-header"><div class="status-icon-box">${icon}</div><div class="status-title"><h2>${title}</h2><p>${desc}</p></div></div>
-          `;
+          if(statusBox) {
+              statusBox.style.display = 'block';
+              
+              statusBox.className = 'glass-panel status-panel';
+              statusBox.classList.add(myApp.status);
+              
+              let icon = ''; let title = ''; let desc = ''; let feedbackLabel = ''; let feedbackIcon = '';
+              switch(myApp.status) {
+                  case 'approved':
+                      icon = '<i class="fa-solid fa-circle-check"></i>'; title = 'ДОСТУП ДОЗВОЛЕНО'; desc = 'Ласкаво просимо до системи Barracuda Family.';
+                      feedbackLabel = 'ПОВІДОМЛЕННЯ КУРАТОРА'; feedbackIcon = 'fa-solid fa-handshake';
+                      break;
+                  case 'rejected':
+                      icon = '<i class="fa-solid fa-circle-xmark"></i>'; title = 'ЗАЯВКУ ВІДХИЛЕНО'; desc = 'У доступі до системи відмовлено.';
+                      feedbackLabel = 'ПРИЧИНА ВІДМОВИ / КОМЕНТАР'; feedbackIcon = 'fa-solid fa-triangle-exclamation';
+                      break;
+                  default:
+                      icon = '<i class="fa-solid fa-hourglass-half"></i>'; title = 'ОЧІКУВАННЯ ПЕРЕВІРКИ'; desc = 'Ваші дані обробляються адміністрацією.';
+                      feedbackLabel = 'СИСТЕМНЕ ПОВІДОМЛЕННЯ'; feedbackIcon = 'fa-solid fa-terminal';
+                      break;
+              }
+              
+              let htmlContent = `
+                <div class="status-header"><div class="status-icon-box">${icon}</div><div class="status-title"><h2>${title}</h2><p>${desc}</p></div></div>
+              `;
 
-          if(myApp.adminComment || myApp.status === 'rejected') {
-             const commentText = myApp.adminComment ? myApp.adminComment : (myApp.status === 'rejected' ? 'Причину не вказано. Зв\'яжіться з адміністрацією в Discord.' : '');
-             if(commentText) {
-                 htmlContent += `<div class="admin-feedback-box animate-visible"><div class="feedback-label"><i class="${feedbackIcon}"></i> ${feedbackLabel}</div><div class="feedback-text">${commentText}</div></div>`;
-             }
+              if(myApp.adminComment || myApp.status === 'rejected') {
+                 const commentText = myApp.adminComment ? myApp.adminComment : (myApp.status === 'rejected' ? 'Причину не вказано. Зв\'яжіться з адміністрацією в Discord.' : '');
+                 if(commentText) {
+                     htmlContent += `<div class="admin-feedback-box animate-visible"><div class="feedback-label"><i class="${feedbackIcon}"></i> ${feedbackLabel}</div><div class="feedback-text">${commentText}</div></div>`;
+                 }
+              }
+              statusBox.innerHTML = htmlContent;
           }
-          statusBox.innerHTML = htmlContent;
       } else {
           if(container) container.style.display = 'block';
           if(form) form.style.display = 'block';
-          statusBox.style.display = 'none';
+          if(statusBox) statusBox.style.display = 'none';
       }
   }
 
@@ -399,12 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // --- TICKETS (ULTRA REDESIGN) ---
-  document.getElementById('createTicketForm')?.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const body = { author: currentUser.username, title: document.getElementById('ticketTitle').value, messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }] };
-      const res = await apiFetch('/api/tickets', {method:'POST', body:JSON.stringify(body)});
-      if(res && res.success) { showToast('ТІКЕТ СТВОРЕНО'); document.getElementById('createTicketForm').reset(); loadMyTickets(); }
-  });
+  const ticketForm = document.getElementById('createTicketForm');
+  if(ticketForm) {
+      ticketForm.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const body = { author: currentUser.username, title: document.getElementById('ticketTitle').value, messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }] };
+          const res = await apiFetch('/api/tickets', {method:'POST', body:JSON.stringify(body)});
+          if(res && res.success) { showToast('ТІКЕТ СТВОРЕНО'); ticketForm.reset(); loadMyTickets(); }
+      });
+  }
 
   async function loadMyTickets() {
       const list = document.getElementById('myTicketsList');
@@ -501,7 +532,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- LANGUAGE SYSTEM & AUTH UI UPDATE ---
-  
   const translations = {
     ua: {
         flag: "ua", label: "UKR",
@@ -623,28 +653,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentLangLabel = document.getElementById('currentLangLabel');
 
   function changeLanguage(lang) {
+      if(!translations[lang]) return;
+
       document.querySelectorAll('[data-lang]').forEach(el => {
           const key = el.getAttribute('data-lang');
           if (key === 'login') {
              const textEl = document.getElementById('authBtnText');
-             if(currentUser) {
-                 textEl.textContent = translations[lang]['account'];
-             } else {
-                 textEl.textContent = translations[lang]['login'];
+             if(textEl) {
+                 if(currentUser) {
+                     textEl.textContent = translations[lang]['account'];
+                 } else {
+                     textEl.textContent = translations[lang]['login'];
+                 }
              }
-          } else if (translations[lang] && translations[lang][key]) {
+          } else if (translations[lang][key]) {
               el.textContent = translations[lang][key];
           }
       });
       
-      if(translations[lang]) {
-        // Оновлюємо прапорець на кнопці (використовуючи код країни з перекладів)
-        const flagCode = translations[lang].flag; 
-        currentFlagImg.src = `https://flagcdn.com/w40/${flagCode}.png`;
-        currentLangLabel.textContent = translations[lang].label;
-      }
+      const flagCode = translations[lang].flag; 
+      if(currentFlagImg) currentFlagImg.src = `https://flagcdn.com/w40/${flagCode}.png`;
+      if(currentLangLabel) currentLangLabel.textContent = translations[lang].label;
 
-      localStorage.setItem('barracuda_lang', lang);
+      try { localStorage.setItem('barracuda_lang', lang); } catch(e){}
       
       document.querySelectorAll('.lang-option').forEach(opt => {
           opt.classList.remove('active');
@@ -661,9 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.lang-option').forEach(opt => {
           opt.addEventListener('click', () => {
               const selectedLang = opt.getAttribute('data-lang');
-              // Зберігаємо мову
-              localStorage.setItem('barracuda_lang', selectedLang);
-              // ОНОВЛЮЄМО САЙТ
+              try { localStorage.setItem('barracuda_lang', selectedLang); } catch(e){}
               location.reload();
           });
       });
@@ -674,35 +703,41 @@ document.addEventListener('DOMContentLoaded', () => {
           }
       });
 
-      const savedLang = localStorage.getItem('barracuda_lang') || 'ua';
+      let savedLang = 'ua';
+      try { savedLang = localStorage.getItem('barracuda_lang') || 'ua'; } catch(e){}
       changeLanguage(savedLang);
   }
 
   async function updateAuthUI() {
       const applyText = document.getElementById('applyText');
       const applyBtn = document.getElementById('applyBtnMain');
-      const currentLang = localStorage.getItem('barracuda_lang') || 'ua';
+      let currentLang = 'ua';
+      try { currentLang = localStorage.getItem('barracuda_lang') || 'ua'; } catch(e){}
       
+      const authBtnText = document.getElementById('authBtnText');
+      const openAuthBtn = document.getElementById('openAuthBtn');
+      const btnLabel = translations[currentLang] || translations['ua'];
+
       if(currentUser) {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           
-          document.getElementById('authBtnText').textContent = translations[currentLang].account;
-          document.getElementById('openAuthBtn').onclick = window.openDashboard;
+          if(authBtnText) authBtnText.textContent = btnLabel.account;
+          if(openAuthBtn) openAuthBtn.onclick = window.openDashboard;
           
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="apply">' + translations[currentLang].apply + '</span>'; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="apply">' + btnLabel.apply + '</span>'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
       } else {
           document.body.classList.remove('is-logged-in','is-admin');
-          document.getElementById('authBtnText').textContent = translations[currentLang].login;
-          document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
+          if(authBtnText) authBtnText.textContent = btnLabel.login;
+          if(openAuthBtn) openAuthBtn.onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
           if(applyBtn) { 
-              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">' + translations[currentLang].access_terminal + '</span>'; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">' + btnLabel.access_terminal + '</span>'; 
               applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
           }
       }
@@ -710,28 +745,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('navToggle')?.addEventListener('click', ()=>document.getElementById('mainNav').classList.toggle('open'));
   document.getElementById('closeAuth')?.addEventListener('click', ()=>document.getElementById('authModal').classList.remove('show'));
-  document.getElementById('closeDashBtn')?.addEventListener('click', ()=>dashModal.classList.remove('show'));
+  if(dashModal) document.getElementById('closeDashBtn')?.addEventListener('click', ()=>dashModal.classList.remove('show'));
   document.getElementById('logoutBtn')?.addEventListener('click', ()=>{ removeCurrentUser(); location.reload(); });
   document.getElementById('lightboxCloseBtn')?.addEventListener('click', ()=>document.getElementById('lightbox').classList.remove('show'));
-  document.getElementById('tabLogin')?.addEventListener('click', (e)=>{ e.target.classList.add('active'); document.getElementById('tabRegister').classList.remove('active'); document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; });
-  document.getElementById('tabRegister')?.addEventListener('click', (e)=>{ e.target.classList.add('active'); document.getElementById('tabLogin').classList.remove('active'); document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; });
+  
+  document.getElementById('tabLogin')?.addEventListener('click', (e)=>{ 
+      e.target.classList.add('active'); 
+      document.getElementById('tabRegister').classList.remove('active'); 
+      document.getElementById('loginForm').style.display='block'; 
+      document.getElementById('registerForm').style.display='none'; 
+  });
+  document.getElementById('tabRegister')?.addEventListener('click', (e)=>{ 
+      e.target.classList.add('active'); 
+      document.getElementById('tabLogin').classList.remove('active'); 
+      document.getElementById('loginForm').style.display='none'; 
+      document.getElementById('registerForm').style.display='block'; 
+  });
 
-  document.getElementById('loginForm')?.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
-      if(res && res.success) { saveCurrentUser(res.user); showToast(`ВІТАЄМО, ${res.user.username}`); setTimeout(()=>location.reload(), 500); } 
-  });
-  document.getElementById('registerForm')?.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const pass = document.getElementById('regPass').value;
-      if(pass !== document.getElementById('regPassConfirm').value) return showToast('ПАРОЛІ НЕ СПІВПАДАЮТЬ', 'error');
-      const res = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username: document.getElementById('regUser').value, email: document.getElementById('regEmail').value, password: pass }) });
-      if(res && res.success) { showToast('СТВОРЕНО. БУДЬ ЛАСКА, УВІЙДІТЬ.'); document.getElementById('tabLogin').click(); }
-  });
+  const loginForm = document.getElementById('loginForm');
+  if(loginForm) {
+      loginForm.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
+          if(res && res.success) { saveCurrentUser(res.user); showToast(`ВІТАЄМО, ${res.user.username}`); setTimeout(()=>location.reload(), 500); } 
+      });
+  }
+  
+  const regForm = document.getElementById('registerForm');
+  if(regForm) {
+      regForm.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const pass = document.getElementById('regPass').value;
+          if(pass !== document.getElementById('regPassConfirm').value) return showToast('ПАРОЛІ НЕ СПІВПАДАЮТЬ', 'error');
+          const res = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username: document.getElementById('regUser').value, email: document.getElementById('regEmail').value, password: pass }) });
+          if(res && res.success) { showToast('СТВОРЕНО. БУДЬ ЛАСКА, УВІЙДІТЬ.'); document.getElementById('tabLogin').click(); }
+      });
+  }
 
   // --- ADMIN MEMBERS ---
   async function loadAdminMembers() {
       const list = document.getElementById('adminMembersList');
+      if(!list) return;
       const m = await apiFetch('/api/members');
       
       if(!m || m.length === 0) {
@@ -748,31 +802,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
-  document.getElementById('adminAddMemberForm')?.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const body = { name: document.getElementById('admName').value, role: document.getElementById('admRole').value, owner: document.getElementById('admOwner').value, links: {discord:document.getElementById('admDiscord').value, youtube:document.getElementById('admYoutube').value} };
-      await apiFetch('/api/members', {method:'POST', body:JSON.stringify(body)});
-      showToast('Учасника додано'); loadAdminMembers();
-  });
+  
+  const addMemberForm = document.getElementById('adminAddMemberForm');
+  if(addMemberForm) {
+      addMemberForm.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const body = { name: document.getElementById('admName').value, role: document.getElementById('admRole').value, owner: document.getElementById('admOwner').value, links: {discord:document.getElementById('admDiscord').value, youtube:document.getElementById('admYoutube').value} };
+          await apiFetch('/api/members', {method:'POST', body:JSON.stringify(body)});
+          showToast('Учасника додано'); loadAdminMembers();
+      });
+  }
+  
   window.deleteMember = async (id) => customConfirm('Видалити учасника?', async (r)=>{ if(r) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Видалено'); loadAdminMembers(); loadInitialData(); } });
 
   function loadMyMemberTab() {
       const container = document.getElementById('myMemberContainer');
+      if(!container) return;
       const myMember = members.find(m => m.owner === currentUser.username);
+      const statusPanel = document.getElementById('myMemberStatusPanel');
+      
       if(myMember) {
-          document.getElementById('myMemberStatusPanel').style.display='block';
+          if(statusPanel) statusPanel.style.display='block';
           container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0 0 5px 0;">${myMember.name}</h3><div style="font-size:12px; color:#888;">РАНГ: <span style="color:#fff">${myMember.role}</span></div></div><div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div></div>`;
-          document.getElementById('saveStatusBtn').onclick=async()=>{
-              let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value;
-              await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})});
-              showToast('Статус оновлено'); loadInitialData(); loadMyMemberTab();
-          };
-      } else { container.innerHTML = `<p style="color:#aaa;">ПЕРСОНАЖА НЕ ЗНАЙДЕНО.</p>`; document.getElementById('myMemberStatusPanel').style.display='none'; }
+          const saveBtn = document.getElementById('saveStatusBtn');
+          if(saveBtn) {
+              saveBtn.onclick=async()=>{
+                  let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value;
+                  await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})});
+                  showToast('Статус оновлено'); loadInitialData(); loadMyMemberTab();
+              };
+          }
+      } else { 
+          container.innerHTML = `<p style="color:#aaa;">ПЕРСОНАЖА НЕ ЗНАЙДЕНО.</p>`; 
+          if(statusPanel) statusPanel.style.display='none'; 
+      }
   }
 
   // --- PUBLIC MEMBERS ---
   function renderPublicMembers() {
       const g = document.getElementById('membersGrid');
+      if(!g) return;
       if(!members || members.length === 0) {
           g.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666;">Список учасників порожній.</div>';
           return;
@@ -786,10 +855,30 @@ document.addEventListener('DOMContentLoaded', () => {
       activateScrollAnimations();
   }
   
-  function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card glass animate-hidden"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); activateScrollAnimations(); }
-  function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div class="glass animate-hidden" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); activateScrollAnimations(); }
-  window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
-  window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
+  function renderNews(l) { 
+      const c = document.getElementById('newsList');
+      if(c) {
+          c.innerHTML = l.map(n=>`<div class="card glass animate-hidden"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); 
+          activateScrollAnimations();
+      }
+  }
+  function renderGallery(l) { 
+      const g = document.getElementById('galleryGrid');
+      if(g) {
+          g.innerHTML = l.map(g=>`<div class="glass animate-hidden" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); 
+          activateScrollAnimations(); 
+      }
+  }
+  
+  window.renderLogs = () => { 
+      const l = document.getElementById('systemLogsList');
+      if(l) l.innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); 
+  };
+  window.clearLogs = () => { 
+      systemLogs=[]; 
+      try { localStorage.removeItem('barakuda_logs'); } catch(e){}
+      renderLogs(); 
+  };
   
   // ============================================
   // --- ULTRA CYBER MODAL LOGIC (GLOBAL) ---
@@ -848,6 +937,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   });
 
+  // Запуск завантаження даних
   loadInitialData();
 });
-}

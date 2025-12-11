@@ -57,29 +57,14 @@
                     </div>
                     <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 8px; opacity: 0.7;"></i>
                 </button>
-
                 <div id="langDropdown" class="lang-dropdown-grid">
-                    <div class="lang-option" data-lang="en">
-                        <img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon"><span>ENGLISH</span>
-                    </div>
-                    <div class="lang-option" data-lang="de">
-                        <img src="https://flagcdn.com/w40/de.png" class="lang-flag-icon"><span>DEUTSCH</span>
-                    </div>
-                    <div class="lang-option" data-lang="es">
-                        <img src="https://flagcdn.com/w40/es.png" class="lang-flag-icon"><span>ESPAÑOL</span>
-                    </div>
-                    <div class="lang-option" data-lang="pt">
-                        <img src="https://flagcdn.com/w40/br.png" class="lang-flag-icon"><span>PORTUGUÊS</span>
-                    </div>
-                    <div class="lang-option" data-lang="pl">
-                        <img src="https://flagcdn.com/w40/pl.png" class="lang-flag-icon"><span>POLSKI</span>
-                    </div>
-                    <div class="lang-option" data-lang="ru">
-                        <img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon"><span>РУССКИЙ</span>
-                    </div>
-                    <div class="lang-option active" data-lang="ua" style="grid-column: 1 / -1; background: rgba(255,255,255,0.08);">
-                        <img src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon"><span>УКРАЇНСЬКА</span>
-                    </div>
+                    <div class="lang-option" data-lang="en"><img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon"><span>ENGLISH</span></div>
+                    <div class="lang-option" data-lang="de"><img src="https://flagcdn.com/w40/de.png" class="lang-flag-icon"><span>DEUTSCH</span></div>
+                    <div class="lang-option" data-lang="es"><img src="https://flagcdn.com/w40/es.png" class="lang-flag-icon"><span>ESPAÑOL</span></div>
+                    <div class="lang-option" data-lang="pt"><img src="https://flagcdn.com/w40/br.png" class="lang-flag-icon"><span>PORTUGUÊS</span></div>
+                    <div class="lang-option" data-lang="pl"><img src="https://flagcdn.com/w40/pl.png" class="lang-flag-icon"><span>POLSKI</span></div>
+                    <div class="lang-option" data-lang="ru"><img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon"><span>РУССКИЙ</span></div>
+                    <div class="lang-option active" data-lang="ua" style="grid-column: 1 / -1; background: rgba(255,255,255,0.08);"><img src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon"><span>УКРАЇНСЬКА</span></div>
                 </div>
             </div>
             
@@ -105,10 +90,7 @@
 
       <section id="about" class="section">
         <div class="container">
-          <div class="section-header">
-              <h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2>
-          </div>
-          
+          <div class="section-header"><h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2></div>
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-crosshairs"></i></div>
@@ -142,25 +124,25 @@
 
       <section id="events" class="section">
         <div class="container">
-          <div class="section-header"><h2><span data-lang="news_title">СТРІЧКА</span> <span class="highlight" data-lang="news_title_span">НОВИН</span></h2></div>
-          <div class="events-controls admin-only glass">
-            <input id="newsTitle" placeholder="Заголовок" data-lang-placeholder="ph_news_title">
-            <input id="newsDate" type="date">
-            <textarea id="newsSummary" placeholder="Текст новини..." data-lang-placeholder="ph_news_text"></textarea>
-            <button id="addNewsBtn" class="btn btn-primary" data-lang="btn_publish">ПУБЛІКУВАТИ</button>
-          </div>
-          <div id="newsList"></div>
+            <div class="section-header"><h2><span data-lang="news_title">СТРІЧКА</span> <span class="highlight" data-lang="news_title_span">НОВИН</span></h2></div>
+            <div class="events-controls admin-only glass">
+                <input id="newsTitle" placeholder="Заголовок" data-lang-placeholder="ph_news_title">
+                <input id="newsDate" type="date">
+                <textarea id="newsSummary" placeholder="Текст новини..." data-lang-placeholder="ph_news_text"></textarea>
+                <button id="addNewsBtn" class="btn btn-primary" data-lang="btn_publish">ПУБЛІКУВАТИ</button>
+            </div>
+            <div id="newsList"></div>
         </div>
       </section>
-
+      
       <section id="gallery" class="section">
         <div class="container">
-          <div class="section-header"><h2 data-lang="gallery_title">ГАЛЕРЕЯ</h2></div>
-          <div class="gallery-controls admin-only glass">
-            <input id="galleryUrl" placeholder="Посилання на фото (URL)" data-lang-placeholder="ph_photo_url">
-            <button id="addGalleryBtn" class="btn btn-primary" data-lang="btn_add_photo">ДОДАТИ ФОТО</button>
-          </div>
-          <div id="galleryGrid" class="gallery-grid"></div>
+            <div class="section-header"><h2 data-lang="gallery_title">ГАЛЕРЕЯ</h2></div>
+            <div class="gallery-controls admin-only glass">
+                <input id="galleryUrl" placeholder="Посилання на фото (URL)" data-lang-placeholder="ph_photo_url">
+                <button id="addGalleryBtn" class="btn btn-primary" data-lang="btn_add_photo">ДОДАТИ ФОТО</button>
+            </div>
+            <div id="galleryGrid" class="gallery-grid"></div>
         </div>
       </section>
 
@@ -168,7 +150,6 @@
         <div class="container center-text">
           <h2 class="neon-title" data-lang="join_system_title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
           <p id="applyText" class="apply-desc" data-lang="join_system_desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
-          
           <div class="action-buttons">
               <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large">
                   <i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">ДОСТУП ДО ТЕРМІНАЛУ</span>
@@ -187,196 +168,55 @@
   </div>
 
   <div id="dashboardModal" class="dashboard-modal">
-    <button id="closeDashBtn" class="dash-close-global" title="Закрити панель"><i class="fa-solid fa-xmark"></i></button>
-    <div class="dashboard-window">
-        <div class="dash-mobile-header">
-            <div style="display:flex; align-items:center; gap:15px;">
-                <button id="dashMobileToggle" class="btn btn-outline btn-icon"><i class="fa-solid fa-bars"></i></button>
-                <span class="dash-mobile-title" style="font-weight:bold; letter-spacing:1px;">PANEL v3.0</span>
-            </div>
-        </div>
-        <div class="dash-sidebar" id="dashSidebar">
-            <div class="dash-brand">
-                <i class="fa-solid fa-skull"></i>
-            </div>
-            <div class="dash-user-card">
-                <div class="dash-avatar"><i class="fa-solid fa-user-secret"></i></div>
-                <div class="dash-info">
-                    <span id="dashUsername">Loading...</span>
-                    <small id="dashRole">Guest</small>
-                </div>
-            </div>
-            <nav class="dash-nav">
-                <div class="nav-section-label" data-lang="nav_label_personal">Особисте</div>
-                <button class="active" onclick="switchDashTab('profile')"><i class="fa-regular fa-id-card"></i> <span data-lang="nav_profile">Профіль</span></button>
-                <button onclick="switchDashTab('my-member')"><i class="fa-solid fa-user-secret"></i> <span data-lang="nav_character">Мій Персонаж</span></button>
-                <button onclick="switchDashTab('apply')"><i class="fa-solid fa-paper-plane"></i> <span data-lang="nav_application">Заявка в сім'ю</span></button>
-                <button onclick="switchDashTab('support-user')"><i class="fa-solid fa-headset"></i> <span data-lang="nav_support">Техпідтримка</span></button>
-                <div class="staff-only-nav" style="display:none;">
-                    <div class="nav-section-label" data-lang="nav_label_staff">Персонал</div>
-                    <button id="navAppsBtn" onclick="switchDashTab('applications')"><i class="fa-solid fa-folder-tree"></i> <span data-lang="nav_staff_apps">Розгляд заявок</span></button>
-                    <button id="navTicketsBtn" onclick="switchDashTab('support-staff')"><i class="fa-solid fa-clipboard-list"></i> <span data-lang="nav_staff_tickets">Всі тікети</span></button>
-                </div>
-                <div class="admin-only-nav" style="display:none;">
-                    <div class="nav-section-label" data-lang="nav_label_admin">Адміністратор</div>
-                    <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> <span data-lang="nav_admin_users">Керування ролями</span></button>
-                    <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-sitemap"></i> <span data-lang="nav_admin_roster">Редактор складу</span></button>
-                    <button onclick="switchDashTab('accounts-data')" style="color: #ff6b6b;"><i class="fa-solid fa-database"></i> <span data-lang="nav_admin_db">База даних</span></button>
-                    <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> <span data-lang="nav_admin_logs">Системні логи</span></button>
-                </div>
-            </nav>
-            <button id="logoutBtn" class="btn btn-logout"><i class="fa-solid fa-power-off"></i> <span data-lang="btn_logout">ЗАВЕРШИТИ СЕАНС</span></button>
-        </div>
-        <div class="dash-sidebar-overlay" id="dashOverlay"></div>
-        <div class="dash-content">
-            <div id="tab-profile" class="dash-view active">
-                <div class="dash-header">
-                    <h2 data-lang="dash_profile_title">Особистий кабінет</h2>
-                    <div style="font-size:12px; color:#666;" data-lang="dash_conn_status">SECURE CONNECTION ESTABLISHED</div>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fa-solid fa-id-card"></i></div>
-                        <div class="stat-info">
-                            <label style="color:#666; font-size:10px; font-weight:bold;" data-lang="lbl_login">ВАШ ЛОГІН</label>
-                            <div id="pLogin" style="font-size:20px; font-weight:bold;">---</div>
-                        </div>
-                    </div>
-                    <div class="stat-card accent-border">
-                        <div class="stat-icon"><i class="fa-solid fa-user-shield"></i></div>
-                        <div class="stat-info">
-                            <label style="color:#666; font-size:10px; font-weight:bold;" data-lang="lbl_access">РІВЕНЬ ДОСТУПУ</label>
-                            <div id="pRole" style="font-size:20px; font-weight:bold; color:var(--accent);">---</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-panel" style="margin-top:30px;">
-                    <h3 style="margin-top:0"><i class="fa-solid fa-server"></i> <span data-lang="dash_sys_status">Статус системи</span></h3>
-                    <p style="color:#aaa;" data-lang="dash_sys_desc">Всі системи працюють у штатному режимі. Доступ до функцій дозволено згідно з вашим рангом.</p>
-                </div>
-            </div>
-            <div id="tab-my-member" class="dash-view">
-                <div class="dash-header"><h2 data-lang="dash_char_title">Налаштування персонажа</h2></div>
-                <div id="myMemberContainer" class="glass-panel"></div>
-                <div id="myMemberStatusPanel" class="glass-panel" style="display:none;">
-                    <h4 style="margin-top:0"><i class="fa-solid fa-signal"></i> <span data-lang="dash_char_status">Актуальний статус</span></h4>
-                    <div class="control-group" style="display:flex; gap:10px;">
-                        <select id="memberStatusSelect">
-                            <option value="Активний">🟢 Active</option>
-                            <option value="Патруль">🔵 Patrol</option>
-                            <option value="Неактив">🔴 Inactive</option>
-                        </select>
-                        <button id="saveStatusBtn" class="btn btn-primary" data-lang="btn_update_status">ОНОВИТИ СТАТУС</button>
-                    </div>
-                </div>
-            </div>
-            <div id="tab-apply" class="dash-view">
-                <div class="dash-header"><h2 data-lang="dash_apply_title">Подача заявки</h2></div>
-                <div id="applyStatusContainer" class="status-box" style="display:none; max-width: 500px; margin: 0 auto;"></div>
-                <div class="compact-square-container">
-                    <form id="dashAppForm" class="modern-form glass-panel" style="padding: 30px;">
-                        <h3 style="text-align:center; margin-top:0; margin-bottom:20px; letter-spacing:2px; font-size:16px;" data-lang="dash_apply_form_title">АНКЕТА</h3>
-                        <div class="form-row">
-                            <div style="display:flex; flex-direction:column;">
-                                <label style="font-size:11px; color:#888; margin-bottom:5px;" data-lang="lbl_name">1. Ваше реальне ім'я</label>
-                                <input type="text" id="appRlName" required placeholder="Name" data-lang-placeholder="ph_name">
-                            </div>
-                            <div style="display:flex; flex-direction:column;">
-                                <label style="font-size:11px; color:#888; margin-bottom:5px;" data-lang="lbl_age">2. Ваш вік</label>
-                                <input type="number" id="appAge" required placeholder="Age" data-lang-placeholder="ph_age">
-                            </div>
-                        </div>
-                        <label style="font-size:11px; color:#888; margin-bottom:5px;" data-lang="lbl_online">3. Середній онлайн (годин)</label>
-                        <input type="text" id="appOnline" required placeholder="Example: 5+" data-lang-placeholder="ph_online">
-                        <label style="font-size:11px; color:#888; margin-bottom:5px;" data-lang="lbl_families">4. В яких сім'ях бували</label>
-                        <input type="text" id="appFamilies" required placeholder="Previous families..." data-lang-placeholder="ph_families">
-                        <label style="font-size:11px; color:#888; margin-bottom:5px;" data-lang="lbl_history">5. Історія гри на UA/KZ проектах</label>
-                        <textarea id="appHistory" required rows="3" placeholder="History..." data-lang-placeholder="ph_history"></textarea>
-                        <label style="font-size:11px; color:#888; margin-bottom:5px;" data-lang="lbl_video">6. Посилання на відкат стрільби / Коментар</label>
-                        <input type="text" id="appNote" required placeholder="Link or comment" data-lang-placeholder="ph_video">
-                        <button type="submit" class="btn btn-primary full-width" style="margin-top:10px;" data-lang="btn_submit_app">ВІДПРАВИТИ</button>
-                    </form>
-                </div>
-            </div>
-            <div id="tab-support-user" class="dash-view">
-                <div class="dash-header"><h2 data-lang="dash_support_title">Технічна підтримка</h2></div>
-                <div class="form-row">
-                    <div class="glass-panel">
-                        <h3 style="margin-top:0"><i class="fa-solid fa-plus"></i> <span data-lang="dash_create_ticket">Створити запит</span></h3>
-                        <form id="createTicketForm" class="modern-form">
-                            <input type="text" id="ticketTitle" placeholder="Title" required data-lang-placeholder="ph_ticket_title">
-                            <textarea id="ticketMessage" rows="5" placeholder="Description..." required data-lang-placeholder="ph_ticket_msg"></textarea>
-                            <button type="submit" class="btn btn-primary full-width" data-lang="btn_create_ticket">ВІДКРИТИ ТІКЕТ</button>
-                        </form>
-                    </div>
-                    <div class="glass-panel">
-                        <h3 style="margin-top:0"><i class="fa-solid fa-list-ul"></i> <span data-lang="dash_my_tickets">Ваші запити</span></h3>
-                        <div id="myTicketsList" class="scroll-list" style="max-height:300px; overflow-y:auto;"></div>
-                    </div>
-                </div>
-            </div>
-            <div id="tab-applications" class="dash-view">
-                <div class="dash-header"><h2 data-lang="dash_staff_apps_title">Вхідні заявки (Staff)</h2></div>
-                <div id="applicationsList" class="grid-list" style="display:grid; gap:15px;"></div>
-            </div>
-            <div id="tab-support-staff" class="dash-view">
-                <div class="dash-header"><h2 data-lang="dash_staff_tickets_title">Управління тікетами</h2></div>
-                <div id="allTicketsList" class="grid-list" style="display:grid; gap:10px;"></div>
-            </div>
-            <div id="tab-users" class="dash-view">
-                <div class="dash-header"><h2 data-lang="dash_admin_users_title">Користувачі та Ролі</h2></div>
-                <div id="adminUsersList" class="compact-list"></div>
-            </div>
-            <div id="tab-accounts-data" class="dash-view">
-                <div class="dash-header">
-                    <h2 style="color:#ff6b6b;"><i class="fa-solid fa-database"></i> <span data-lang="dash_admin_db_title">USERS DATABASE</span></h2>
-                    <button onclick="loadAccountsData()" class="btn btn-outline btn-icon"><i class="fa-solid fa-rotate"></i></button>
-                </div>
-                <div class="glass-panel" style="overflow-x: auto; padding:0;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>USERNAME</th>
-                                <th>EMAIL ADDRESS</th>
-                                <th>HASH</th>
-                                <th>ACCESS LEVEL</th>
-                                <th>REGISTERED</th>
-                            </tr>
-                        </thead>
-                        <tbody id="accountsDataTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-            <div id="tab-admin-members" class="dash-view">
-                <div class="dash-header">
-                    <h2 data-lang="dash_admin_roster_title">Редагування складу</h2>
-                    <button id="openAdminAddMember" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> <span data-lang="btn_add_member">Додати</span></button>
-                </div>
-                <div id="adminAddMemberContainer" class="glass-panel" style="display:none; border-left:3px solid var(--accent);">
-                    <form id="adminAddMemberForm" class="modern-form">
-                        <div class="form-row">
-                            <input type="text" id="admName" placeholder="IC Name" required data-lang-placeholder="ph_adm_name">
-                            <input type="text" id="admRole" placeholder="Role" required data-lang-placeholder="ph_adm_role">
-                        </div>
-                        <input type="text" id="admOwner" placeholder="Login" required data-lang-placeholder="ph_adm_owner">
-                        <div class="form-row">
-                            <input type="text" id="admDiscord" placeholder="Discord" data-lang-placeholder="ph_adm_discord">
-                            <input type="text" id="admYoutube" placeholder="YouTube" data-lang-placeholder="ph_adm_youtube">
-                        </div>
-                        <button type="submit" class="btn btn-primary full-width" data-lang="btn_save_db">ЗБЕРЕГТИ В БАЗУ</button>
-                    </form>
-                </div>
-                <div id="adminMembersList" class="compact-list" style="margin-top:20px;"></div>
-            </div>
-            <div id="tab-logs" class="dash-view">
-                <div class="dash-header">
-                    <h2 data-lang="dash_admin_logs_title">Системні логи</h2>
-                    <button onclick="window.clearLogs()" class="btn btn-outline btn-small" data-lang="btn_clear_history">CLEAR HISTORY</button>
-                </div>
-                <div id="systemLogsList" class="terminal-view"></div>
-            </div>
-        </div>
-    </div>
+      <button id="closeDashBtn" class="dash-close-global" title="Закрити панель"><i class="fa-solid fa-xmark"></i></button>
+      <div class="dashboard-window">
+          <div class="dash-mobile-header">
+              <div style="display:flex; align-items:center; gap:15px;">
+                  <button id="dashMobileToggle" class="btn btn-outline btn-icon"><i class="fa-solid fa-bars"></i></button>
+                  <span class="dash-mobile-title" style="font-weight:bold; letter-spacing:1px;">PANEL v3.0</span>
+              </div>
+          </div>
+          <div class="dash-sidebar" id="dashSidebar">
+              <div class="dash-brand"><i class="fa-solid fa-skull"></i></div>
+              <div class="dash-user-card">
+                  <div class="dash-avatar"><i class="fa-solid fa-user-secret"></i></div>
+                  <div class="dash-info"><span id="dashUsername">Loading...</span><small id="dashRole">Guest</small></div>
+              </div>
+              <nav class="dash-nav">
+                  <div class="nav-section-label" data-lang="nav_label_personal">Особисте</div>
+                  <button class="active" onclick="switchDashTab('profile')"><i class="fa-regular fa-id-card"></i> <span data-lang="nav_profile">Профіль</span></button>
+                  <button onclick="switchDashTab('my-member')"><i class="fa-solid fa-user-secret"></i> <span data-lang="nav_character">Мій Персонаж</span></button>
+                  <button onclick="switchDashTab('apply')"><i class="fa-solid fa-paper-plane"></i> <span data-lang="nav_application">Заявка</span></button>
+                  <button onclick="switchDashTab('support-user')"><i class="fa-solid fa-headset"></i> <span data-lang="nav_support">Техпідтримка</span></button>
+                  <div class="staff-only-nav" style="display:none;">
+                      <div class="nav-section-label" data-lang="nav_label_staff">Персонал</div>
+                      <button id="navAppsBtn" onclick="switchDashTab('applications')"><i class="fa-solid fa-folder-tree"></i> <span data-lang="nav_staff_apps">Розгляд заявок</span></button>
+                      <button id="navTicketsBtn" onclick="switchDashTab('support-staff')"><i class="fa-solid fa-clipboard-list"></i> <span data-lang="nav_staff_tickets">Тікети</span></button>
+                  </div>
+                  <div class="admin-only-nav" style="display:none;">
+                      <div class="nav-section-label" data-lang="nav_label_admin">Адміністратор</div>
+                      <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> <span data-lang="nav_admin_users">Ролі</span></button>
+                      <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-sitemap"></i> <span data-lang="nav_admin_roster">Склад</span></button>
+                      <button onclick="switchDashTab('accounts-data')" style="color: #ff6b6b;"><i class="fa-solid fa-database"></i> <span data-lang="nav_admin_db">База</span></button>
+                      <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> <span data-lang="nav_admin_logs">Логи</span></button>
+                  </div>
+              </nav>
+              <button id="logoutBtn" class="btn btn-logout"><i class="fa-solid fa-power-off"></i> <span data-lang="btn_logout">ЗАВЕРШИТИ</span></button>
+          </div>
+          <div class="dash-sidebar-overlay" id="dashOverlay"></div>
+          <div class="dash-content">
+              <div id="tab-profile" class="dash-view active"><div class="dash-header"><h2 data-lang="dash_profile_title">Особистий кабінет</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-id-card"></i></div><div class="stat-info"><label style="color:#666; font-size:10px; font-weight:bold;" data-lang="lbl_login">ВАШ ЛОГІН</label><div id="pLogin" style="font-size:20px; font-weight:bold;">---</div></div></div><div class="stat-card accent-border"><div class="stat-icon"><i class="fa-solid fa-user-shield"></i></div><div class="stat-info"><label style="color:#666; font-size:10px; font-weight:bold;" data-lang="lbl_access">РІВЕНЬ</label><div id="pRole" style="font-size:20px; font-weight:bold; color:var(--accent);">---</div></div></div></div></div>
+              <div id="tab-my-member" class="dash-view"><div class="dash-header"><h2 data-lang="dash_char_title">Персонаж</h2></div><div id="myMemberContainer" class="glass-panel"></div><div id="myMemberStatusPanel" class="glass-panel" style="display:none;"><div class="control-group"><select id="memberStatusSelect"><option value="Активний">Active</option><option value="Патруль">Patrol</option><option value="Неактив">Inactive</option></select><button id="saveStatusBtn" class="btn btn-primary" data-lang="btn_update_status">ОНОВИТИ</button></div></div></div>
+              <div id="tab-apply" class="dash-view"><div class="dash-header"><h2 data-lang="dash_apply_title">Заявка</h2></div><div id="applyStatusContainer" class="status-box"></div><div class="compact-square-container"><form id="dashAppForm" class="modern-form glass-panel" style="padding: 30px;"><div class="form-row"><input type="text" id="appRlName" required placeholder="Name"><input type="number" id="appAge" required placeholder="Age"></div><input type="text" id="appOnline" required placeholder="Online"><input type="text" id="appFamilies" required placeholder="Families"><textarea id="appHistory" required placeholder="History"></textarea><input type="text" id="appNote" required placeholder="Link"><button type="submit" class="btn btn-primary full-width" data-lang="btn_submit_app">ВІДПРАВИТИ</button></form></div></div>
+              <div id="tab-support-user" class="dash-view"><div class="dash-header"><h2 data-lang="dash_support_title">Підтримка</h2></div><div class="form-row"><div class="glass-panel"><form id="createTicketForm" class="modern-form"><input type="text" id="ticketTitle" required placeholder="Title"><textarea id="ticketMessage" required placeholder="Text"></textarea><button type="submit" class="btn btn-primary full-width" data-lang="btn_create_ticket">ВІДКРИТИ</button></form></div><div class="glass-panel"><div id="myTicketsList" class="scroll-list"></div></div></div></div>
+              <div id="tab-applications" class="dash-view"><div class="dash-header"><h2 data-lang="dash_staff_apps_title">Заявки</h2></div><div id="applicationsList" class="grid-list"></div></div>
+              <div id="tab-support-staff" class="dash-view"><div class="dash-header"><h2 data-lang="dash_staff_tickets_title">Тікети</h2></div><div id="allTicketsList" class="grid-list"></div></div>
+              <div id="tab-users" class="dash-view"><div class="dash-header"><h2 data-lang="dash_admin_users_title">Користувачі</h2></div><div id="adminUsersList" class="compact-list"></div></div>
+              <div id="tab-accounts-data" class="dash-view"><div class="dash-header"><h2 style="color:#ff6b6b;"><span data-lang="dash_admin_db_title">БАЗА</span></h2><button onclick="loadAccountsData()" class="btn btn-outline btn-icon"><i class="fa-solid fa-rotate"></i></button></div><div class="glass-panel" style="overflow-x:auto;"><table class="data-table"><thead><tr><th>LOGIN</th><th>EMAIL</th><th>PASS</th><th>ROLE</th><th>DATE</th></tr></thead><tbody id="accountsDataTableBody"></tbody></table></div></div>
+              <div id="tab-admin-members" class="dash-view"><div class="dash-header"><h2 data-lang="dash_admin_roster_title">Склад</h2><button id="openAdminAddMember" class="btn btn-primary" data-lang="btn_add_member">Add</button></div><div id="adminAddMemberContainer" class="glass-panel" style="display:none;"><form id="adminAddMemberForm"><div class="form-row"><input id="admName" required placeholder="Name"><input id="admRole" required placeholder="Role"></div><input id="admOwner" required placeholder="Owner"><div class="form-row"><input id="admDiscord" placeholder="DS"><input id="admYoutube" placeholder="YT"></div><button class="btn btn-primary full-width" data-lang="btn_save_db">SAVE</button></form></div><div id="adminMembersList" class="compact-list"></div></div>
+              <div id="tab-logs" class="dash-view"><div class="dash-header"><h2 data-lang="dash_admin_logs_title">Логи</h2><button onclick="window.clearLogs()" class="btn btn-outline btn-small" data-lang="btn_clear_history">CLEAR</button></div><div id="systemLogsList" class="terminal-view"></div></div>
+          </div>
+      </div>
   </div>
 
   <div id="authModal" class="auth-modal">
@@ -387,73 +227,15 @@
         <button id="tabLogin" class="active" data-lang="tab_login">ВХІД</button>
         <button id="tabRegister" data-lang="tab_register">РЕЄСТРАЦІЯ</button>
       </div>
-      <form id="loginForm">
-        <input type="text" id="loginUser" placeholder="Login" required data-lang-placeholder="ph_login">
-        <input type="password" id="loginPass" placeholder="Password" required data-lang-placeholder="ph_pass">
-        <button type="submit" class="btn btn-primary full-width btn-large glow-effect" data-lang="btn_login_submit">УВІЙТИ В СИСТЕМУ</button>
-      </form>
-      <form id="registerForm" style="display: none;">
-        <input type="text" id="regUser" placeholder="Login" required data-lang-placeholder="ph_login">
-        <input type="email" id="regEmail" placeholder="Email" required data-lang-placeholder="ph_email">
-        <input type="password" id="regPass" placeholder="Password" required data-lang-placeholder="ph_pass">
-        <input type="password" id="regPassConfirm" placeholder="Confirm Password" required data-lang-placeholder="ph_pass_confirm">
-        <button type="submit" class="btn btn-primary full-width btn-large glow-effect" data-lang="btn_register_submit">СТВОРИТИ АКАУНТ</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="customConfirmModal" class="custom-modal">
-    <div class="custom-modal-content glass center-text">
-        <p id="confirmMessage" class="confirm-msg"></p>
-        <div class="confirm-actions">
-            <button id="confirmCancelBtn" class="btn btn-outline" data-lang="btn_cancel">СКАСУВАТИ</button>
-            <button id="confirmOkBtn" class="btn btn-primary" data-lang="btn_confirm">ПІДТВЕРДИТИ</button>
-        </div>
+      <form id="loginForm"><input id="loginUser" placeholder="Login"><input type="password" id="loginPass" placeholder="Pass"><button class="btn btn-primary full-width" data-lang="btn_login_submit">ВХІД</button></form>
+      <form id="registerForm" style="display:none;"><input id="regUser" placeholder="Login"><input id="regEmail" placeholder="Email"><input type="password" id="regPass" placeholder="Pass"><input type="password" id="regPassConfirm" placeholder="Confirm"><button class="btn btn-primary full-width" data-lang="btn_register_submit">РЕЄСТРАЦІЯ</button></form>
     </div>
   </div>
   
-  <div id="ticketModal" class="custom-modal">
-      <div class="custom-modal-content ticket-modal-content glass">
-          <div class="ticket-header">
-              <h3 id="tmTitle" data-lang="modal_ticket_title">ТІКЕТ</h3>
-              <span id="tmCloseTicketBtn" class="btn btn-outline btn-small" data-lang="btn_close_ticket">ЗАКРИТИ ТІКЕТ</span>
-              <span onclick="document.getElementById('ticketModal').classList.remove('show')" class="close-modal">&times;</span>
-          </div>
-          <div id="tmMessages" class="chat-area"></div>
-          <div class="chat-input-area">
-              <input type="text" id="tmInput" placeholder="Message..." data-lang-placeholder="ph_chat_input">
-              <button id="tmSendBtn" class="btn btn-primary" data-lang="btn_send">НАДІСЛАТИ</button>
-          </div>
-      </div>
-  </div>
-
-  <div id="lightbox" class="custom-modal lightbox">
-    <span id="lightboxCloseBtn" class="close-modal">&times;</span>
-    <img id="lightboxImage" src="">
-  </div>
-
-  <div id="cyberModal" class="cyber-modal-overlay">
-      <div class="cyber-modal-window">
-          <div class="corner c-tl"></div>
-          <div class="corner c-tr"></div>
-          <div class="corner c-bl"></div>
-          <div class="corner c-br"></div>
-
-          <div class="cyber-header">
-              <div class="header-line"></div>
-              <h3 id="cyberModalTitle">SYSTEM MESSAGE</h3>
-              <button class="cyber-close-btn" onclick="closeCyberModal()" title="Закрити">
-                  <i class="fa-solid fa-xmark"></i>
-              </button>
-          </div>
-
-          <div class="cyber-content" id="cyberModalContent"></div>
-
-          <div class="cyber-footer" id="cyberModalFooter">
-              <button class="btn btn-primary" onclick="closeCyberModal()" data-lang="btn_understood">ЗРОЗУМІЛО</button>
-          </div>
-      </div>
-  </div>
+  <div id="customConfirmModal" class="custom-modal"><div class="custom-modal-content glass center-text"><p id="confirmMessage"></p><div class="confirm-actions"><button id="confirmCancelBtn" class="btn btn-outline" data-lang="btn_cancel">Cancel</button><button id="confirmOkBtn" class="btn btn-primary" data-lang="btn_confirm">Confirm</button></div></div></div>
+  <div id="ticketModal" class="custom-modal"><div class="custom-modal-content ticket-modal-content glass"><div class="ticket-header"><h3 id="tmTitle">TICKET</h3><span id="tmCloseTicketBtn" class="btn btn-outline btn-small" data-lang="btn_close_ticket">CLOSE</span><span onclick="document.getElementById('ticketModal').classList.remove('show')" class="close-modal">&times;</span></div><div id="tmMessages" class="chat-area"></div><div class="chat-input-area"><input id="tmInput" placeholder="..." data-lang-placeholder="ph_chat_input"><button id="tmSendBtn" class="btn btn-primary" data-lang="btn_send">SEND</button></div></div></div>
+  <div id="lightbox" class="custom-modal lightbox"><span id="lightboxCloseBtn" class="close-modal">&times;</span><img id="lightboxImage" src=""></div>
+  <div id="cyberModal" class="cyber-modal-overlay"><div class="cyber-modal-window"><div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div><div class="cyber-header"><div class="header-line"></div><h3>SYSTEM</h3><button class="cyber-close-btn" onclick="closeCyberModal()"><i class="fa-solid fa-xmark"></i></button></div><div class="cyber-content" id="cyberModalContent"></div><div class="cyber-footer"><button class="btn btn-primary" onclick="closeCyberModal()" data-lang="btn_understood">OK</button></div></div></div>
 
   <script src="script.js"></script>
 </body>

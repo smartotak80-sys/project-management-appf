@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // --- 1. ПРІОРИТЕТНЕ ПРИБИРАННЯ ЗАСТАВКИ (SAFE MODE) ---
   setTimeout(() => {
       const p = document.getElementById('preloader');
       if(p) { 
@@ -9,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }, 2000);
 
-  // --- ЗМІННІ ---
   const CURRENT_USER_KEY = 'barakuda_current_user';
   let members = [];
   let systemLogs = [];
@@ -18,13 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
       systemLogs = storedLogs ? JSON.parse(storedLogs) : [];
   } catch(e) { systemLogs = []; }
 
-  // --- ХЕЛПЕР ПЕРЕКЛАДУ (НОВИЙ) ---
   function getTrans(key) {
       const lang = localStorage.getItem('barracuda_lang') || 'ua';
       return translations[lang]?.[key] || translations['ua']?.[key] || key;
   }
 
-  // UTILS
   function loadCurrentUser(){ try{ return JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); } catch(e){ return null; } }
   function saveCurrentUser(val){ try { localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(val)); } catch(e){} }
   function removeCurrentUser(){ try { localStorage.removeItem(CURRENT_USER_KEY); } catch(e){} }
@@ -49,10 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!m) return;
       document.getElementById('confirmMessage').textContent=msg;
       const ok=document.getElementById('confirmOkBtn');
-      // Оновлюємо кнопки модалки динамічно
       document.getElementById('confirmCancelBtn').textContent = getTrans('modal_cancel');
       ok.textContent = getTrans('modal_confirm');
-
       m.classList.add('show');
       const clean=(r)=>{ m.classList.remove('show'); ok.onclick=null; if(cb)cb(r); };
       ok.onclick=()=>clean(true); 
@@ -82,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch(e) { console.error("Init data load failed:", e); }
   }
 
-  // --- АНІМАЦІЇ ---
   function activateScrollAnimations() {
       if (!window.IntersectionObserver) return;
       const observer = new IntersectionObserver((entries) => {
@@ -101,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // --- DASHBOARD UI ---
   const dashModal = document.getElementById('dashboardModal');
   const mobileToggle = document.getElementById('dashMobileToggle');
   const sidebar = document.getElementById('dashSidebar');
@@ -149,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
       switchDashTab('profile');
   }
 
-  // --- ACCOUNTS DATA & ADMIN ---
   window.loadAccountsData = async () => {
       const tbody = document.getElementById('accountsDataTableBody');
       if(!tbody) return;
@@ -178,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.changeUserRole = async (u, role) => { await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) }); showToast(getTrans('msg_updated')); loadUsersAdmin(); };
   window.banUser = async (u) => customConfirm(`${getTrans('msg_confirm_ban')} ${u}?`, async(r)=>{ if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast(getTrans('msg_deleted')); loadUsersAdmin(); } });
 
-  // --- APPLICATIONS ---
   const dashAppForm = document.getElementById('dashAppForm');
   if(dashAppForm) {
       dashAppForm.addEventListener('submit', async (e)=>{
@@ -220,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.updateAppStatus = async (id, status) => { const input = document.getElementById(`reason-${id}`); await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: input?input.value:''})}); showToast(getTrans('msg_updated')); loadApplicationsStaff(); };
   window.deleteApp = async (id) => { await apiFetch(`/api/applications/${id}`, { method: 'DELETE' }); showToast(getTrans('msg_deleted')); loadApplicationsStaff(); };
 
-  // --- TICKETS ---
   const ticketForm = document.getElementById('createTicketForm');
   if(ticketForm) {
       ticketForm.addEventListener('submit', async (e)=>{
@@ -261,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('tmInput').value = ''; window.openTicket(currentTicketId);
   });
 
-  // --- FULL TRANSLATION SYSTEM ---
   const translations = {
     ua: {
         flag: "ua", label: "UKR",
@@ -292,7 +280,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ph_login: "Логін", ph_pass: "Пароль", ph_email: "Email", ph_pass_conf: "Підтвердіть пароль",
         modal_cancel: "СКАСУВАТИ", modal_confirm: "ПІДТВЕРДИТИ", modal_ok: "ЗРОЗУМІЛО",
         search_placeholder: "Пошук агента...", ticket_close_btn: "ЗАКРИТИ ТІКЕТ", ph_chat: "Повідомлення...", chat_send: "НАДІСЛАТИ",
-        // ADMIN & SYSTEM MESSAGES
+        
+        // ADMIN & SYSTEM MESSAGES (UPDATED)
         msg_access_denied: "ДОСТУП ЗАБОРОНЕНО",
         msg_welcome: "ВІТАЄМО",
         msg_error: "Помилка",
@@ -312,7 +301,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_approve: "ОК",
         btn_reject: "НІ",
         btn_delete: "ВИДАЛИТИ",
-        btn_ban: "BAN"
+        btn_ban: "BAN",
+        
+        // NEW DASHBOARD HEADERS
+        dash_header_apps: "Вхідні заявки (Staff)",
+        dash_header_tickets: "Управління тікетами",
+        dash_header_users: "Користувачі та Ролі",
+        dash_header_db: "БАЗА КОРИСТУВАЧІВ",
+        dash_header_roster: "Редагування складу",
+        dash_header_logs: "Системні логи",
+        btn_add_member: "Додати",
+        btn_save_db: "ЗБЕРЕГТИ В БАЗУ",
+        btn_clear_history: "ОЧИСТИТИ ІСТОРІЮ",
+        // Table Headers
+        tbl_username: "КОРИСТУВАЧ",
+        tbl_email: "EMAIL",
+        tbl_hash: "ПАРОЛЬ (HASH)",
+        tbl_access: "РІВЕНЬ ДОСТУПУ",
+        tbl_reg: "ДАТА РЕЄСТРАЦІЇ"
     },
     en: {
         flag: "gb", label: "ENG",
@@ -343,7 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ph_login: "Login", ph_pass: "Password", ph_email: "Email", ph_pass_conf: "Confirm Password",
         modal_cancel: "CANCEL", modal_confirm: "CONFIRM", modal_ok: "UNDERSTOOD",
         search_placeholder: "Search agent...", ticket_close_btn: "CLOSE TICKET", ph_chat: "Message...", chat_send: "SEND",
-        // ADMIN & SYSTEM MESSAGES
+        
+        // ADMIN & SYSTEM MESSAGES (UPDATED)
         msg_access_denied: "ACCESS DENIED",
         msg_welcome: "WELCOME",
         msg_error: "Error",
@@ -363,7 +370,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_approve: "OK",
         btn_reject: "NO",
         btn_delete: "DEL",
-        btn_ban: "BAN"
+        btn_ban: "BAN",
+
+        // NEW DASHBOARD HEADERS
+        dash_header_apps: "Incoming Applications (Staff)",
+        dash_header_tickets: "Ticket Management",
+        dash_header_users: "Users & Roles",
+        dash_header_db: "USERS DATABASE",
+        dash_header_roster: "Roster Editor",
+        dash_header_logs: "System Logs",
+        btn_add_member: "Add",
+        btn_save_db: "SAVE TO DB",
+        btn_clear_history: "CLEAR HISTORY",
+        // Table Headers
+        tbl_username: "USERNAME",
+        tbl_email: "EMAIL ADDRESS",
+        tbl_hash: "HASH",
+        tbl_access: "ACCESS LEVEL",
+        tbl_reg: "REGISTERED"
     },
     ru: {
         flag: "ru", label: "RUS",
@@ -394,7 +418,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ph_login: "Логин", ph_pass: "Пароль", ph_email: "Email", ph_pass_conf: "Подтвердите пароль",
         modal_cancel: "ОТМЕНА", modal_confirm: "ПОДТВЕРДИТЬ", modal_ok: "ПОНЯТНО",
         search_placeholder: "Поиск агента...", ticket_close_btn: "ЗАКРЫТЬ ТИКЕТ", ph_chat: "Сообщение...", chat_send: "ОТПРАВИТЬ",
-        // ADMIN & SYSTEM MESSAGES
+        
+        // ADMIN & SYSTEM MESSAGES (UPDATED)
         msg_access_denied: "ДОСТУП ЗАПРЕЩЕН",
         msg_welcome: "ДОБРО ПОЖАЛОВАТЬ",
         msg_error: "Ошибка",
@@ -414,7 +439,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_approve: "ОК",
         btn_reject: "НЕТ",
         btn_delete: "УДАЛИТЬ",
-        btn_ban: "BAN"
+        btn_ban: "BAN",
+
+        // NEW DASHBOARD HEADERS
+        dash_header_apps: "Заявки (Staff)",
+        dash_header_tickets: "Управление тикетами",
+        dash_header_users: "Пользователи и Роли",
+        dash_header_db: "БАЗА ПОЛЬЗОВАТЕЛЕЙ",
+        dash_header_roster: "Редактор состава",
+        dash_header_logs: "Системные логи",
+        btn_add_member: "Добавить",
+        btn_save_db: "СОХРАНИТЬ В БАЗУ",
+        btn_clear_history: "ОЧИСТИТЬ ИСТОРИЮ",
+        // Table Headers
+        tbl_username: "ПОЛЬЗОВАТЕЛЬ",
+        tbl_email: "EMAIL",
+        tbl_hash: "ХЕШ ПАРОЛЯ",
+        tbl_access: "УРОВЕНЬ ДОСТУПА",
+        tbl_reg: "ДАТА РЕГИСТРАЦИИ"
     },
     de: {
         flag: "de", label: "DEU",
@@ -445,7 +487,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ph_login: "Benutzer", ph_pass: "Passwort", ph_email: "E-Mail", ph_pass_conf: "Passwort bestätigen",
         modal_cancel: "ABBRECHEN", modal_confirm: "BESTÄTIGEN", modal_ok: "VERSTANDEN",
         search_placeholder: "Agent suchen...", ticket_close_btn: "SCHLIESSEN", ph_chat: "Nachricht...", chat_send: "SENDEN",
-        // ADMIN & SYSTEM MESSAGES
+        
+        // ADMIN & SYSTEM MESSAGES (UPDATED)
         msg_access_denied: "ZUGRIFF VERWEIGERT",
         msg_welcome: "WILLKOMMEN",
         msg_error: "Fehler",
@@ -465,7 +508,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_approve: "OK",
         btn_reject: "NEIN",
         btn_delete: "LÖSCHEN",
-        btn_ban: "BAN"
+        btn_ban: "BAN",
+
+        // NEW DASHBOARD HEADERS
+        dash_header_apps: "Bewerbungen (Staff)",
+        dash_header_tickets: "Ticketverwaltung",
+        dash_header_users: "Benutzer & Rollen",
+        dash_header_db: "BENUTZERDATENBANK",
+        dash_header_roster: "Dienstplan-Editor",
+        dash_header_logs: "Systemprotokolle",
+        btn_add_member: "Hinzufügen",
+        btn_save_db: "IN DB SPEICHERN",
+        btn_clear_history: "VERLAUF LÖSCHEN",
+        // Table Headers
+        tbl_username: "BENUTZERNAME",
+        tbl_email: "E-MAIL",
+        tbl_hash: "HASH",
+        tbl_access: "ZUGRIFFSEBENE",
+        tbl_reg: "REGISTRIERT"
     },
     es: {
         flag: "es", label: "ESP",
@@ -496,7 +556,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ph_login: "Usuario", ph_pass: "Contraseña", ph_email: "Email", ph_pass_conf: "Confirmar",
         modal_cancel: "CANCELAR", modal_confirm: "CONFIRMAR", modal_ok: "ENTENDIDO",
         search_placeholder: "Buscar agente...", ticket_close_btn: "CERRAR", ph_chat: "Mensaje...", chat_send: "ENVIAR",
-        // ADMIN & SYSTEM MESSAGES
+        
+        // ADMIN & SYSTEM MESSAGES (UPDATED)
         msg_access_denied: "ACCESO DENEGADO",
         msg_welcome: "BIENVENIDO",
         msg_error: "Error",
@@ -516,7 +577,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_approve: "OK",
         btn_reject: "NO",
         btn_delete: "ELIMINAR",
-        btn_ban: "BAN"
+        btn_ban: "BAN",
+
+        // NEW DASHBOARD HEADERS
+        dash_header_apps: "Solicitudes (Staff)",
+        dash_header_tickets: "Gestión de Tickets",
+        dash_header_users: "Usuarios y Roles",
+        dash_header_db: "BASE DE DATOS DE USUARIOS",
+        dash_header_roster: "Editor de Lista",
+        dash_header_logs: "Registros del Sistema",
+        btn_add_member: "Añadir",
+        btn_save_db: "GUARDAR EN BD",
+        btn_clear_history: "BORRAR HISTORIAL",
+        // Table Headers
+        tbl_username: "USUARIO",
+        tbl_email: "EMAIL",
+        tbl_hash: "HASH",
+        tbl_access: "NIVEL DE ACCESO",
+        tbl_reg: "REGISTRADO"
     },
     pt: {
         flag: "br", label: "POR",
@@ -547,7 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ph_login: "Usuário", ph_pass: "Senha", ph_email: "Email", ph_pass_conf: "Confirmar",
         modal_cancel: "CANCELAR", modal_confirm: "CONFIRMAR", modal_ok: "ENTENDIDO",
         search_placeholder: "Buscar agente...", ticket_close_btn: "FECHAR", ph_chat: "Mensagem...", chat_send: "ENVIAR",
-        // ADMIN & SYSTEM MESSAGES
+        
+        // ADMIN & SYSTEM MESSAGES (UPDATED)
         msg_access_denied: "ACESSO NEGADO",
         msg_welcome: "BEM-VINDO",
         msg_error: "Erro",
@@ -567,7 +646,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_approve: "OK",
         btn_reject: "NÃO",
         btn_delete: "EXCLUIR",
-        btn_ban: "BAN"
+        btn_ban: "BAN",
+
+        // NEW DASHBOARD HEADERS
+        dash_header_apps: "Aplicações (Staff)",
+        dash_header_tickets: "Gestão de Tickets",
+        dash_header_users: "Usuários e Papéis",
+        dash_header_db: "BANCO DE DADOS DE USUÁRIOS",
+        dash_header_roster: "Editor de Lista",
+        dash_header_logs: "Logs do Sistema",
+        btn_add_member: "Adicionar",
+        btn_save_db: "SALVAR NO BD",
+        btn_clear_history: "LIMPAR HISTÓRICO",
+        // Table Headers
+        tbl_username: "USUÁRIO",
+        tbl_email: "EMAIL",
+        tbl_hash: "HASH",
+        tbl_access: "NÍVEL DE ACESSO",
+        tbl_reg: "REGISTRADO"
     },
     pl: {
         flag: "pl", label: "POL",
@@ -598,7 +694,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ph_login: "Login", ph_pass: "Hasło", ph_email: "Email", ph_pass_conf: "Potwierdź hasło",
         modal_cancel: "ANULUJ", modal_confirm: "POTWIERDŹ", modal_ok: "ZROZUMIANO",
         search_placeholder: "Szukaj agenta...", ticket_close_btn: "ZAMKNIJ TICKET", ph_chat: "Wiadomość...", chat_send: "WYŚLIJ",
-        // ADMIN & SYSTEM MESSAGES
+        
+        // ADMIN & SYSTEM MESSAGES (UPDATED)
         msg_access_denied: "ODMOWA DOSTĘPU",
         msg_welcome: "WITAJ",
         msg_error: "Błąd",
@@ -618,7 +715,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_approve: "OK",
         btn_reject: "NIE",
         btn_delete: "USUŃ",
-        btn_ban: "BAN"
+        btn_ban: "BAN",
+
+        // NEW DASHBOARD HEADERS
+        dash_header_apps: "Aplikacje (Staff)",
+        dash_header_tickets: "Zarządzanie Ticketami",
+        dash_header_users: "Użytkownicy i Role",
+        dash_header_db: "BAZA UŻYTKOWNIKÓW",
+        dash_header_roster: "Edytor Składu",
+        dash_header_logs: "Logi Systemowe",
+        btn_add_member: "Dodaj",
+        btn_save_db: "ZAPISZ W BAZIE",
+        btn_clear_history: "WYCZYŚĆ HISTORIĘ",
+        // Table Headers
+        tbl_username: "UŻYTKOWNIK",
+        tbl_email: "EMAIL",
+        tbl_hash: "HASH HASŁA",
+        tbl_access: "POZIOM DOSTĘPU",
+        tbl_reg: "ZAREJESTROWANY"
     }
   };
 
@@ -690,7 +804,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   }
 
-  // EVENT LISTENERS
   document.getElementById('navToggle')?.addEventListener('click', ()=>document.getElementById('mainNav').classList.toggle('open'));
   document.getElementById('closeAuth')?.addEventListener('click', ()=>document.getElementById('authModal').classList.remove('show'));
   if(dashModal) document.getElementById('closeDashBtn')?.addEventListener('click', ()=>dashModal.classList.remove('show'));
@@ -701,7 +814,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('loginForm')?.addEventListener('submit', async (e)=>{ e.preventDefault(); const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) }); if(res && res.success) { saveCurrentUser(res.user); showToast(`${getTrans('msg_welcome')}, ${res.user.username}`); setTimeout(()=>location.reload(), 500); } });
   document.getElementById('registerForm')?.addEventListener('submit', async (e)=>{ e.preventDefault(); const pass = document.getElementById('regPass').value; if(pass !== document.getElementById('regPassConfirm').value) return showToast(getTrans('msg_pass_mismatch'), 'error'); const res = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username: document.getElementById('regUser').value, email: document.getElementById('regEmail').value, password: pass }) }); if(res && res.success) { showToast(getTrans('msg_created_login')); document.getElementById('tabLogin').click(); } });
   
-  // ADMIN & MEMBER MANAGEMENT
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
   document.getElementById('adminAddMemberForm')?.addEventListener('submit', async (e)=>{ e.preventDefault(); const body = { name: document.getElementById('admName').value, role: document.getElementById('admRole').value, owner: document.getElementById('admOwner').value, links: {discord:document.getElementById('admDiscord').value, youtube:document.getElementById('admYoutube').value} }; await apiFetch('/api/members', {method:'POST', body:JSON.stringify(body)}); showToast(getTrans('msg_member_added')); loadAdminMembers(); });
   async function loadAdminMembers() { const list = document.getElementById('adminMembersList'); if(!list) return; const m = await apiFetch('/api/members'); if(!m || m.length === 0) { list.innerHTML = `<div>${getTrans('msg_empty_list')}</div>`; return; } list.innerHTML = m.map(x => `<div class="u-row animate-hidden"><div>${x.name} <small>(${x.role})</small></div><button class="btn btn-outline" onclick="window.deleteMember('${x.id}')">${getTrans('btn_delete')}</button></div>`).join(''); }
@@ -725,7 +837,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.renderLogs = () => { const l = document.getElementById('systemLogsList'); if(l) l.innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
   window.clearLogs = () => { systemLogs=[]; try { localStorage.removeItem('barakuda_logs'); } catch(e){} renderLogs(); };
   
-  // MODAL LOGIC
   window.closeCyberModal = () => { const modal = document.getElementById('cyberModal'); if (modal) modal.classList.remove('active'); };
   const cyberModal = document.getElementById('cyberModal');
   if (cyberModal) { cyberModal.addEventListener('click', (e) => { if (e.target.classList.contains('cyber-modal-overlay')) closeCyberModal(); }); }

@@ -39,7 +39,6 @@
             <li><a href="#home" data-lang="home">ГОЛОВНА</a></li>
             <li><a href="#about" data-lang="about">ІНФО</a></li>
             <li><a href="#members" data-lang="members">СКЛАД</a></li>
-            <li><a href="#shop" data-lang="shop">МАГАЗИН</a></li>
             <li><a href="#gallery" data-lang="media">МЕДІА</a></li>
             <li><a href="#apply" class="primary-link" data-lang="apply">ВСТУП</a></li>
           </ul>
@@ -111,7 +110,7 @@
                 <h3 data-lang="server_stake">Stake RP</h3>
                 <p>
                     <span style="color:var(--text-muted); font-size: 12px;" data-lang="lbl_owner">ВЛАСНИК</span><br>
-                    <span style="font-size: 18px; font-weight: bold; color: var(--accent);">Triton Barracuda</span>
+                    <span class="owner-link" onclick="showOwnerInfo('stake')">Triton Barracuda</span>
                 </p>
             </article>
 
@@ -120,7 +119,7 @@
                 <h3 data-lang="server_chicago">Majestic RP Chicago</h3>
                 <p>
                     <span style="color:var(--text-muted); font-size: 12px;" data-lang="lbl_owner">ВЛАСНИК</span><br>
-                    <span style="font-size: 18px; font-weight: bold; color: var(--accent);">Derici Barracuda</span>
+                    <span class="owner-link" onclick="showOwnerInfo('chicago')">Derici Barracuda</span>
                 </p>
             </article>
 
@@ -129,7 +128,7 @@
                 <h3 data-lang="server_ny">Majestic RP New York</h3>
                 <p>
                     <span style="color:var(--text-muted); font-size: 12px;" data-lang="lbl_owner">ВЛАСНИК</span><br>
-                    <span style="font-size: 18px; font-weight: bold; color: var(--accent);">Triton Barracuda</span>
+                    <span class="owner-link" onclick="showOwnerInfo('ny')">Triton Barracuda</span>
                 </p>
             </article>
           </div>
@@ -145,14 +144,6 @@
           </div>
           <div id="membersGrid" class="members-grid"></div>
         </div>
-      </section>
-
-      <section id="shop" class="section">
-          <div class="container">
-              <div class="section-header"><h2><span data-lang="shop_title">МАГАЗИН</span> <span class="highlight">BARRACUDA</span></h2></div>
-              <p style="color:var(--text-muted); text-align:center; max-width:600px; margin:0 auto 30px;" data-lang="shop_desc">Ексклюзивні товари для членів сім'ї. Оплата здійснюється через Discord або внутрішню валюту.</p>
-              <div id="shopGrid" class="cards"></div>
-          </div>
       </section>
 
       <section id="events" class="section">
@@ -236,7 +227,6 @@
                 
                 <div class="admin-only-nav" style="display:none;">
                     <div class="nav-section-label" data-lang="dash_label_admin">Адміністратор</div>
-                    <button onclick="switchDashTab('shop-admin')"><i class="fa-solid fa-cart-shopping"></i> <span data-lang="dash_nav_shop">Магазин (Керування)</span></button>
                     <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> <span data-lang="dash_nav_users">Керування ролями</span></button>
                     <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-sitemap"></i> <span data-lang="dash_nav_roster">Редактор складу</span></button>
                     <button onclick="switchDashTab('accounts-data')" style="color: #ff6b6b;"><i class="fa-solid fa-database"></i> <span data-lang="dash_nav_db">База даних</span></button>
@@ -345,28 +335,6 @@
                 <div class="dash-header"><h2>Користувачі та Ролі</h2></div>
                 <div id="adminUsersList" class="compact-list"></div>
             </div>
-            
-            <div id="tab-shop-admin" class="dash-view">
-                <div class="dash-header">
-                    <h2 data-lang="dash_shop_admin_title">Керування Магазином</h2>
-                </div>
-                <div class="glass-panel">
-                    <h3 data-lang="dash_shop_add">Додати товар</h3>
-                    <form id="adminShopForm" class="modern-form">
-                        <div class="form-row">
-                            <input type="text" id="shopTitle" placeholder="Назва товару" required>
-                            <input type="text" id="shopPrice" placeholder="Ціна (напр: 500$)" required>
-                        </div>
-                        <input type="text" id="shopImage" placeholder="Посилання на картинку (URL)" required>
-                        <textarea id="shopDesc" placeholder="Опис товару" rows="2"></textarea>
-                        <button type="submit" class="btn btn-primary full-width" data-lang="btn_add_item">ДОДАТИ ТОВАР</button>
-                    </form>
-                </div>
-                <div class="glass-panel" style="margin-top:20px;">
-                    <h3 data-lang="dash_shop_list">Список товарів</h3>
-                    <div id="adminShopList" class="compact-list"></div>
-                </div>
-            </div>
 
             <div id="tab-accounts-data" class="dash-view">
                 <div class="dash-header">
@@ -451,6 +419,22 @@
             <button id="confirmOkBtn" class="btn btn-primary" data-lang="modal_confirm">ПІДТВЕРДИТИ</button>
         </div>
     </div>
+  </div>
+
+  <div id="ownerInfoModal" class="custom-modal">
+      <div class="custom-modal-content glass center-text" style="border: 1px solid var(--accent); box-shadow: 0 0 30px rgba(255,42,42,0.2);">
+          <h3 id="ownerModalTitle" style="color:var(--accent); text-transform:uppercase; margin-bottom: 20px;">INFO</h3>
+          <div style="margin-bottom: 20px; font-size: 16px;">
+              <p style="color:#aaa; font-size:12px; margin-bottom:5px;">PROMO CODE</p>
+              <div id="ownerPromo" style="font-family:monospace; font-size:24px; color:#fff; background:rgba(255,255,255,0.1); padding:10px; border-radius:8px;"></div>
+          </div>
+          <div style="margin-bottom: 25px;">
+              <a id="ownerDiscordBtn" href="#" target="_blank" class="btn btn-discord full-width">
+                  <i class="fa-brands fa-discord"></i> DISCORD
+              </a>
+          </div>
+          <button class="btn btn-outline full-width" onclick="document.getElementById('ownerInfoModal').classList.remove('show')">ЗАКРИТИ</button>
+      </div>
   </div>
   
   <div id="ticketModal" class="custom-modal">

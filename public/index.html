@@ -96,12 +96,15 @@
           <div class="section-header">
               <h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2>
           </div>
+          
           <div class="glass-panel about-main-text animate-hidden">
              <p class="about-desc" data-lang="about_main_desc">
-                BARRACUDA — це елітна сім'я та організація, що об'єднує гравців на провідних RP проектах. Ми граємо на різних серверах GTA V, поширюючи свій вплив та встановлюючи свої правила.<br><br>
+                BARRACUDA — це елітна сім'я та організація, що об'єднує гравців на провідних RP проектах. Ми граємо на різних серверах GTA V, поширюючи свій вплив та встановлюючи свої правила.
+                <br><br>
                 Ми — це більше, ніж просто клан. Це братерство, скріплене залізною дисципліною та амбіціями. Ми контролюємо ресурси, захоплюємо території та завжди прикриваємо спини один одному.
              </p>
           </div>
+
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-server"></i></div>
@@ -111,6 +114,7 @@
                     <span class="owner-link" onclick="showOwnerInfo('stake')">Triton Barracuda</span>
                 </p>
             </article>
+
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-city"></i></div>
                 <h3 data-lang="server_chicago">Majestic RP Chicago</h3>
@@ -119,6 +123,7 @@
                     <span class="owner-link" onclick="showOwnerInfo('chicago')">Derici Barracuda</span>
                 </p>
             </article>
+
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-building"></i></div>
                 <h3 data-lang="server_ny">Majestic RP New York</h3>
@@ -271,7 +276,6 @@
 
             <div id="tab-my-member" class="dash-view">
                 <div class="dash-header"><h2 data-lang="dash_char_settings">Налаштування персонажа</h2></div>
-                
                 <div id="createMemberBlock">
                      <div class="glass-panel" style="text-align:center;">
                          <h3>Створити персонажа</h3>
@@ -279,9 +283,7 @@
                          <button id="openAdminAddMemberUser" class="btn btn-primary">СТВОРИТИ</button>
                      </div>
                 </div>
-
                 <div id="myMemberContainer" class="glass-panel" style="display:none;"></div>
-                
                 <div id="myMemberStatusPanel" class="glass-panel" style="display:none;">
                     <h4 style="margin-top:0"><i class="fa-solid fa-signal"></i> <span data-lang="dash_char_status">Актуальний статус</span></h4>
                     <div class="control-group" style="display:flex; gap:10px;">
@@ -439,18 +441,19 @@
   </div>
 
   <div id="ownerInfoModal" class="custom-modal">
-      <div class="custom-modal-content glass center-text" style="border: 1px solid var(--accent); box-shadow: 0 0 30px rgba(255,42,42,0.2);">
-          <h3 id="ownerModalTitle" style="color:var(--accent); text-transform:uppercase; margin-bottom: 20px;">INFO</h3>
-          <div style="margin-bottom: 20px; font-size: 16px;">
-              <p style="color:#aaa; font-size:12px; margin-bottom:5px;">PROMO CODE</p>
-              <div id="ownerPromo" style="font-family:monospace; font-size:24px; color:#fff; background:rgba(255,255,255,0.1); padding:10px; border-radius:8px;"></div>
+      <div class="custom-modal-content">
+          <h3 id="ownerModalTitle">SERVER NAME</h3>
+          
+          <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+              <span class="promo-label">PROMO CODE</span>
+              <div id="ownerPromo">/promo CODE</div>
           </div>
-          <div style="margin-bottom: 25px;">
-              <a id="ownerDiscordBtn" href="#" target="_blank" class="btn btn-discord full-width">
-                  <i class="fa-brands fa-discord"></i> DISCORD
-              </a>
-          </div>
-          <button class="btn btn-outline full-width" onclick="document.getElementById('ownerInfoModal').classList.remove('show')">ЗАКРИТИ</button>
+          
+          <a id="ownerDiscordBtn" href="#" target="_blank" class="btn-discord">
+              <i class="fa-brands fa-discord"></i> DISCORD
+          </a>
+          
+          <button class="btn-close-modal" onclick="document.getElementById('ownerInfoModal').classList.remove('show')">ЗАКРИТИ</button>
       </div>
   </div>
 

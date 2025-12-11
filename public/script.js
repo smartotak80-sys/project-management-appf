@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function saveCurrentUser(val){ try { localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(val)); } catch(e){} }
   function removeCurrentUser(){ try { localStorage.removeItem(CURRENT_USER_KEY); } catch(e){} }
   
-  // --- FULL TRANSLATION SYSTEM (ALL SECTIONS) ---
+  // --- FULL TRANSLATION SYSTEM ---
   const translations = {
     ua: {
         flag: "ua", label: "UKR",
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         about_title_span: "ХТО", about_title: "МИ Є", hero_lead: "ДОМІНУВАННЯ. СТИЛЬ. ДИСЦИПЛІНА.",
         card_mission: "МІСІЯ", card_mission_desc: "Створення унікального RP досвіду та домінування в сферах впливу.",
         card_protection: "ЗАХИСТ", card_protection_desc: "Ми стоїмо один за одного. Сім'я — це непорушна фортеця.",
-        card_resources: "РЕСУРСИ", card_resources_desc: "Забезпечення кожного учасника усім необхідним для комфортної гри.",
+        card_resources: "РЕСУРСИ", card_resources_desc: "Забезпечення кожного учасника усім необхідним для комфортной гри.",
         members_title_span: "НАШ", members_title: "СКЛАД",
         news_title: "СТРІЧКА", news_title_span: "НОВИН",
         gallery_title: "ГАЛЕРЕЯ",

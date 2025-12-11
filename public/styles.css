@@ -259,28 +259,21 @@ h1, h2, h3, .brand-text { font-family: var(--font-main); letter-spacing: 1px; }
 .card-icon { font-size: 30px; color: var(--accent); margin-bottom: 15px; }
 .card h3 { color: #fff; margin: 0 0 10px; font-size: 20px; text-transform: uppercase; }
 
-/* --- SHOP STYLES --- */
-.shop-card {
-    background: var(--bg-panel); border-radius: 16px; overflow: hidden;
-    border: 1px solid var(--glass-border); transition: transform 0.3s;
-    display: flex; flex-direction: column; height: 100%;
-    backdrop-filter: blur(10px);
+/* --- OWNER LINKS --- */
+.owner-link {
+    font-size: 18px; 
+    font-weight: bold; 
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    border-bottom: 1px dashed rgba(255, 42, 42, 0.4);
 }
-.shop-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 40px rgba(255, 42, 42, 0.08); }
-.shop-img {
-    height: 180px; background-size: cover; background-position: center;
-    border-bottom: 1px solid rgba(255,255,255,0.05); position: relative;
-    background-color: rgba(255,255,255,0.02);
+.owner-link:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+    text-shadow: 0 0 10px var(--accent);
 }
-.shop-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-.shop-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-.shop-header h3 { margin: 0; font-size: 18px; color: #fff; max-width: 70%; text-transform: uppercase; letter-spacing: 0.5px; }
-.shop-price { 
-    background: rgba(255, 42, 42, 0.1); color: var(--accent); padding: 5px 10px; 
-    border-radius: 6px; font-weight: 800; font-size: 14px; border: 1px solid rgba(255,42,42,0.3); 
-    white-space: nowrap;
-}
-.shop-desc { font-size: 13px; color: #aaa; margin-bottom: 20px; flex: 1; line-height: 1.5; }
 
 /* --- INPUTS --- */
 input, textarea, select {

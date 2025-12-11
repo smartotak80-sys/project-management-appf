@@ -26,13 +26,13 @@ body {
   position: relative;
 }
 
-/* --- CUSTOM SCROLLBAR --- */
+/* --- CUSTOM SCROLLBAR (FIX WHITE BAR) --- */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #050505; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* --- COMMON CONTAINER --- */
+/* --- COMMON CONTAINER (FIX WIDTH) --- */
 .container {
     max-width: 1400px; 
     margin: 0 auto;    
@@ -173,17 +173,20 @@ h1, h2, h3, .brand-text { font-family: var(--font-main); letter-spacing: 1px; }
 
 .header-actions { display: flex; align-items: center; gap: 12px; z-index: 1001; }
 
+/* LOGIN BUTTON (MEDIUM SIZE) */
 .btn-login {
     display: inline-flex; align-items: center; gap: 8px;
     background: transparent; border: 1px solid rgba(255,255,255,0.2);
-    color: #fff; padding: 8px 16px; border-radius: 8px;
-    font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s;
+    color: #fff; padding: 8px 16px; 
+    border-radius: 8px;
+    font-size: 13px; font-weight: 700; 
+    cursor: pointer; transition: 0.3s;
 }
 .btn-login:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
 .nav-toggle { display: none; background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; }
 
-/* --- LANGUAGE MENU --- */
+/* --- LANGUAGE MENU (WIDER & MEDIUM SIZE) --- */
 .lang-custom-wrapper { position: relative; z-index: 2000; display: inline-block; }
 
 .lang-trigger-btn {
@@ -196,9 +199,11 @@ h1, h2, h3, .brand-text { font-family: var(--font-main); letter-spacing: 1px; }
 .lang-trigger-btn:hover { border-color: var(--accent); background: #151515; }
 .lang-flag-icon { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; display: block; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
 
+/* WIDER MENU TO FIX TEXT CUTOFF */
 .lang-dropdown-grid {
     display: none; position: absolute; top: calc(100% + 12px); right: 0; 
-    width: 360px; background: #050505; border: 1px solid rgba(255, 255, 255, 0.1); 
+    width: 360px; /* Made wider */
+    background: #050505; border: 1px solid rgba(255, 255, 255, 0.1); 
     border-radius: 12px; padding: 12px; grid-template-columns: 1fr 1fr; gap: 8px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.9); z-index: 5000;
 }
@@ -488,7 +493,7 @@ footer p { margin: 0; }
   /* Actions залишаються справа */
   .header-actions { gap: 10px; }
   .btn-login span { display: none; } 
-  .btn-login { padding: 10px; min-width: auto; }
+  .btn-login { padding: 8px; min-width: auto; }
   
   .lang-dropdown-grid { right: 0; width: 300px; }
   

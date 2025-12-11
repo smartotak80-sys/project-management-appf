@@ -174,12 +174,12 @@
   </div>
 
   <div id="dashboardModal" class="dashboard-modal">
-    <button id="closeDashBtn" class="dash-close-global" title="Закрити панель"><i class="fa-solid fa-xmark"></i></button>
+    <button id="closeDashBtn" class="dash-close-global" title="Close"><i class="fa-solid fa-xmark"></i></button>
     <div class="dashboard-window">
         <div class="dash-mobile-header">
             <div style="display:flex; align-items:center; gap:15px;">
                 <button id="dashMobileToggle" class="btn btn-outline btn-icon"><i class="fa-solid fa-bars"></i></button>
-                <span class="dash-mobile-title" style="font-weight:bold; letter-spacing:1px;">PANEL v3.0</span>
+                <span class="dash-mobile-title" style="font-weight:bold; letter-spacing:1px;" data-lang="dash_mobile_title">PANEL v3.0</span>
             </div>
         </div>
         <div class="dash-sidebar" id="dashSidebar">
@@ -189,8 +189,8 @@
             <div class="dash-user-card">
                 <div class="dash-avatar"><i class="fa-solid fa-user-secret"></i></div>
                 <div class="dash-info">
-                    <span id="dashUsername">Завантаження...</span>
-                    <small id="dashRole">Гість</small>
+                    <span id="dashUsername">Loading...</span>
+                    <small id="dashRole" data-lang="role_guest">Гість</small>
                 </div>
             </div>
             <nav class="dash-nav">
@@ -241,7 +241,7 @@
                 </div>
                 <div class="glass-panel" style="margin-top:30px;">
                     <h3 style="margin-top:0"><i class="fa-solid fa-server"></i> <span data-lang="dash_sys_status">Статус системи</span></h3>
-                    <p style="color:#aaa;" data-lang="dash_sys_ok">Всі системи працюють у штатному режимі. Доступ до функцій дозволено згідно з вашим рангом.</p>
+                    <p style="color:#aaa;" data-lang="dash_sys_ok">Всі системи працюють у штатному режимі.</p>
                 </div>
             </div>
             <div id="tab-my-member" class="dash-view">
@@ -305,21 +305,21 @@
                 </div>
             </div>
             <div id="tab-applications" class="dash-view">
-                <div class="dash-header"><h2>Вхідні заявки (Staff)</h2></div>
+                <div class="dash-header"><h2 data-lang="dash_staff_apps">Вхідні заявки (Staff)</h2></div>
                 <div id="applicationsList" class="grid-list" style="display:grid; gap:15px;"></div>
             </div>
             <div id="tab-support-staff" class="dash-view">
-                <div class="dash-header"><h2>Управління тікетами</h2></div>
+                <div class="dash-header"><h2 data-lang="dash_staff_tickets">Управління тікетами</h2></div>
                 <div id="allTicketsList" class="grid-list" style="display:grid; gap:10px;"></div>
             </div>
             <div id="tab-users" class="dash-view">
-                <div class="dash-header"><h2>Користувачі та Ролі</h2></div>
+                <div class="dash-header"><h2 data-lang="dash_admin_users">Користувачі та Ролі</h2></div>
                 <div id="adminUsersList" class="compact-list"></div>
             </div>
             <div id="tab-accounts-data" class="dash-view">
                 <div class="dash-header">
-                    <h2 style="color:#ff6b6b;"><i class="fa-solid fa-database"></i> USERS DATABASE</h2>
-                    <button onclick="loadAccountsData()" class="btn btn-outline btn-icon"><i class="fa-solid fa-rotate"></i></button>
+                    <h2 style="color:#ff6b6b;" data-lang="dash_admin_db"><i class="fa-solid fa-database"></i> USERS DATABASE</h2>
+                    <button onclick="loadAccountsData()" class="btn btn-outline btn-icon" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
                 </div>
                 <div class="glass-panel" style="overflow-x: auto; padding:0;">
                     <table class="data-table">
@@ -338,29 +338,29 @@
             </div>
             <div id="tab-admin-members" class="dash-view">
                 <div class="dash-header">
-                    <h2>Редагування складу</h2>
-                    <button id="openAdminAddMember" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Додати</button>
+                    <h2 data-lang="dash_admin_roster">Редагування складу</h2>
+                    <button id="openAdminAddMember" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> <span data-lang="dash_btn_add">Додати</span></button>
                 </div>
                 <div id="adminAddMemberContainer" class="glass-panel" style="display:none; border-left:3px solid var(--accent);">
                     <form id="adminAddMemberForm" class="modern-form">
                         <div class="form-row">
-                            <input type="text" id="admName" placeholder="IC Ім'я (наприклад: Alex Barracuda)" required>
-                            <input type="text" id="admRole" placeholder="Ранг (наприклад: Leader)" required>
+                            <input type="text" id="admName" placeholder="IC Ім'я" required data-lang-placeholder="ph_adm_name">
+                            <input type="text" id="admRole" placeholder="Ранг" required data-lang-placeholder="ph_adm_role">
                         </div>
-                        <input type="text" id="admOwner" placeholder="Логін користувача на сайті (для прив'язки)" required>
+                        <input type="text" id="admOwner" placeholder="Логін на сайті" required data-lang-placeholder="ph_adm_owner">
                         <div class="form-row">
                             <input type="text" id="admDiscord" placeholder="Discord Tag">
                             <input type="text" id="admYoutube" placeholder="YouTube Link">
                         </div>
-                        <button type="submit" class="btn btn-primary full-width">ЗБЕРЕГТИ В БАЗУ</button>
+                        <button type="submit" class="btn btn-primary full-width" data-lang="dash_btn_save">ЗБЕРЕГТИ В БАЗУ</button>
                     </form>
                 </div>
                 <div id="adminMembersList" class="compact-list" style="margin-top:20px;"></div>
             </div>
             <div id="tab-logs" class="dash-view">
                 <div class="dash-header">
-                    <h2>Системні логи</h2>
-                    <button onclick="window.clearLogs()" class="btn btn-outline btn-small">CLEAR HISTORY</button>
+                    <h2 data-lang="dash_admin_logs">Системні логи</h2>
+                    <button onclick="window.clearLogs()" class="btn btn-outline btn-small" data-lang="dash_btn_clear">CLEAR HISTORY</button>
                 </div>
                 <div id="systemLogsList" class="terminal-view"></div>
             </div>

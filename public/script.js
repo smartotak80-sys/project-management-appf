@@ -58,7 +58,446 @@ document.addEventListener('DOMContentLoaded', () => {
       if(yearEl) yearEl.textContent = new Date().getFullYear();
   }
 
-  // --- LANGUAGE SYSTEM (FULL) ---
+  // --- АНІМАЦІЇ ---
+  function activateScrollAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                  entry.target.classList.add('animate-visible');
+                  entry.target.classList.remove('animate-hidden');
+                  if (entry.target.classList.contains('reveal-on-scroll')) {
+                      entry.target.classList.add('visible');
+                  }
+                  observer.unobserve(entry.target);
+              }
+          });
+      }, { threshold: 0.1 });
+
+      const elements = document.querySelectorAll('.hero, .section, .card, .member, .u-row, .app-card, .app-card-ultra, .ticket-card-ultra, .reveal-on-scroll');
+      
+      elements.forEach((el) => {
+          if (!el.classList.contains('reveal-on-scroll')) {
+              el.classList.add('animate-hidden');
+          }
+          if(el.parentElement.classList.contains('members-grid') || el.parentElement.classList.contains('cards')) {
+              const idx = Array.from(el.parentElement.children).indexOf(el);
+              el.style.transitionDelay = `${idx * 100}ms`;
+          }
+          observer.observe(el);
+      });
+  }
+
+  document.addEventListener('mousemove', (e) => {
+      document.querySelectorAll('.card, .member, .btn').forEach(card => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          if (x > -50 && x < rect.width + 50 && y > -50 && y < rect.height + 50) {
+            card.style.setProperty('--x', `${x}px`);
+            card.style.setProperty('--y', `${y}px`);
+          }
+      });
+  });
+
+  // --- DASHBOARD UI ---
+  const dashModal = document.getElementById('dashboardModal');
+  const mobileToggle = document.getElementById('dashMobileToggle');
+  const sidebar = document.getElementById('dashSidebar');
+  const overlay = document.getElementById('dashOverlay');
+
+  if(mobileToggle) {
+      mobileToggle.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
+  }
+  if(overlay) {
+      overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
+  }
+  document.querySelectorAll('.dash-nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+          if(window.innerWidth <= 900) { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+      });
+  });
+
+  window.switchDashTab = (tab) => {
+      if(['users', 'admin-members', 'logs', 'accounts-data'].includes(tab)) {
+          if(!currentUser || currentUser.role !== 'admin') {
+              showToast('ДОСТУП ЗАБОРОНЕНО: ПОТРІБНІ ПРАВА АДМІНА', 'error');
+              return;
+          }
+      }
+      document.querySelectorAll('.dash-view').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.dash-nav button').forEach(e => e.classList.remove('active'));
+      
+      const btn = Array.from(document.querySelectorAll('.dash-nav button')).find(b => b.getAttribute('onclick')?.includes(tab));
+      if(btn) btn.classList.add('active');
+      
+      document.getElementById(`tab-${tab}`)?.classList.add('active');
+      
+      if(tab === 'apply') checkMyApplication();
+      if(tab === 'applications') loadApplicationsStaff();
+      if(tab === 'support-user') loadMyTickets();
+      if(tab === 'support-staff') loadAllTickets();
+      if(tab === 'users') loadUsersAdmin();
+      if(tab === 'admin-members') loadAdminMembers();
+      if(tab === 'logs') renderLogs();
+      if(tab === 'my-member') loadMyMemberTab();
+      if(tab === 'accounts-data') loadAccountsData();
+  };
+
+  window.openDashboard = () => {
+      if(!currentUser) return;
+      dashModal.classList.add('show');
+      document.getElementById('dashUsername').textContent = currentUser.username;
+      document.getElementById('dashRole').textContent = currentUser.role;
+      document.getElementById('pLogin').textContent = currentUser.username;
+      document.getElementById('pRole').textContent = currentUser.role.toUpperCase();
+
+      const role = currentUser.role;
+      const isStaff = ['admin', 'moderator', 'support'].includes(role);
+      const isAdmin = role === 'admin';
+      const isModOrAdmin = ['admin', 'moderator'].includes(role);
+
+      const staffNav = document.querySelector('.staff-only-nav');
+      const adminNav = document.querySelector('.admin-only-nav');
+      
+      if(staffNav) staffNav.style.display = isStaff ? 'block' : 'none';
+      if(adminNav) adminNav.style.display = isAdmin ? 'block' : 'none';
+      
+      const btnApps = document.getElementById('navAppsBtn');
+      if(btnApps) btnApps.style.display = isModOrAdmin ? 'flex' : 'none';
+
+      switchDashTab('profile');
+  }
+
+  // --- ACCOUNTS DATA ---
+  window.loadAccountsData = async () => {
+      const tbody = document.getElementById('accountsDataTableBody');
+      if(!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Завантаження бази даних...</td></tr>';
+      
+      const users = await apiFetch('/api/users');
+      if(!users || !users.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">База порожня</td></tr>';
+          return;
+      }
+      
+      tbody.innerHTML = users.map(u => `
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding:10px; color:#fff; font-weight:bold;">${u.username}</td>
+            <td style="padding:10px; color:#aaa;">${u.email}</td>
+            <td style="padding:10px; font-family:monospace; color:var(--accent);">${u.password || '***'}</td>
+            <td style="padding:10px;"><span class="badge ${u.role}">${u.role}</span></td>
+            <td style="padding:10px; color:#666; font-size:12px;">${new Date(u.regDate).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+  };
+
+  // --- ADMIN USERS ---
+  async function loadUsersAdmin() {
+      const list = document.getElementById('adminUsersList');
+      if (!list) return;
+
+      list.innerHTML = '<div style="color:#666; padding:10px;">Завантаження...</div>';
+      
+      try {
+          const users = await apiFetch('/api/users');
+          if(!users || !Array.isArray(users) || users.length === 0) {
+              list.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">Список порожній.</div>`;
+              return;
+          }
+          list.innerHTML = users.map(u => {
+              const isSystemAdmin = u._id === 'system_admin_id' || u.username === 'ADMIN 🦈';
+              return `
+                <div class="u-row animate-hidden">
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-size:16px; font-weight:bold; color:#fff;">
+                            ${u.username} ${isSystemAdmin ? '<i class="fa-solid fa-server" style="color:#555;"></i>' : ''}
+                        </span>
+                        <span style="font-size:10px; color:#555;">Роль: ${u.role}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        ${isSystemAdmin ? 
+                            '<span style="font-size:11px; color:#666;">СИСТЕМА</span>' 
+                            : 
+                            `<select onchange="window.changeUserRole('${u.username}', this.value)" style="margin:0; width:auto; padding:5px; background:#222; border:1px solid #444;">
+                                <option value="member" ${u.role==='member'?'selected':''}>Учасник</option>
+                                <option value="support" ${u.role==='support'?'selected':''}>Підтримка</option>
+                                <option value="moderator" ${u.role==='moderator'?'selected':''}>Модератор</option>
+                                <option value="admin" ${u.role==='admin'?'selected':''}>Адмін</option>
+                            </select>
+                            <button class="btn btn-outline btn-icon" style="color:#ff4757; border-color:rgba(255,71,87,0.3);" onclick="window.banUser('${u.username}')"><i class="fa-solid fa-trash"></i></button>`
+                        }
+                    </div>
+                </div>`;
+          }).join('');
+          activateScrollAnimations();
+      } catch (err) { console.error(err); }
+  }
+  
+  window.changeUserRole = async (u, role) => {
+      if(!currentUser || currentUser.role !== 'admin') return;
+      await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) });
+      showToast(`Роль для ${u} змінено на ${role}`);
+      addLog(`Адмін змінив роль ${u} на ${role}`);
+      loadUsersAdmin(); 
+  };
+  window.banUser = async (u) => customConfirm(`ВИДАЛИТИ КОРИСТУВАЧА ${u}?`, async(r)=>{ 
+      if(r) { await apiFetch(`/api/users/${u}`, {method:'DELETE'}); showToast('Користувача видалено'); loadUsersAdmin(); }
+  });
+
+  // --- APPLICATIONS ---
+  document.getElementById('dashAppForm')?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const body = {
+          rlName: document.getElementById('appRlName').value,
+          age: document.getElementById('appAge').value,
+          onlineTime: document.getElementById('appOnline').value,
+          prevFamilies: document.getElementById('appFamilies').value,
+          history: document.getElementById('appHistory').value,
+          note: document.getElementById('appNote').value,
+          submittedBy: currentUser.username
+      };
+      const res = await apiFetch('/api/applications', {method:'POST', body:JSON.stringify(body)});
+      if(res && res.success) { showToast('ЗАЯВКУ ВІДПРАВЛЕНО'); document.getElementById('dashAppForm').reset(); checkMyApplication(); updateAuthUI(); }
+  });
+
+  async function checkMyApplication() {
+      const apps = await apiFetch('/api/applications/my');
+      const myApp = apps ? apps.filter(a => a.submittedBy === currentUser.username).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0] : null;
+      
+      const form = document.getElementById('dashAppForm');
+      const statusBox = document.getElementById('applyStatusContainer');
+      const container = document.querySelector('.compact-square-container'); 
+
+      if(myApp) {
+          if(container) container.style.display = 'none'; 
+          if(form) form.style.display = 'none';
+          statusBox.style.display = 'block';
+          
+          statusBox.className = 'glass-panel status-panel';
+          statusBox.classList.add(myApp.status);
+          
+          let icon = ''; let title = ''; let desc = ''; let feedbackLabel = ''; let feedbackIcon = '';
+          switch(myApp.status) {
+              case 'approved':
+                  icon = '<i class="fa-solid fa-circle-check"></i>'; title = 'ДОСТУП ДОЗВОЛЕНО'; desc = 'Ласкаво просимо до системи Barracuda Family.';
+                  feedbackLabel = 'ПОВІДОМЛЕННЯ КУРАТОРА'; feedbackIcon = 'fa-solid fa-handshake';
+                  break;
+              case 'rejected':
+                  icon = '<i class="fa-solid fa-circle-xmark"></i>'; title = 'ЗАЯВКУ ВІДХИЛЕНО'; desc = 'У доступі до системи відмовлено.';
+                  feedbackLabel = 'ПРИЧИНА ВІДМОВИ / КОМЕНТАР'; feedbackIcon = 'fa-solid fa-triangle-exclamation';
+                  break;
+              default:
+                  icon = '<i class="fa-solid fa-hourglass-half"></i>'; title = 'ОЧІКУВАННЯ ПЕРЕВІРКИ'; desc = 'Ваші дані обробляються адміністрацією.';
+                  feedbackLabel = 'СИСТЕМНЕ ПОВІДОМЛЕННЯ'; feedbackIcon = 'fa-solid fa-terminal';
+                  break;
+          }
+          
+          let htmlContent = `
+            <div class="status-header"><div class="status-icon-box">${icon}</div><div class="status-title"><h2>${title}</h2><p>${desc}</p></div></div>
+          `;
+
+          if(myApp.adminComment || myApp.status === 'rejected') {
+             const commentText = myApp.adminComment ? myApp.adminComment : (myApp.status === 'rejected' ? 'Причину не вказано. Зв\'яжіться з адміністрацією в Discord.' : '');
+             if(commentText) {
+                 htmlContent += `<div class="admin-feedback-box animate-visible"><div class="feedback-label"><i class="${feedbackIcon}"></i> ${feedbackLabel}</div><div class="feedback-text">${commentText}</div></div>`;
+             }
+          }
+          statusBox.innerHTML = htmlContent;
+      } else {
+          if(container) container.style.display = 'block';
+          if(form) form.style.display = 'block';
+          statusBox.style.display = 'none';
+      }
+  }
+
+  // --- ВІДОБРАЖЕННЯ ЗАЯВОК (ULTRA REDESIGN) ---
+  async function loadApplicationsStaff() {
+      const list = document.getElementById('applicationsList');
+      if(!list) return;
+      list.style.display = 'block'; 
+      const apps = await apiFetch('/api/applications');
+      
+      if(!apps || !apps.length) { 
+          list.innerHTML = '<div style="text-align:center; padding:50px; color:#444; font-family:var(--font-main);">DATABASE EMPTY / НЕМАЄ ЗАЯВОК</div>'; 
+          return; 
+      }
+      
+      list.innerHTML = apps.map((a, index) => {
+          // Розпізнавання посилання
+          const noteContent = a.note || a.shootingVideo || 'Не вказано';
+          const isLink = noteContent.startsWith('http') || noteContent.startsWith('www');
+          const displayNote = isLink 
+              ? `<a href="${noteContent}" target="_blank" class="ultra-link"><i class="fa-solid fa-link"></i> ВІДКРИТИ ПОСИЛАННЯ</a>` 
+              : `<span style="color:#ccc;">${noteContent}</span>`;
+
+          return `
+            <div class="app-card-ultra animate-hidden">
+                <span class="app-id-badge">#${index + 1}</span>
+                <div class="ultra-row">
+                    <span class="ultra-label">КАНДИДАТ</span>
+                    <span class="ultra-highlight">${a.rlName} <span style="font-size:14px; color:#666; font-weight:400;">(${a.age} р.)</span></span>
+                </div>
+                <div class="ultra-row">
+                    <span class="ultra-label">АГЕНТ</span> 
+                    <span style="color:#fff; font-weight:700;">${a.submittedBy}</span> 
+                    <i class="fa-solid fa-user-secret" style="color:#444; margin-left:5px;"></i>
+                </div>
+                <div class="ultra-row">
+                    <span class="ultra-label">ОНЛАЙН</span> <span style="color:#ccc;">${a.onlineTime}</span>
+                </div>
+                 <div class="ultra-row">
+                    <span class="ultra-label">СІМ'Ї</span> <span style="color:#ccc;">${a.prevFamilies}</span>
+                </div>
+                <div class="ultra-row">
+                    <span class="ultra-label">ПРИМІТКА</span> 
+                    ${displayNote}
+                </div>
+                <div style="margin-top:15px; font-size:10px; color:#666; font-weight:800; letter-spacing:1px;">ІСТОРІЯ ГРАВЦЯ:</div>
+                <div class="ultra-history">${a.history}</div>
+                ${a.status === 'pending' ? `
+                <div class="ultra-input-group">
+                    <input type="text" id="reason-${a.id}" class="ultra-input" placeholder="Коментар адміністратора...">
+                    <div class="ultra-actions">
+                        <button class="btn-icon-square approve" title="СХВАЛИТИ" onclick="window.updateAppStatus('${a.id}','approved')"><i class="fa-solid fa-check"></i></button>
+                        <button class="btn-icon-square reject" title="ВІДХИЛИТИ" onclick="window.updateAppStatus('${a.id}','rejected')"><i class="fa-solid fa-xmark"></i></button>
+                        <button class="btn-icon-square delete" title="ВИДАЛИТИ" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+                ` : `
+                <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span class="status-tag" style="color:${a.status==='approved'?'#2ecc71':'#e74c3c'}; border-color:${a.status==='approved'?'#2ecc71':'#e74c3c'};">СТАТУС: ${a.status.toUpperCase()}</span>
+                    <button class="btn-icon-square delete" onclick="window.deleteApp('${a.id}')"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                `}
+            </div>
+          `;
+      }).join('');
+      activateScrollAnimations();
+  }
+  
+  window.updateAppStatus = async (id, status) => {
+      const input = document.getElementById(`reason-${id}`);
+      await apiFetch(`/api/applications/${id}`, {method:'PUT', body:JSON.stringify({status, adminComment: input ? input.value : ''})});
+      showToast('ОНОВЛЕНО'); loadApplicationsStaff();
+  };
+  
+  window.deleteApp = async (id) => {
+      openCyberModal(
+          'УВАГА: ВИДАЛЕННЯ ДАНИХ',
+          `<p style="color:#aaa;">Ви ініціювали видалення анкети з бази даних. Ця дія є незворотньою і файл не підлягає відновленню.</p>
+           <p style="color:#fff; font-weight:bold;">Підтвердити знищення даних?</p>`,
+          async () => {
+              await apiFetch(`/api/applications/${id}`, { method: 'DELETE' });
+              showToast('ФАЙЛ ЗНИЩЕНО');
+              loadApplicationsStaff();
+          }
+      );
+  };
+
+  // --- TICKETS (ULTRA REDESIGN) ---
+  document.getElementById('createTicketForm')?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const body = { author: currentUser.username, title: document.getElementById('ticketTitle').value, messages: [{ sender: currentUser.username, text: document.getElementById('ticketMessage').value, isStaff: false }] };
+      const res = await apiFetch('/api/tickets', {method:'POST', body:JSON.stringify(body)});
+      if(res && res.success) { showToast('ТІКЕТ СТВОРЕНО'); document.getElementById('createTicketForm').reset(); loadMyTickets(); }
+  });
+
+  async function loadMyTickets() {
+      const list = document.getElementById('myTicketsList');
+      if(!list) return;
+      const all = await apiFetch('/api/tickets');
+      const my = all ? all.filter(t => t.author === currentUser.username) : [];
+      
+      if(!my.length) { list.innerHTML = '<div class="empty" style="text-align:center; color:#555;">НЕМАЄ ТІКЕТІВ</div>'; return; }
+
+      // ULTRA LIST DESIGN
+      list.innerHTML = my.map(t => `
+        <div class="ticket-card-ultra ${t.status}" onclick="window.openTicket('${t.id}')" style="cursor:pointer; margin-bottom:10px; border-left-color: ${t.status==='open'?'var(--accent-blue)':'#7f8c8d'};">
+            <div class="ultra-row">
+                <span class="ultra-label">ТЕМА</span>
+                <span style="color:#fff; font-weight:bold;">${t.title}</span>
+            </div>
+            <div class="ultra-row">
+                <span class="ultra-label">СТАТУС</span>
+                <span class="status-tag ${t.status}" style="${t.status==='closed'?'color:#95a5a6; border-color:#95a5a6;':''}">${t.status.toUpperCase()}</span>
+            </div>
+        </div>
+      `).join('');
+  }
+
+  async function loadAllTickets() {
+      const list = document.getElementById('allTicketsList');
+      if(!list) return;
+      list.style.display = 'block';
+      const all = await apiFetch('/api/tickets');
+      
+      if(!all || !all.length) { list.innerHTML = '<div class="empty" style="text-align:center;">НЕМАЄ ТІКЕТІВ</div>'; return; }
+
+      list.innerHTML = all.map((t, index) => `
+        <div class="ticket-card-ultra animate-hidden ${t.status}">
+            <span class="app-id-badge" style="font-size:32px;">#${index+1}</span>
+            <div class="ultra-row">
+                <span class="ultra-label">АВТОР</span>
+                <span class="ultra-highlight" style="color:#fff; font-size:16px;">${t.author}</span>
+            </div>
+            <div class="ultra-row">
+                <span class="ultra-label">ПРОБЛЕМА</span>
+                <span style="color:#ccc;">${t.title}</span>
+            </div>
+             <div class="ultra-row">
+                <span class="ultra-label">СТАТУС</span>
+                <span class="status-tag ${t.status}" style="${t.status==='closed'?'color:#95a5a6; border-color:#95a5a6;':''}">${t.status.toUpperCase()}</span>
+            </div>
+            <div class="ultra-actions" style="margin-top:15px;">
+                <button class="btn-icon-square open-ticket" onclick="window.openTicket('${t.id}')" title="Відкрити чат"><i class="fa-regular fa-comments"></i></button>
+            </div>
+        </div>
+      `).join('');
+      activateScrollAnimations();
+  }
+
+  let currentTicketId = null;
+  window.openTicket = async (id) => {
+      currentTicketId = id;
+      const all = await apiFetch('/api/tickets');
+      const t = all.find(x => x.id === id);
+      if(!t) return;
+      document.getElementById('ticketModal').classList.add('show');
+      document.getElementById('tmTitle').textContent = `ТІКЕТ: ${t.title}`;
+      const chat = document.getElementById('tmMessages');
+      chat.innerHTML = t.messages.map(m => `<div class="msg ${m.sender===currentUser.username?'me':'other'} ${m.isStaff?'staff':''}"><div class="sender">${m.sender}</div>${m.text}</div>`).join('');
+      chat.scrollTop = chat.scrollHeight;
+      
+      const closeBtn = document.getElementById('tmCloseTicketBtn');
+      if(t.status === 'closed') {
+          closeBtn.style.display = 'none';
+      } else {
+          closeBtn.style.display = 'inline-block';
+          closeBtn.onclick = () => {
+              openCyberModal(
+                  'ЗАКРИТТЯ ЗАПИТУ',
+                  '<p style="color:#ccc;">Ви впевнені, що проблема вирішена і тікет можна закрити?</p>',
+                  async () => {
+                       await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ status: 'closed' }) });
+                       document.getElementById('ticketModal').classList.remove('show');
+                       showToast('ТІКЕТ ЗАКРИТО');
+                       loadMyTickets(); loadAllTickets();
+                  }
+              );
+          };
+      }
+  };
+
+  document.getElementById('tmSendBtn')?.addEventListener('click', async () => {
+      if(!currentTicketId) return;
+      const txt = document.getElementById('tmInput').value; if(!txt) return;
+      const isStaff = ['admin', 'moderator', 'support'].includes(currentUser.role);
+      await apiFetch(`/api/tickets/${currentTicketId}`, { method:'PUT', body: JSON.stringify({ message: { sender: currentUser.username, text: txt, isStaff } }) });
+      document.getElementById('tmInput').value = ''; window.openTicket(currentTicketId);
+  });
+
+  // --- LANGUAGE SYSTEM & AUTH UI UPDATE ---
+  
   const translations = {
     ua: {
         flag: "ua", label: "UKR",
@@ -68,43 +507,27 @@ document.addEventListener('DOMContentLoaded', () => {
         card_mission: "МІСІЯ", card_mission_desc: "Створення унікального RP досвіду та домінування в сферах впливу.",
         card_protection: "ЗАХИСТ", card_protection_desc: "Ми стоїмо один за одного. Сім'я — це непорушна фортеця.",
         card_resources: "РЕСУРСИ", card_resources_desc: "Забезпечення кожного учасника усім необхідним для комфортної гри.",
-        members_title_span: "НАШ", members_title: "СКЛАД", ph_search_agent: "Пошук агента...",
-        news_title: "СТРІЧКА", news_title_span: "НОВИН", ph_news_title: "Заголовок", ph_news_text: "Текст новини...", btn_publish: "ПУБЛИКУВАТИ",
-        gallery_title: "ГАЛЕРЕЯ", ph_photo_url: "Посилання на фото (URL)", btn_add_photo: "ДОДАТИ ФОТО",
+        members_title_span: "НАШ", members_title: "СКЛАД",
+        news_title: "СТРІЧКА", news_title_span: "НОВИН",
+        gallery_title: "ГАЛЕРЕЯ",
         join_system_title: "ПРИЄДНУЙСЯ ДО СИСТЕМИ", join_system_desc: "Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.",
-        access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ", footer: "BARRACUDA FAMILY. RP.",
-        // Auth
-        auth_title: "СИСТЕМНИЙ ВХІД", tab_login: "ВХІД", tab_register: "РЕЄСТРАЦІЯ",
-        ph_login: "Логін", ph_pass: "Пароль", ph_email: "Email", ph_pass_confirm: "Підтвердіть пароль",
-        btn_login_submit: "УВІЙТИ В СИСТЕМУ", btn_register_submit: "СТВОРИТИ АКАУНТ",
-        // Dashboard Nav
-        nav_label_personal: "Особисте", nav_profile: "Профіль", nav_character: "Мій Персонаж", nav_application: "Заявка в сім'ю", nav_support: "Техпідтримка",
-        nav_label_staff: "Персонал", nav_staff_apps: "Розгляд заявок", nav_staff_tickets: "Всі тікети",
-        nav_label_admin: "Адміністратор", nav_admin_users: "Керування ролями", nav_admin_roster: "Редактор складу", nav_admin_db: "База даних", nav_admin_logs: "Системні логи",
-        btn_logout: "ЗАВЕРШИТИ СЕАНС",
-        // Dashboard Content
-        dash_profile_title: "Особистий кабінет", dash_conn_status: "БЕЗПЕЧНЕ З'ЄДНАННЯ ВСТАНОВЛЕНО",
-        lbl_login: "ВАШ ЛОГІН", lbl_access: "РІВЕНЬ ДОСТУПУ", dash_sys_status: "Статус системи",
-        dash_sys_desc: "Всі системи працюють у штатному режимі. Доступ до функцій дозволено згідно з вашим рангом.",
-        dash_char_title: "Налаштування персонажа", dash_char_status: "Актуальний статус", btn_update_status: "ОНОВИТИ СТАТУС",
-        dash_apply_title: "Подача заявки", dash_apply_form_title: "АНКЕТА",
-        lbl_name: "1. Ваше реальне ім'я", ph_name: "Ім'я",
-        lbl_age: "2. Ваш вік", ph_age: "Вік",
-        lbl_online: "3. Середній онлайн (годин)", ph_online: "Наприклад: 5+",
-        lbl_families: "4. В яких сім'ях бували", ph_families: "Назви сімей...",
-        lbl_history: "5. Історія гри на UA/KZ проектах", ph_history: "Де грали, чого досягли...",
-        lbl_video: "6. Посилання на відкат стрільби / Коментар", ph_video: "YouTube / Коментар", btn_submit_app: "ВІДПРАВИТИ",
-        dash_support_title: "Технічна підтримка", dash_create_ticket: "Створити запит", ph_ticket_title: "Коротко про проблему", ph_ticket_msg: "Детальний опис...",
-        btn_create_ticket: "ВІДКРИТИ ТІКЕТ", dash_my_tickets: "Ваші запити",
-        // Staff/Admin
-        dash_staff_apps_title: "Вхідні заявки (Staff)", dash_staff_tickets_title: "Управління тікетами",
-        dash_admin_users_title: "Користувачі та Ролі", dash_admin_db_title: "БАЗА ДАННЫХ КОРИСТУВАЧІВ",
-        dash_admin_roster_title: "Редагування складу", btn_add_member: "Додати",
-        ph_adm_name: "IC Ім'я", ph_adm_role: "Ранг", ph_adm_owner: "Логін власника", ph_adm_discord: "Discord", ph_adm_youtube: "YouTube", btn_save_db: "ЗБЕРЕГТИ",
-        dash_admin_logs_title: "Системні логи", btn_clear_history: "ОЧИСТИТИ",
-        // Modals
-        modal_ticket_title: "ТІКЕТ", btn_close_ticket: "ЗАКРИТИ ТІКЕТ", ph_chat_input: "Напишіть повідомлення...", btn_send: "НАДІСЛАТИ",
-        btn_cancel: "СКАСУВАТИ", btn_confirm: "ПІДТВЕРДИТИ", btn_understood: "ЗРОЗУМІЛО"
+        access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ",
+        footer: "BARRACUDA FAMILY. RP."
+    },
+    ru: {
+        flag: "ru", label: "RUS",
+        home: "ГЛАВНАЯ", about: "ИНФО", members: "СОСТАВ", media: "МЕДИА", apply: "ВСТУПИТЬ",
+        login: "ВХОД", account: "АККАУНТ", hero_btn: "ПРИСОЕДИНИТЬСЯ", hero_members: "СОСТАВ",
+        about_title_span: "КТО", about_title: "МЫ ЕСТЬ",
+        card_mission: "МИССИЯ", card_mission_desc: "Создание уникального RP опыта и доминирование в сферах влияния.",
+        card_protection: "ЗАЩИТА", card_protection_desc: "Мы стоим друг за друга. Семья — это нерушимая крепость.",
+        card_resources: "РЕСУРСЫ", card_resources_desc: "Обеспечение каждого участника всем необходимым для комфортной игры.",
+        members_title_span: "НАШ", members_title: "СОСТАВ",
+        news_title: "ЛЕНТА", news_title_span: "НОВОСТЕЙ",
+        gallery_title: "ГАЛЕРЕЯ",
+        join_system_title: "ПРИСОЕДИНЯЙСЯ К СИСТЕМЕ", join_system_desc: "Авторизуйтесь, чтобы получить доступ к закрытому разделу подачи заявок.",
+        access_terminal: "ДОСТУП К ТЕРМИНАЛУ",
+        footer: "BARRACUDA FAMILY. RP."
     },
     en: {
         flag: "gb", label: "ENG",
@@ -114,83 +537,73 @@ document.addEventListener('DOMContentLoaded', () => {
         card_mission: "MISSION", card_mission_desc: "Creating a unique RP experience and dominating spheres of influence.",
         card_protection: "PROTECTION", card_protection_desc: "We stand for each other. The family is an unshakeable fortress.",
         card_resources: "RESOURCES", card_resources_desc: "Providing every member with everything needed for comfortable gameplay.",
-        members_title_span: "OUR", members_title: "ROSTER", ph_search_agent: "Search agent...",
-        news_title: "NEWS", news_title_span: "FEED", ph_news_title: "Title", ph_news_text: "News content...", btn_publish: "PUBLISH",
-        gallery_title: "GALLERY", ph_photo_url: "Photo URL", btn_add_photo: "ADD PHOTO",
+        members_title_span: "OUR", members_title: "ROSTER",
+        news_title: "NEWS", news_title_span: "FEED",
+        gallery_title: "GALLERY",
         join_system_title: "JOIN THE SYSTEM", join_system_desc: "Authorize to access the restricted application section.",
-        access_terminal: "ACCESS TERMINAL", footer: "BARRACUDA FAMILY. RP.",
-        // Auth
-        auth_title: "SYSTEM LOGIN", tab_login: "LOGIN", tab_register: "REGISTER",
-        ph_login: "Username", ph_pass: "Password", ph_email: "Email", ph_pass_confirm: "Confirm Password",
-        btn_login_submit: "ENTER SYSTEM", btn_register_submit: "CREATE ACCOUNT",
-        // Dashboard Nav
-        nav_label_personal: "Personal", nav_profile: "Profile", nav_character: "My Character", nav_application: "Apply", nav_support: "Support",
-        nav_label_staff: "Staff", nav_staff_apps: "Review Applications", nav_staff_tickets: "All Tickets",
-        nav_label_admin: "Admin", nav_admin_users: "Manage Roles", nav_admin_roster: "Edit Roster", nav_admin_db: "Database", nav_admin_logs: "System Logs",
-        btn_logout: "LOGOUT",
-        // Dashboard Content
-        dash_profile_title: "Personal Cabinet", dash_conn_status: "SECURE CONNECTION ESTABLISHED",
-        lbl_login: "YOUR LOGIN", lbl_access: "ACCESS LEVEL", dash_sys_status: "System Status",
-        dash_sys_desc: "All systems operational. Function access granted based on your rank.",
-        dash_char_title: "Character Settings", dash_char_status: "Current Status", btn_update_status: "UPDATE STATUS",
-        dash_apply_title: "Application", dash_apply_form_title: "FORM",
-        lbl_name: "1. Real Name", ph_name: "Name",
-        lbl_age: "2. Age", ph_age: "Age",
-        lbl_online: "3. Average Online", ph_online: "e.g., 5+ hours",
-        lbl_families: "4. Previous Families", ph_families: "Family names...",
-        lbl_history: "5. History on UA/KZ projects", ph_history: "Where you played...",
-        lbl_video: "6. Shooting Video / Comment", ph_video: "Link or comment", btn_submit_app: "SUBMIT",
-        dash_support_title: "Technical Support", dash_create_ticket: "Create Ticket", ph_ticket_title: "Brief issue", ph_ticket_msg: "Detailed description...",
-        btn_create_ticket: "OPEN TICKET", dash_my_tickets: "Your Tickets",
-        // Staff/Admin
-        dash_staff_apps_title: "Incoming Applications", dash_staff_tickets_title: "Ticket Management",
-        dash_admin_users_title: "Users & Roles", dash_admin_db_title: "USERS DATABASE",
-        dash_admin_roster_title: "Roster Editor", btn_add_member: "Add",
-        ph_adm_name: "IC Name", ph_adm_role: "Rank", ph_adm_owner: "Owner Login", ph_adm_discord: "Discord", ph_adm_youtube: "YouTube", btn_save_db: "SAVE TO DB",
-        dash_admin_logs_title: "System Logs", btn_clear_history: "CLEAR HISTORY",
-        // Modals
-        modal_ticket_title: "TICKET", btn_close_ticket: "CLOSE TICKET", ph_chat_input: "Write a message...", btn_send: "SEND",
-        btn_cancel: "CANCEL", btn_confirm: "CONFIRM", btn_understood: "UNDERSTOOD"
+        access_terminal: "ACCESS TERMINAL",
+        footer: "BARRACUDA FAMILY. RP."
     },
-    // ... (Other languages can be populated similarly if needed, but these 3 cover the main request fully)
-    ru: {
-        flag: "ru", label: "RUS",
-        home: "ГЛАВНАЯ", about: "ИНФО", members: "СОСТАВ", media: "МЕДИА", apply: "ВСТУПИТЬ",
-        login: "ВХОД", account: "АККАУНТ", hero_btn: "ПРИСОЕДИНИТЬСЯ", hero_members: "СОСТАВ",
-        about_title_span: "КТО", about_title: "МЫ ЕСТЬ",
-        card_mission: "МИССИЯ", card_mission_desc: "Создание уникального RP опыта и доминирование в сферах влияния.",
-        card_protection: "ЗАЩИТА", card_protection_desc: "Мы стоим друг за друга. Семья — это нерушимая крепость.",
-        card_resources: "РЕСУРСЫ", card_resources_desc: "Обеспечение каждого участника всем необходимым для комфортной игры.",
-        members_title_span: "НАШ", members_title: "СОСТАВ", ph_search_agent: "Поиск агента...",
-        news_title: "ЛЕНТА", news_title_span: "НОВОСТЕЙ", ph_news_title: "Заголовок", ph_news_text: "Текст новости...", btn_publish: "ПУБЛИКОВАТЬ",
-        gallery_title: "ГАЛЕРЕЯ", ph_photo_url: "Ссылка на фото (URL)", btn_add_photo: "ДОБАВИТЬ ФОТО",
-        join_system_title: "ПРИСОЕДИНЯЙСЯ К СИСТЕМЕ", join_system_desc: "Авторизуйтесь, чтобы получить доступ к закрытому разделу подачи заявок.",
-        access_terminal: "ДОСТУП К ТЕРМИНАЛУ", footer: "BARRACUDA FAMILY. RP.",
-        auth_title: "СИСТЕМНЫЙ ВХОД", tab_login: "ВХОД", tab_register: "РЕГИСТРАЦИЯ",
-        ph_login: "Логин", ph_pass: "Пароль", ph_email: "Email", ph_pass_confirm: "Подтвердите пароль",
-        btn_login_submit: "ВОЙТИ В СИСТЕМУ", btn_register_submit: "СОЗДАТЬ АККАУНТ",
-        nav_label_personal: "Личное", nav_profile: "Профиль", nav_character: "Мой Персонаж", nav_application: "Заявка", nav_support: "Поддержка",
-        nav_label_staff: "Персонал", nav_staff_apps: "Заявки", nav_staff_tickets: "Тикеты",
-        nav_label_admin: "Администратор", nav_admin_users: "Управление ролями", nav_admin_roster: "Редактор состава", nav_admin_db: "База данных", nav_admin_logs: "Логи",
-        btn_logout: "ЗАВЕРШИТЬ СЕАНС",
-        dash_profile_title: "Личный кабинет", dash_conn_status: "БЕЗОПАСНОЕ СОЕДИНЕНИЕ",
-        lbl_login: "ВАШ ЛОГИН", lbl_access: "УРОВЕНЬ ДОСТУПА", dash_sys_status: "Статус системы",
-        dash_sys_desc: "Все системы работают штатно. Доступ разрешен согласно рангу.",
-        dash_char_title: "Настройки персонажа", dash_char_status: "Текущий статус", btn_update_status: "ОБНОВИТЬ СТАТУС",
-        dash_apply_title: "Подача заявки", dash_apply_form_title: "АНКЕТА",
-        lbl_name: "1. Реальное имя", ph_name: "Имя", lbl_age: "2. Возраст", ph_age: "Возраст",
-        lbl_online: "3. Средний онлайн", ph_online: "Например: 5+", lbl_families: "4. Прошлые семьи", ph_families: "Названия...",
-        lbl_history: "5. История игры", ph_history: "Где играли...", lbl_video: "6. Откат стрельбы", ph_video: "Ссылка", btn_submit_app: "ОТПРАВИТЬ",
-        dash_support_title: "Техподдержка", dash_create_ticket: "Создать запрос", ph_ticket_title: "Суть проблемы", ph_ticket_msg: "Описание...",
-        btn_create_ticket: "ОТКРЫТЬ ТИКЕТ", dash_my_tickets: "Ваши тикеты",
-        dash_staff_apps_title: "Входящие заявки", dash_staff_tickets_title: "Управление тикетами",
-        dash_admin_users_title: "Пользователи", dash_admin_db_title: "БАЗА ДАННЫХ", dash_admin_roster_title: "Состав", btn_add_member: "Добавить",
-        ph_adm_name: "IC Имя", ph_adm_role: "Ранг", ph_adm_owner: "Логин", ph_adm_discord: "Discord", ph_adm_youtube: "YouTube", btn_save_db: "СОХРАНИТЬ",
-        dash_admin_logs_title: "Логи", btn_clear_history: "ОЧИСТИТЬ",
-        modal_ticket_title: "ТИКЕТ", btn_close_ticket: "ЗАКРЫТЬ", ph_chat_input: "Сообщение...", btn_send: "ОТПРАВИТЬ",
-        btn_cancel: "ОТМЕНА", btn_confirm: "ПОДТВЕРДИТЬ", btn_understood: "ПОНЯТНО"
+    pl: {
+        flag: "pl", label: "POL",
+        home: "GŁÓWNA", about: "INFO", members: "EKIPA", media: "MEDIA", apply: "REKRUTACJA",
+        login: "WEJŚCIE", account: "KONTO", hero_btn: "DOŁĄCZ", hero_members: "EKIPA",
+        about_title_span: "KIM", about_title: "JESTEŚMY",
+        card_mission: "MISJA", card_mission_desc: "Tworzenie unikalnego doświadczenia RP i dominacja w strefach wpływów.",
+        card_protection: "OCHRONA", card_protection_desc: "Stoimy za sobą murem. Rodzina to nienaruszalna twierdza.",
+        card_resources: "ZASOBY", card_resources_desc: "Zapewnienie każdemu członkowi wszystkiego, co niezbędne do gry.",
+        members_title_span: "NASZA", members_title: "EKIPA",
+        news_title: "WIADOMOŚCI", news_title_span: "I NEWSY",
+        gallery_title: "GALERIA",
+        join_system_title: "DOŁĄCZ DO SYSTEMU", join_system_desc: "Zaloguj się, aby uzyskać dostęp do sekcji rekrutacji.",
+        access_terminal: "DOSTĘP DO TERMINALA",
+        footer: "RODZINA BARRACUDA. RP."
+    },
+    de: {
+        flag: "de", label: "DEU",
+        home: "HOME", about: "INFO", members: "MITGLIEDER", media: "MEDIEN", apply: "BEWERBEN",
+        login: "LOGIN", account: "KONTO", hero_btn: "BEITRETEN", hero_members: "MITGLIEDER",
+        about_title_span: "WER", about_title: "WIR SIND",
+        card_mission: "MISSION", card_mission_desc: "Schaffung eines einzigartigen RP-Erlebnisses und Dominanz in Einflussbereichen.",
+        card_protection: "SCHUTZ", card_protection_desc: "Wir stehen füreinander ein. Die Familie ist eine unerschütterliche Festung.",
+        card_resources: "RESSOURCEN", card_resources_desc: "Bereitstellung aller notwendigen Mittel für ein komfortables Spiel.",
+        members_title_span: "UNSERE", members_title: "MITGLIEDER",
+        news_title: "NACHRICHTEN", news_title_span: "FEED",
+        gallery_title: "GALERIE",
+        join_system_title: "TRITT DEM SYSTEM BEI", join_system_desc: "Melden Sie sich an, um Zugang zum Bewerbungsbereich zu erhalten.",
+        access_terminal: "TERMINAL ZUGRIFF",
+        footer: "BARRACUDA FAMILIE. RP."
+    },
+    es: {
+        flag: "es", label: "ESP",
+        home: "INICIO", about: "INFO", members: "MIEMBROS", media: "MEDIOS", apply: "APLICAR",
+        login: "ACCESO", account: "CUENTA", hero_btn: "ÚNETE", hero_members: "MIEMBROS",
+        about_title_span: "QUIÉNES", about_title: "SOMOS",
+        card_mission: "MISIÓN", card_mission_desc: "Creando una experiencia RP única y dominando las esferas de influencia.",
+        card_protection: "PROTECCIÓN", card_protection_desc: "Nos defendemos mutuamente. La familia es una fortaleza inquebrantable.",
+        card_resources: "RECURSOS", card_resources_desc: "Proporcionando a cada miembro todo lo necesario para un juego cómodo.",
+        members_title_span: "NUESTROS", members_title: "MIEMBROS",
+        news_title: "NOTICIAS", news_title_span: "FEED",
+        gallery_title: "GALERÍA",
+        join_system_title: "ÚNETE AL SISTEMA", join_system_desc: "Inicia sesión para acceder a la sección de solicitudes restringidas.",
+        access_terminal: "ACCESO TERMINAL",
+        footer: "FAMILIA BARRACUDA. RP."
+    },
+    pt: {
+        flag: "br", label: "POR",
+        home: "INÍCIO", about: "INFO", members: "MEMBROS", media: "MÍDIA", apply: "APLICAR",
+        login: "LOGIN", account: "CONTA", hero_btn: "JUNTAR-SE", hero_members: "MEMBROS",
+        about_title_span: "QUEM", about_title: "SOMOS",
+        card_mission: "MISSÃO", card_mission_desc: "Criando uma experiência única de RP e dominando esferas de influência.",
+        card_protection: "PROTEÇÃO", card_protection_desc: "Nós nos defendemos. A família é uma fortaleza inabalável.",
+        card_resources: "RECURSOS", card_resources_desc: "Fornecendo a cada membro tudo o que é necessário para um jogo confortável.",
+        members_title_span: "NOSSOS", members_title: "MEMBROS",
+        news_title: "NOTÍCIAS", news_title_span: "FEED",
+        gallery_title: "GALERIA",
+        join_system_title: "JUNTE-SE AO SISTEMA", join_system_desc: "Faça login para acessar a seção de aplicativos restrita.",
+        access_terminal: "ACESSO TERMINAL",
+        footer: "FAMÍLIA BARRACUDA. RP."
     }
-    // (Other languages can be populated similarly if needed, but these 3 cover the main request fully)
   };
 
   const langTrigger = document.getElementById('langTrigger');
@@ -199,34 +612,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentLangLabel = document.getElementById('currentLangLabel');
 
   function changeLanguage(lang) {
-      // 1. Text Content
       document.querySelectorAll('[data-lang]').forEach(el => {
           const key = el.getAttribute('data-lang');
           if (key === 'login') {
              const textEl = document.getElementById('authBtnText');
              if(currentUser) {
-                 textEl.textContent = translations[lang]['account'] || "ACCOUNT";
+                 textEl.textContent = translations[lang]['account'];
              } else {
-                 textEl.textContent = translations[lang]['login'] || "LOGIN";
+                 textEl.textContent = translations[lang]['login'];
              }
           } else if (translations[lang] && translations[lang][key]) {
               el.textContent = translations[lang][key];
           }
       });
-
-      // 2. Placeholders
-      document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
-          const key = el.getAttribute('data-lang-placeholder');
-          if (translations[lang] && translations[lang][key]) {
-              el.placeholder = translations[lang][key];
-          }
-      });
       
-      // 3. Update Flag/Label
       if(translations[lang]) {
-        const flagCode = translations[lang].flag || lang; 
+        // Оновлюємо прапорець на кнопці (використовуючи код країни з перекладів)
+        const flagCode = translations[lang].flag; 
         currentFlagImg.src = `https://flagcdn.com/w40/${flagCode}.png`;
-        currentLangLabel.textContent = translations[lang].label || lang.toUpperCase();
+        currentLangLabel.textContent = translations[lang].label;
       }
 
       localStorage.setItem('barracuda_lang', lang);
@@ -246,7 +650,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.lang-option').forEach(opt => {
           opt.addEventListener('click', () => {
               const selectedLang = opt.getAttribute('data-lang');
-              changeLanguage(selectedLang);
+              // Зберігаємо мову
+              localStorage.setItem('barracuda_lang', selectedLang);
+              // ОНОВЛЮЄМО САЙТ
+              location.reload();
           });
       });
 
@@ -269,26 +676,22 @@ document.addEventListener('DOMContentLoaded', () => {
           document.body.classList.add('is-logged-in');
           if(currentUser.role==='admin') document.body.classList.add('is-admin');
           
-          const accText = translations[currentLang] ? translations[currentLang]['account'] : "ACCOUNT";
-          document.getElementById('authBtnText').textContent = accText;
+          document.getElementById('authBtnText').textContent = translations[currentLang].account;
           document.getElementById('openAuthBtn').onclick = window.openDashboard;
           
           if(applyText) applyText.style.display = 'none';
           
           if(applyBtn) { 
-              const applyLabel = translations[currentLang] ? translations[currentLang]['apply'] : "APPLY";
-              applyBtn.innerHTML = `<i class="fa-solid fa-file-signature"></i> <span data-lang="apply">${applyLabel}</span>`; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="apply">' + translations[currentLang].apply + '</span>'; 
               applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); };
           }
       } else {
           document.body.classList.remove('is-logged-in','is-admin');
-          const loginText = translations[currentLang] ? translations[currentLang]['login'] : "LOGIN";
-          document.getElementById('authBtnText').textContent = loginText;
+          document.getElementById('authBtnText').textContent = translations[currentLang].login;
           document.getElementById('openAuthBtn').onclick = ()=>document.getElementById('authModal').classList.add('show');
           if(applyText) applyText.style.display = 'block';
           if(applyBtn) { 
-              const accessLabel = translations[currentLang] ? translations[currentLang]['access_terminal'] : "ACCESS TERMINAL";
-              applyBtn.innerHTML = `<i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">${accessLabel}</span>`; 
+              applyBtn.innerHTML = '<i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">' + translations[currentLang].access_terminal + '</span>'; 
               applyBtn.onclick = ()=>document.getElementById('openAuthBtn').click(); 
           }
       }
@@ -299,48 +702,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('closeDashBtn')?.addEventListener('click', ()=>dashModal.classList.remove('show'));
   document.getElementById('logoutBtn')?.addEventListener('click', ()=>{ removeCurrentUser(); location.reload(); });
   document.getElementById('lightboxCloseBtn')?.addEventListener('click', ()=>document.getElementById('lightbox').classList.remove('show'));
-  
-  // Tab switching in Auth Modal
-  document.getElementById('tabLogin')?.addEventListener('click', (e)=>{ 
-      e.target.classList.add('active'); 
-      document.getElementById('tabRegister').classList.remove('active'); 
-      document.getElementById('loginForm').style.display='block'; 
-      document.getElementById('registerForm').style.display='none'; 
-  });
-  document.getElementById('tabRegister')?.addEventListener('click', (e)=>{ 
-      e.target.classList.add('active'); 
-      document.getElementById('tabLogin').classList.remove('active'); 
-      document.getElementById('loginForm').style.display='none'; 
-      document.getElementById('registerForm').style.display='block'; 
-  });
+  document.getElementById('tabLogin')?.addEventListener('click', (e)=>{ e.target.classList.add('active'); document.getElementById('tabRegister').classList.remove('active'); document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; });
+  document.getElementById('tabRegister')?.addEventListener('click', (e)=>{ e.target.classList.add('active'); document.getElementById('tabLogin').classList.remove('active'); document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; });
 
-  // Animation & Rendering code... (Same as before, just kept for context)
-  function activateScrollAnimations() {
-      const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                  entry.target.classList.add('animate-visible');
-                  entry.target.classList.remove('animate-hidden');
-                  observer.unobserve(entry.target);
-              }
-          });
-      }, { threshold: 0.1 });
-      document.querySelectorAll('.hero, .section, .card, .member').forEach(el => {
-          el.classList.add('animate-hidden');
-          observer.observe(el);
-      });
-  }
-  document.addEventListener('mousemove', (e) => {
-      document.querySelectorAll('.card, .member, .btn').forEach(card => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          card.style.setProperty('--x', `${x}px`);
-          card.style.setProperty('--y', `${y}px`);
-      });
-  });
-
-  // Auth Forms
   document.getElementById('loginForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
@@ -354,13 +718,24 @@ document.addEventListener('DOMContentLoaded', () => {
       if(res && res.success) { showToast('СТВОРЕНО. БУДЬ ЛАСКА, УВІЙДІТЬ.'); document.getElementById('tabLogin').click(); }
   });
 
-  // Admin/Member Logic (unchanged)
+  // --- ADMIN MEMBERS ---
   async function loadAdminMembers() {
       const list = document.getElementById('adminMembersList');
       const m = await apiFetch('/api/members');
-      if(!m || m.length === 0) { list.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Ще немає учасників.</div>'; return; }
-      list.innerHTML = m.map(x => `<div class="u-row animate-hidden"><div>${x.name} <small>(${x.role})</small></div><button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">ВИДАЛИТИ</button></div>`).join('');
+      
+      if(!m || m.length === 0) {
+          list.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Ще немає учасників сім\'ї. Додайте їх зверху ⬆️</div>';
+          return;
+      }
+
+      list.innerHTML = m.map(x => `
+        <div class="u-row animate-hidden">
+            <div>${x.name} <small>(${x.role})</small></div>
+            <button class="btn btn-outline" style="color:#ff4757; border-color:#ff4757;" onclick="window.deleteMember('${x.id}')">ВИДАЛИТИ</button>
+        </div>`).join('');
+      activateScrollAnimations();
   }
+  
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block');
   document.getElementById('adminAddMemberForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
@@ -370,40 +745,97 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   window.deleteMember = async (id) => customConfirm('Видалити учасника?', async (r)=>{ if(r) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Видалено'); loadAdminMembers(); loadInitialData(); } });
 
-  // Render Functions
+  function loadMyMemberTab() {
+      const container = document.getElementById('myMemberContainer');
+      const myMember = members.find(m => m.owner === currentUser.username);
+      if(myMember) {
+          document.getElementById('myMemberStatusPanel').style.display='block';
+          container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0 0 5px 0;">${myMember.name}</h3><div style="font-size:12px; color:#888;">РАНГ: <span style="color:#fff">${myMember.role}</span></div></div><div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div></div>`;
+          document.getElementById('saveStatusBtn').onclick=async()=>{
+              let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value;
+              await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})});
+              showToast('Статус оновлено'); loadInitialData(); loadMyMemberTab();
+          };
+      } else { container.innerHTML = `<p style="color:#aaa;">ПЕРСОНАЖА НЕ ЗНАЙДЕНО.</p>`; document.getElementById('myMemberStatusPanel').style.display='none'; }
+  }
+
+  // --- PUBLIC MEMBERS ---
   function renderPublicMembers() {
       const g = document.getElementById('membersGrid');
-      if(!members || members.length === 0) { g.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666;">Список порожній.</div>'; return; }
-      g.innerHTML = members.map(m=>`<div class="member glass animate-hidden"><h3>${m.name}</h3><div class="role-badge">${m.role}</div>${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#aaa;">${m.links.discord}</div>`:''}</div>`).join('');
+      if(!members || members.length === 0) {
+          g.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666;">Список учасників порожній.</div>';
+          return;
+      }
+      g.innerHTML = members.map(m=>`
+        <div class="member glass animate-hidden">
+            <h3>${m.name}</h3>
+            <div class="role-badge">${m.role}</div>
+            ${m.links.discord?`<div style="margin-top:10px; font-size:12px; color:#aaa;">${m.links.discord}</div>`:''}
+        </div>`).join('');
       activateScrollAnimations();
   }
+  
   function renderNews(l) { document.getElementById('newsList').innerHTML = l.map(n=>`<div class="card glass animate-hidden"><b>${n.date}</b><h3>${n.title}</h3><p>${n.summary}</p></div>`).join(''); activateScrollAnimations(); }
   function renderGallery(l) { document.getElementById('galleryGrid').innerHTML = l.map(g=>`<div class="glass animate-hidden" style="padding:5px;"><img src="${g.url}" onclick="document.getElementById('lightbox').classList.add('show');document.getElementById('lightboxImage').src='${g.url}'"></div>`).join(''); activateScrollAnimations(); }
-  
   window.renderLogs = () => { document.getElementById('systemLogsList').innerHTML = systemLogs.map(l=>`<div>${l}</div>`).join(''); };
   window.clearLogs = () => { systemLogs=[]; localStorage.removeItem('barakuda_logs'); renderLogs(); };
+  
+  // ============================================
+  // --- ULTRA CYBER MODAL LOGIC (GLOBAL) ---
+  // ============================================
 
-  // Dashboard Tab Logic
-  window.switchDashTab = (tab) => {
-      document.querySelectorAll('.dash-view').forEach(e => e.classList.remove('active'));
-      document.querySelectorAll('.dash-nav button').forEach(e => e.classList.remove('active'));
-      const btn = Array.from(document.querySelectorAll('.dash-nav button')).find(b => b.getAttribute('onclick')?.includes(tab));
-      if(btn) btn.classList.add('active');
-      document.getElementById(`tab-${tab}`)?.classList.add('active');
-      
-      if(tab === 'apply') checkMyApplication();
-      if(tab === 'applications') loadApplicationsStaff();
-      if(tab === 'support-user') loadMyTickets();
-      if(tab === 'support-staff') loadAllTickets();
-      if(tab === 'users') loadUsersAdmin();
-      if(tab === 'admin-members') loadAdminMembers();
-      if(tab === 'logs') renderLogs();
-      if(tab === 'my-member') loadMyMemberTab();
-      if(tab === 'accounts-data') loadAccountsData();
+  window.openCyberModal = (title, htmlContent, onConfirm = null) => {
+      const modal = document.getElementById('cyberModal');
+      const titleEl = document.getElementById('cyberModalTitle');
+      const contentEl = document.getElementById('cyberModalContent');
+      const footerEl = document.getElementById('cyberModalFooter');
+
+      if (!modal || !titleEl || !contentEl || !footerEl) return;
+
+      titleEl.textContent = title || 'SYSTEM ALERT';
+      contentEl.innerHTML = htmlContent || '<p>No data received.</p>';
+
+      if (onConfirm && typeof onConfirm === 'function') {
+          footerEl.innerHTML = `
+              <button class="btn btn-outline" onclick="closeCyberModal()">СКАСУВАТИ</button>
+              <button id="cyberConfirmBtn" class="btn btn-primary">ПІДТВЕРДИТИ</button>
+          `;
+          setTimeout(() => {
+              const confirmBtn = document.getElementById('cyberConfirmBtn');
+              if (confirmBtn) {
+                  confirmBtn.onclick = () => {
+                      onConfirm();     
+                      closeCyberModal(); 
+                  };
+              }
+          }, 50);
+      } else {
+          footerEl.innerHTML = `
+              <button class="btn btn-primary" onclick="closeCyberModal()">ЗРОЗУМІЛО</button>
+          `;
+      }
+      modal.classList.add('active');
   };
 
-  // ... (Other specific logic like checkMyApplication, loadMyTickets etc. remains as is, just ensured elements exist) ...
-  // Keeping minimal for brevity, assume standard implementations for those function calls exist as before.
+  window.closeCyberModal = () => {
+      const modal = document.getElementById('cyberModal');
+      if (modal) modal.classList.remove('active');
+  };
+
+  const cyberModal = document.getElementById('cyberModal');
+  if (cyberModal) {
+      cyberModal.addEventListener('click', (e) => {
+          if (e.target.classList.contains('cyber-modal-overlay')) {
+              closeCyberModal();
+          }
+      });
+  }
+
+  document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && cyberModal && cyberModal.classList.contains('active')) {
+          closeCyberModal();
+      }
+  });
 
   loadInitialData();
 });

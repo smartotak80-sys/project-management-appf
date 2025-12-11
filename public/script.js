@@ -1,3 +1,7 @@
+{
+type: uploaded file
+fileName: smartotak80-sys/project-management-appf/project-management-appf-8d935f6abaabdab4fe5107dfa9cdd18238fe4b8f/public/script.js
+fullContent:
 document.addEventListener('DOMContentLoaded', () => {
   const CURRENT_USER_KEY = 'barakuda_current_user';
   let members = [];
@@ -512,7 +516,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "ГАЛЕРЕЯ",
         join_system_title: "ПРИЄДНУЙСЯ ДО СИСТЕМИ", join_system_desc: "Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.",
         access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ",
-        footer: "BARRACUDA FAMILY. RP."
+        footer: "BARRACUDA FAMILY. RP.",
+        hero_lead: "ДОМІНУВАННЯ. СТИЛЬ. ДИСЦИПЛІНА."
     },
     ru: {
         flag: "ru", label: "RUS",
@@ -527,7 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "ГАЛЕРЕЯ",
         join_system_title: "ПРИСОЕДИНЯЙСЯ К СИСТЕМЕ", join_system_desc: "Авторизуйтесь, чтобы получить доступ к закрытому разделу подачи заявок.",
         access_terminal: "ДОСТУП К ТЕРМИНАЛУ",
-        footer: "BARRACUDA FAMILY. RP."
+        footer: "BARRACUDA FAMILY. RP.",
+        hero_lead: "ДОМИНИРОВАНИЕ. СТИЛЬ. ДИСЦИПЛИНА."
     },
     en: {
         flag: "gb", label: "ENG",
@@ -542,7 +548,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALLERY",
         join_system_title: "JOIN THE SYSTEM", join_system_desc: "Authorize to access the restricted application section.",
         access_terminal: "ACCESS TERMINAL",
-        footer: "BARRACUDA FAMILY. RP."
+        footer: "BARRACUDA FAMILY. RP.",
+        hero_lead: "DOMINANCE. STYLE. DISCIPLINE."
     },
     pl: {
         flag: "pl", label: "POL",
@@ -557,7 +564,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERIA",
         join_system_title: "DOŁĄCZ DO SYSTEMU", join_system_desc: "Zaloguj się, aby uzyskać dostęp do sekcji rekrutacji.",
         access_terminal: "DOSTĘP DO TERMINALA",
-        footer: "RODZINA BARRACUDA. RP."
+        footer: "RODZINA BARRACUDA. RP.",
+        hero_lead: "DOMINACJA. STYL. DYSCYPLINA."
     },
     de: {
         flag: "de", label: "DEU",
@@ -572,7 +580,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERIE",
         join_system_title: "TRITT DEM SYSTEM BEI", join_system_desc: "Melden Sie sich an, um Zugang zum Bewerbungsbereich zu erhalten.",
         access_terminal: "TERMINAL ZUGRIFF",
-        footer: "BARRACUDA FAMILIE. RP."
+        footer: "BARRACUDA FAMILIE. RP.",
+        hero_lead: "DOMINANZ. STIL. DISZIPLIN."
     },
     es: {
         flag: "es", label: "ESP",
@@ -587,7 +596,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERÍA",
         join_system_title: "ÚNETE AL SISTEMA", join_system_desc: "Inicia sesión para acceder a la sección de solicitudes restringidas.",
         access_terminal: "ACCESO TERMINAL",
-        footer: "FAMILIA BARRACUDA. RP."
+        footer: "FAMILIA BARRACUDA. RP.",
+        hero_lead: "DOMINIO. ESTILO. DISCIPLINA."
     },
     pt: {
         flag: "br", label: "POR",
@@ -602,7 +612,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery_title: "GALERIA",
         join_system_title: "JUNTE-SE AO SISTEMA", join_system_desc: "Faça login para acessar a seção de aplicativos restrita.",
         access_terminal: "ACESSO TERMINAL",
-        footer: "FAMÍLIA BARRACUDA. RP."
+        footer: "FAMÍLIA BARRACUDA. RP.",
+        hero_lead: "DOMÍNIO. ESTILO. DISCIPLINA."
     }
   };
 
@@ -839,3 +850,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadInitialData();
 });
+}

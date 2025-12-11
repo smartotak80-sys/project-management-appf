@@ -24,9 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         login: "ВХІД", account: "АКАУНТ", hero_btn: "ПРИЄДНАТИСЬ", hero_members: "СКЛАД",
         about_title_span: "ХТО", about_title: "МИ Є", hero_lead: "ДОМІНУВАННЯ. СТИЛЬ. ДИСЦИПЛІНА.",
         about_main_desc: "BARRACUDA — це елітна сім'я та організація, що об'єднує гравців на провідних RP проектах. Ми граємо на різних серверах GTA V, поширюючи свій вплив та встановлюючи свої правила.<br><br>Ми — це більше, ніж просто клан. Це братерство, скріплене залізною дисципліною та амбіціями. Ми контролюємо ресурси, захоплюємо території та завжди прикриваємо спини один одному. Наша мета — абсолютна першість у кожному місті, куди ступає нога Барракуди.",
-        card_mission: "МІСІЯ", card_mission_desc: "Створення унікального RP досвіду та домінування в сферах впливу.",
-        card_protection: "ЗАХИСТ", card_protection_desc: "Ми стоїмо один за одного. Сім'я — це непорушна фортеця.",
-        card_resources: "РЕСУРСИ", card_resources_desc: "Забезпечення кожного учасника усім необхідним для комфортної гри.",
+        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "ВЛАСНИК",
         members_title_span: "НАШ", members_title: "СКЛАД",
         shop_title: "МАГАЗИН", shop_desc: "Ексклюзивні товари для членів сім'ї. Оплата здійснюється через Discord або внутрішню валюту.",
         news_title: "СТРІЧКА", news_title_span: "НОВИН",
@@ -62,9 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         login: "LOGIN", account: "ACCOUNT", hero_btn: "JOIN US", hero_members: "ROSTER",
         about_title_span: "WHO", about_title: "WE ARE", hero_lead: "DOMINANCE. STYLE. DISCIPLINE.",
         about_main_desc: "BARRACUDA is an elite family and organization uniting players on leading RP projects. We operate on various GTA V servers, expanding our influence and setting our own rules.<br><br>We are more than just a clan. This is a brotherhood forged by iron discipline and ambition. We control resources, conquer territories, and always watch each other's backs. Our goal is absolute supremacy in every city Barracuda steps into.",
-        card_mission: "MISSION", card_mission_desc: "Creating a unique RP experience and dominating spheres of influence.",
-        card_protection: "PROTECTION", card_protection_desc: "We stand for each other. The family is an unshakeable fortress.",
-        card_resources: "RESOURCES", card_resources_desc: "Providing every member with everything needed for comfortable gameplay.",
+        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "OWNER",
         members_title_span: "OUR", members_title: "ROSTER",
         shop_title: "SHOP", shop_desc: "Exclusive items for family members. Payment via Discord or internal currency.",
         news_title: "NEWS", news_title_span: "FEED",
@@ -100,9 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         login: "ВХОД", account: "АККАУНТ", hero_btn: "ПРИСОЕДИНИТЬСЯ", hero_members: "СОСТАВ",
         about_title_span: "КТО", about_title: "МЫ ЕСТЬ", hero_lead: "ДОМИНИРОВАНИЕ. СТИЛЬ. ДИСЦИПЛИНА.",
         about_main_desc: "BARRACUDA — это элитная семья и организация, объединяющая игроков на ведущих RP проектах. Мы играем на различных серверах GTA V, распространяя свое влияние и устанавливая свои правила.<br><br>Мы — это больше, чем просто клан. Это братство, скрепленное железной дисциплиной и амбициями. Мы контролируем ресурсы, захватываем территории и всегда прикрываем спины друг друга. Наша цель — абсолютное первенство.",
-        card_mission: "МИССИЯ", card_mission_desc: "Создание уникального RP опыта и доминирование в сферах влияния.",
-        card_protection: "ЗАЩИТА", card_protection_desc: "Мы стоим друг за друга. Семья — это нерушимая крепость.",
-        card_resources: "РЕСУРСИ", card_resources_desc: "Обеспечение каждого участника всем необходимым для комфортной игры.",
+        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "ВЛАДЕЛЕЦ",
         members_title_span: "НАШ", members_title: "СОСТАВ",
         shop_title: "МАГАЗИН", shop_desc: "Эксклюзивные товары для членов семьи. Оплата через Discord или внутреннюю валюту.",
         news_title: "ЛЕНТА", news_title_span: "НОВОСТЕЙ",
@@ -138,9 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         login: "ANMELDEN", account: "KONTO", hero_btn: "BEITRETEN", hero_members: "TEAM",
         about_title_span: "WER", about_title: "WIR SIND", hero_lead: "DOMINANZ. STIL. DISZIPLIN.",
         about_main_desc: "BARRACUDA ist eine Elite-Familie und Organisation, die Spieler auf führenden RP-Projekten vereint. Wir spielen auf verschiedenen GTA V Servern, erweitern unseren Einfluss und stellen unsere eigenen Regeln auf.<br><br>Wir sind mehr als nur ein Clan. Dies ist eine Bruderschaft, geschmiedet aus eiserner Disziplin und Ehrgeiz. Wir kontrollieren Ressourcen, erobern Gebiete und halten uns immer gegenseitig den Rücken frei.",
-        card_mission: "MISSION", card_mission_desc: "Schaffung eines einzigartigen RP-Erlebnisses und Dominanz in Einflussbereichen.",
-        card_protection: "SCHUTZ", card_protection_desc: "Wir stehen füreinander ein. Die Familie ist eine unerschütterliche Festung.",
-        card_resources: "RESSOURCEN", card_resources_desc: "Bereitstellung von allem, was für ein komfortables Spiel benötigt wird.",
+        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "BESITZER",
         members_title_span: "UNSER", members_title: "TEAM",
         shop_title: "SHOP", shop_desc: "Exklusive Artikel für Familienmitglieder. Zahlung über Discord oder interne Währung.",
         news_title: "NEWS", news_title_span: "FEED",
@@ -176,9 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         login: "ACCESO", account: "CUENTA", hero_btn: "ÚNETE", hero_members: "MIEMBROS",
         about_title_span: "QUIÉNES", about_title: "SOMOS", hero_lead: "DOMINIO. ESTILO. DISCIPLINA.",
         about_main_desc: "BARRACUDA es una familia de élite y organización que une a jugadores en los principales proyectos de RP. Operamos en varios servidores de GTA V, expandiendo nuestra influencia y estableciendo nuestras propias reglas.<br><br>Somos más que un simple clan. Esto es una hermandad forjada por una disciplina de hierro y ambición.",
-        card_mission: "MISIÓN", card_mission_desc: "Creando una experiencia RP única y dominando esferas de influencia.",
-        card_protection: "PROTECCIÓN", card_protection_desc: "Nos apoyamos mutuamente. La familia es una fortaleza inquebrantable.",
-        card_resources: "RECURSOS", card_resources_desc: "Proporcionando a cada miembro todo lo necesario para un juego cómodo.",
+        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "DUEÑO",
         members_title_span: "NUESTRO", members_title: "EQUIPO",
         shop_title: "TIENDA", shop_desc: "Artículos exclusivos para miembros de la familia. Pago vía Discord o moneda interna.",
         news_title: "NOTICIAS", news_title_span: "FEED",
@@ -214,9 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         login: "LOGIN", account: "CONTA", hero_btn: "JUNTAR-SE", hero_members: "MEMBROS",
         about_title_span: "QUEM", about_title: "SOMOS", hero_lead: "DOMÍNIO. ESTILO. DISCIPLINA.",
         about_main_desc: "BARRACUDA é uma família de elite e organização que une jogadores nos principais projetos de RP. Operamos em vários servidores de GTA V, expandindo nossa influência e estabelecendo nossas próprias regras.",
-        card_mission: "MISSÃO", card_mission_desc: "Criando uma experiência única de RP e dominando esferas de influência.",
-        card_protection: "PROTEÇÃO", card_protection_desc: "Nós nos apoiamos. A família é uma fortaleza inabalável.",
-        card_resources: "RECURSOS", card_resources_desc: "Fornecendo a cada membro tudo o que é necessário para um jogo confortável.",
+        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "PROPRIETÁRIO",
         members_title_span: "NOSSO", members_title: "TIME",
         shop_title: "LOJA", shop_desc: "Itens exclusivos para membros da família. Pagamento via Discord ou moeda interna.",
         news_title: "NOTÍCIAS", news_title_span: "FEED",
@@ -252,9 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         login: "LOGOWANIE", account: "KONTO", hero_btn: "DOŁĄCZ", hero_members: "SKŁAD",
         about_title_span: "KIM", about_title: "JESTEŚMY", hero_lead: "DOMINACJA. STYL. DYSCYPLINA.",
         about_main_desc: "BARRACUDA to elitarna rodzina i organizacja zrzeszająca graczy na wiodących projektach RP. Gramy na różnych serwerach GTA V, rozszerzając nasze wpływy i ustalając własne zasady.",
-        card_mission: "MISJA", card_mission_desc: "Tworzenie unikalnego doświadczenia RP i dominacja w strefach wpływów.",
-        card_protection: "OCHRONA", card_protection_desc: "Stojimy za sobą murem. Rodzina to niezniszczalna twierdza.",
-        card_resources: "ZASOBY", card_resources_desc: "Zapewnienie każdemu członkowi wszystkiego, co niezbędne do komfortowej gry.",
+        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "WŁAŚCICIEL",
         members_title_span: "NASZ", members_title: "SKŁAD",
         shop_title: "SKLEP", shop_desc: "Ekskluzywne przedmioty dla członków rodziny. Płatność przez Discord lub walutę wewnętrzną.",
         news_title: "AKTUALNOŚCI", news_title_span: "FEED",
@@ -401,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   };
 
-  // --- РЕШТА КОДУ (оновлена switchDashTab та ініціалізація) ---
+  // --- РЕШТА КОДУ ---
   
   function loadCurrentUser(){ try{ return JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); } catch(e){ return null; } }
   function saveCurrentUser(val){ try { localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(val)); } catch(e){} }
@@ -457,7 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const yearEl = document.getElementById('year');
           if(yearEl) yearEl.textContent = new Date().getFullYear();
           
-          // Ініціалізація мови
           if(langTrigger && langDropdown) {
               langTrigger.addEventListener('click', (e) => { e.stopPropagation(); langDropdown.classList.toggle('show'); });
               document.querySelectorAll('.lang-option').forEach(opt => {
@@ -517,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(tab === 'support-staff') loadAllTickets();
       if(tab === 'users') loadUsersAdmin();
       if(tab === 'admin-members') loadAdminMembers();
-      if(tab === 'shop-admin') loadAdminShop(); // Завантаження товарів в адмінці
+      if(tab === 'shop-admin') loadAdminShop();
       if(tab === 'logs') renderLogs();
       if(tab === 'my-member') loadMyMemberTab();
       if(tab === 'accounts-data') loadAccountsData();
@@ -540,7 +525,6 @@ document.addEventListener('DOMContentLoaded', () => {
       switchDashTab('profile');
   }
 
-  // ... (Решта функцій loadAccountsData, loadUsersAdmin, renderPublicMembers, і т.д. залишаються без змін) ...
   window.loadAccountsData = async () => { const tbody = document.getElementById('accountsDataTableBody'); if(!tbody) return; tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>'; const users = await apiFetch('/api/users'); if(!users || !users.length) { tbody.innerHTML = `<tr><td colspan="5">${getTrans('msg_empty_list')}</td></tr>`; return; } tbody.innerHTML = users.map(u => `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding:10px;">${u.username}</td><td style="padding:10px;">${u.email}</td><td style="padding:10px; color:var(--accent);">${u.password || '***'}</td><td style="padding:10px;">${u.role}</td><td style="padding:10px;">${new Date(u.regDate).toLocaleDateString()}</td></tr>`).join(''); };
   async function loadUsersAdmin() { const list = document.getElementById('adminUsersList'); if (!list) return; const users = await apiFetch('/api/users'); if(!users || !users.length) { list.innerHTML = `<div>${getTrans('msg_empty_list')}</div>`; return; } list.innerHTML = users.map(u => `<div class="u-row animate-hidden"><div><b>${u.username}</b> <small>(${u.role})</small></div>${u.username === 'ADMIN 🦈' ? '' : `<select onchange="window.changeUserRole('${u.username}', this.value)" style="width:auto; padding:5px;"><option value="member" ${u.role==='member'?'selected':''}>Member</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option></select> <button class="btn btn-outline" onclick="window.banUser('${u.username}')">X</button>`}</div>`).join(''); }
   window.changeUserRole = async (u, role) => { await apiFetch(`/api/users/${u}/role`, { method:'PUT', body: JSON.stringify({role}) }); showToast(getTrans('msg_updated')); loadUsersAdmin(); };

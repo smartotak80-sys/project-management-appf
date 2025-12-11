@@ -50,16 +50,20 @@ const News = mongoose.model('News', NewsSchema);
 const GallerySchema = new mongoose.Schema({ url: String, createdAt: { type: Date, default: Date.now } });
 const Gallery = mongoose.model('Gallery', GallerySchema);
 
+// НОВА СХЕМА МАГАЗИНУ
+const ShopItemSchema = new mongoose.Schema({
+    title: String,
+    price: String,
+    image: String,
+    description: String,
+    createdAt: { type: Date, default: Date.now }
+});
+const ShopItem = mongoose.model('ShopItem', ShopItemSchema);
+
 const ApplicationSchema = new mongoose.Schema({
-    rlName: String,       // 1. Ім'я
-    age: String,          // 2. Вік
-    onlineTime: String,   // 3. Онлайн
-    prevFamilies: String, // 4. Сім'ї
-    history: String,      // 5. Історія
-    note: String,         // 6. Коментар
+    rlName: String, age: String, onlineTime: String, prevFamilies: String, history: String, note: String,
     status: { type: String, default: 'pending' }, 
-    submittedBy: String, 
-    adminComment: String,
+    submittedBy: String, adminComment: String,
     createdAt: { type: Date, default: Date.now }
 });
 const Application = mongoose.model('Application', ApplicationSchema);
@@ -105,7 +109,7 @@ app.put('/api/users/:username/role', async (req, res) => {
     catch(e) { res.status(500).json({ success: false }); }
 });
 
-// MEMBERS & NEWS & GALLERY
+// MEMBERS & NEWS & GALLERY & SHOP
 app.post('/api/members', async (req, res) => { try { await new Member(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 app.get('/api/members', async (req, res) => { const m = await Member.find().sort({ createdAt: -1 }); res.json(m.map(x => ({ ...x._doc, id: x._id }))); });
 app.put('/api/members/:id', async (req, res) => { await Member.findByIdAndUpdate(req.params.id, req.body); res.json({ success: true }); });
@@ -118,6 +122,11 @@ app.delete('/api/news/:id', async (req, res) => { await News.findByIdAndDelete(r
 app.get('/api/gallery', async (req, res) => { const g = await Gallery.find().sort({ createdAt: -1 }); res.json(g.map(x => ({ ...x._doc, id: x._id }))); });
 app.post('/api/gallery', async (req, res) => { await new Gallery(req.body).save(); res.json({ success: true }); });
 app.delete('/api/gallery/:id', async (req, res) => { await Gallery.findByIdAndDelete(req.params.id); res.json({ success: true }); });
+
+// API SHOP
+app.get('/api/shop', async (req, res) => { const s = await ShopItem.find().sort({ createdAt: -1 }); res.json(s.map(x => ({ ...x._doc, id: x._id }))); });
+app.post('/api/shop', async (req, res) => { await new ShopItem(req.body).save(); res.json({ success: true }); });
+app.delete('/api/shop/:id', async (req, res) => { await ShopItem.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
 // USERS API
 app.get('/api/users', async (req, res) => { 

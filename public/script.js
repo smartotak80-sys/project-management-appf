@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         dash_admin_users: "Користувачі та Ролі", dash_admin_roster: "Редагування складу", dash_admin_db: "USERS DATABASE", dash_admin_logs: "Системні логи",
         dash_btn_add: "Додати", dash_btn_save: "ЗБЕРЕГТИ В БАЗУ", dash_btn_clear: "CLEAR HISTORY", dash_btn_refresh: "ОНОВИТИ",
         ph_adm_name: "IC Ім'я", ph_adm_role: "Ранг", ph_adm_owner: "Логін (Login)",
+        // DB Headers
+        db_user: "КОРИСТУВАЧ", db_email: "EMAIL", db_hash: "ПАРОЛЬ (HASH)", db_role: "РІВЕНЬ ДОСТУПУ", db_reg: "РЕЄСТРАЦІЯ",
         // JS Messages
         msg_access_denied: "ДОСТУП ЗАБОРОНЕНО", msg_error: "Помилка", msg_updated: "Оновлено", msg_deleted: "Видалено", msg_sent: "ВІДПРАВЛЕНО",
         msg_pass_mismatch: "ПАРОЛІ НЕ СПІВПАДАЮТЬ", msg_welcome: "ВІТАЄМО", msg_login_plz: "СТВОРЕНО. БУДЬ ЛАСКА, УВІЙДІТЬ.",
@@ -100,6 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
         dash_admin_users: "Users & Roles", dash_admin_roster: "Roster Editor", dash_admin_db: "USERS DATABASE", dash_admin_logs: "System Logs",
         dash_btn_add: "Add", dash_btn_save: "SAVE TO DB", dash_btn_clear: "CLEAR HISTORY", dash_btn_refresh: "REFRESH",
         ph_adm_name: "IC Name", ph_adm_role: "Rank", ph_adm_owner: "Login User",
+        // DB Headers
+        db_user: "USERNAME", db_email: "EMAIL", db_hash: "HASH", db_role: "ACCESS LEVEL", db_reg: "REGISTERED",
         // JS Messages
         msg_access_denied: "ACCESS DENIED", msg_error: "Error", msg_updated: "Updated", msg_deleted: "Deleted", msg_sent: "SENT",
         msg_pass_mismatch: "PASSWORDS DO NOT MATCH", msg_welcome: "WELCOME", msg_login_plz: "CREATED. PLEASE LOGIN.",
@@ -141,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         dash_admin_users: "Пользователи и Роли", dash_admin_roster: "Редактор состава", dash_admin_db: "БАЗА ДАННЫХ", dash_admin_logs: "Системные логи",
         dash_btn_add: "Добавить", dash_btn_save: "СОХРАНИТЬ", dash_btn_clear: "ОЧИСТИТЬ", dash_btn_refresh: "ОБНОВИТЬ",
         ph_adm_name: "IC Имя", ph_adm_role: "Ранг", ph_adm_owner: "Логин на сайте",
+        // DB Headers
+        db_user: "ПОЛЬЗОВАТЕЛЬ", db_email: "EMAIL", db_hash: "ПАРОЛЬ (HASH)", db_role: "ДОСТУП", db_reg: "РЕГИСТРАЦИЯ",
         // JS Messages
         msg_access_denied: "ДОСТУП ЗАПРЕЩЕН", msg_error: "Ошибка", msg_updated: "Обновлено", msg_deleted: "Удалено", msg_sent: "ОТПРАВЛЕНО",
         msg_pass_mismatch: "ПАРОЛИ НЕ СОВПАДАЮТ", msg_welcome: "ПРИВЕТСТВУЕМ", msg_login_plz: "СОЗДАНО. ПОЖАЛУЙСТА, ВОЙДИТЕ.",
@@ -182,6 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dash_admin_users: "Benutzer & Rollen", dash_admin_roster: "Dienstplan bearbeiten", dash_admin_db: "BENUTZER-DB", dash_admin_logs: "Systemprotokolle",
         dash_btn_add: "Hinzufügen", dash_btn_save: "SPEICHERN", dash_btn_clear: "LÖSCHEN", dash_btn_refresh: "AKTUALISIEREN",
         ph_adm_name: "IC Name", ph_adm_role: "Rang", ph_adm_owner: "Benutzer-Login",
+        // DB Headers
+        db_user: "BENUTZER", db_email: "EMAIL", db_hash: "PASSWORT (HASH)", db_role: "ZUGRIFF", db_reg: "REGISTRIERT",
+        // JS Messages
         msg_access_denied: "ZUGRIFF VERWEIGERT", msg_error: "Fehler", msg_updated: "Aktualisiert", msg_deleted: "Gelöscht", msg_sent: "GESENDET",
         msg_pass_mismatch: "PASSWÖRTER STIMMEN NICHT ÜBEREIN", msg_welcome: "WILLKOMMEN", msg_login_plz: "ERSTELLT. BITTE EINLOGGEN.",
         msg_empty: "Liste ist leer", msg_loading: "Wird geladen...", msg_ban_confirm: "BENUTZER SPERREN?", msg_del_confirm: "LÖSCHEN?",
@@ -222,6 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dash_admin_users: "Usuarios y Roles", dash_admin_roster: "Editar Lista", dash_admin_db: "BASE DE DATOS", dash_admin_logs: "Logs del Sistema",
         dash_btn_add: "Añadir", dash_btn_save: "GUARDAR", dash_btn_clear: "BORRAR", dash_btn_refresh: "REFRESCAR",
         ph_adm_name: "Nombre IC", ph_adm_role: "Rango", ph_adm_owner: "Usuario Login",
+        // DB Headers
+        db_user: "USUARIO", db_email: "EMAIL", db_hash: "CLAVE (HASH)", db_role: "ACCESO", db_reg: "REGISTRO",
+        // JS Messages
         msg_access_denied: "ACCESO DENEGADO", msg_error: "Error", msg_updated: "Actualizado", msg_deleted: "Eliminado", msg_sent: "ENVIADO",
         msg_pass_mismatch: "LAS CONTRASEÑAS NO COINCIDEN", msg_welcome: "BIENVENIDO", msg_login_plz: "CREADO. POR FAVOR ENTRA.",
         msg_empty: "Lista vacía", msg_loading: "Cargando...", msg_ban_confirm: "¿BANEAR USUARIO?", msg_del_confirm: "¿ELIMINAR?",
@@ -262,6 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dash_admin_users: "Usuários e Funções", dash_admin_roster: "Editar Lista", dash_admin_db: "BANCO DE DADOS", dash_admin_logs: "Logs do Sistema",
         dash_btn_add: "Adicionar", dash_btn_save: "SALVAR", dash_btn_clear: "LIMPAR", dash_btn_refresh: "ATUALIZAR",
         ph_adm_name: "Nome IC", ph_adm_role: "Rank", ph_adm_owner: "Login do Usuário",
+        // DB Headers
+        db_user: "USUÁRIO", db_email: "EMAIL", db_hash: "SENHA (HASH)", db_role: "ACESSO", db_reg: "REGISTRO",
+        // JS Messages
         msg_access_denied: "ACESSO NEGADO", msg_error: "Erro", msg_updated: "Atualizado", msg_deleted: "Excluído", msg_sent: "ENVIADO",
         msg_pass_mismatch: "SENHAS NÃO CONFEREM", msg_welcome: "BEM-VINDO", msg_login_plz: "CRIADO. POR FAVOR FAÇA LOGIN.",
         msg_empty: "Lista vazia", msg_loading: "Carregando...", msg_ban_confirm: "BANIR USUÁRIO?", msg_del_confirm: "EXCLUIR?",
@@ -302,6 +317,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dash_admin_users: "Użytkownicy i Role", dash_admin_roster: "Edytor Składu", dash_admin_db: "BAZA DANYCH", dash_admin_logs: "Logi Systemowe",
         dash_btn_add: "Dodaj", dash_btn_save: "ZAPISZ", dash_btn_clear: "WYCZYŚĆ", dash_btn_refresh: "ODŚWIEŻ",
         ph_adm_name: "Imię IC", ph_adm_role: "Ranga", ph_adm_owner: "Login Użytkownika",
+        // DB Headers
+        db_user: "UŻYTKOWNIK", db_email: "EMAIL", db_hash: "HASŁO (HASH)", db_role: "DOSTĘP", db_reg: "REJESTRACJA",
+        // JS Messages
         msg_access_denied: "BRAK DOSTĘPU", msg_error: "Błąd", msg_updated: "Zaktualizowano", msg_deleted: "Usunięto", msg_sent: "WYSŁANO",
         msg_pass_mismatch: "HASŁA NIE PASUJĄ", msg_welcome: "WITAJ", msg_login_plz: "UTWORZONO. ZALOGUJ SIĘ.",
         msg_empty: "Lista pusta", msg_loading: "Ładowanie...", msg_ban_confirm: "ZBANOWAĆ?", msg_del_confirm: "USUNĄĆ?",

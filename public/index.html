@@ -39,7 +39,8 @@
             <li><a href="#home" data-lang="home">ГОЛОВНА</a></li>
             <li><a href="#about" data-lang="about">ІНФО</a></li>
             <li><a href="#members" data-lang="members">СКЛАД</a></li>
-            <li><a href="#gallery" data-lang="media">МЕДІА</a></li>
+            <li><a href="#gallery" data-lang="gallery">ГАЛЕРЕЯ</a></li>
+            <li><a href="#videos" id="navVideos" style="display:none;" data-lang="videos">МЕДІЙКИ</a></li>
             <li><a href="#apply" class="primary-link" data-lang="apply">ВСТУП</a></li>
           </ul>
         </nav>
@@ -95,15 +96,12 @@
           <div class="section-header">
               <h2><span class="highlight" data-lang="about_title_span">ХТО</span> <span data-lang="about_title">МИ Є</span></h2>
           </div>
-          
           <div class="glass-panel about-main-text animate-hidden">
              <p class="about-desc" data-lang="about_main_desc">
-                BARRACUDA — це елітна сім'я та організація, що об'єднує гравців на провідних RP проектах. Ми граємо на різних серверах GTA V, поширюючи свій вплив та встановлюючи свої правила.
-                <br><br>
-                Ми — це більше, ніж просто клан. Це братерство, скріплене залізною дисципліною та амбіціями. Ми контролюємо ресурси, захоплюємо території та завжди прикриваємо спини один одному. Наша мета — абсолютна першість у кожному місті, куди ступає нога Барракуди.
+                BARRACUDA — це елітна сім'я та організація, що об'єднує гравців на провідних RP проектах. Ми граємо на різних серверах GTA V, поширюючи свій вплив та встановлюючи свої правила.<br><br>
+                Ми — це більше, ніж просто клан. Це братерство, скріплене залізною дисципліною та амбіціями. Ми контролюємо ресурси, захоплюємо території та завжди прикриваємо спини один одному.
              </p>
           </div>
-
           <div class="cards">
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-server"></i></div>
@@ -113,7 +111,6 @@
                     <span class="owner-link" onclick="showOwnerInfo('stake')">Triton Barracuda</span>
                 </p>
             </article>
-
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-city"></i></div>
                 <h3 data-lang="server_chicago">Majestic RP Chicago</h3>
@@ -122,7 +119,6 @@
                     <span class="owner-link" onclick="showOwnerInfo('chicago')">Derici Barracuda</span>
                 </p>
             </article>
-
             <article class="card glass">
                 <div class="card-icon"><i class="fa-solid fa-building"></i></div>
                 <h3 data-lang="server_ny">Majestic RP New York</h3>
@@ -170,11 +166,22 @@
         </div>
       </section>
 
+      <section id="videos" class="section" style="display:none;">
+          <div class="container">
+              <div class="section-header"><h2><span class="highlight" data-lang="videos_title">МЕДІЙКИ</span></h2></div>
+              <div class="gallery-controls admin-only glass">
+                  <input id="videoTitle" placeholder="Назва відео">
+                  <input id="videoUrl" placeholder="Посилання на YouTube/Video">
+                  <button id="addVideoBtn" class="btn btn-primary">ДОДАТИ ВІДЕО</button>
+              </div>
+              <div id="videosGrid" class="cards"></div>
+          </div>
+      </section>
+
       <section id="apply" class="section footer-section">
         <div class="container center-text">
           <h2 class="neon-title" data-lang="join_system_title">ПРИЄДНУЙСЯ ДО СИСТЕМИ</h2>
           <p id="applyText" class="apply-desc" data-lang="join_system_desc">Авторизуйтесь, щоб отримати доступ до закритого розділу подачі заявок.</p>
-          
           <div class="action-buttons">
               <button id="applyBtnMain" onclick="document.getElementById('openAuthBtn').click()" class="btn btn-primary btn-large">
                   <i class="fa-solid fa-file-signature"></i> <span data-lang="access_terminal">ДОСТУП ДО ТЕРМІНАЛУ</span>
@@ -198,13 +205,11 @@
         <div class="dash-mobile-header">
             <div style="display:flex; align-items:center; gap:15px;">
                 <button id="dashMobileToggle" class="btn btn-outline btn-icon"><i class="fa-solid fa-bars"></i></button>
-                <span class="dash-mobile-title" style="font-weight:bold; letter-spacing:1px;">PANEL v3.0</span>
+                <span class="dash-mobile-title">PANEL v3.0</span>
             </div>
         </div>
         <div class="dash-sidebar" id="dashSidebar">
-            <div class="dash-brand">
-                <i class="fa-solid fa-skull"></i>
-            </div>
+            <div class="dash-brand"><i class="fa-solid fa-skull"></i></div>
             <div class="dash-user-card">
                 <div class="dash-avatar"><i class="fa-solid fa-user-secret"></i></div>
                 <div class="dash-info">
@@ -263,9 +268,20 @@
                     <p style="color:#aaa;" data-lang="dash_sys_ok">Всі системи працюють у штатному режимі. Доступ до функцій дозволено згідно з вашим рангом.</p>
                 </div>
             </div>
+
             <div id="tab-my-member" class="dash-view">
                 <div class="dash-header"><h2 data-lang="dash_char_settings">Налаштування персонажа</h2></div>
-                <div id="myMemberContainer" class="glass-panel"></div>
+                
+                <div id="createMemberBlock">
+                     <div class="glass-panel" style="text-align:center;">
+                         <h3>Створити персонажа</h3>
+                         <p style="color:#aaa;">У вас ще немає активного персонажа. Створіть його, щоб потрапити до складу.</p>
+                         <button id="openAdminAddMemberUser" class="btn btn-primary">СТВОРИТИ</button>
+                     </div>
+                </div>
+
+                <div id="myMemberContainer" class="glass-panel" style="display:none;"></div>
+                
                 <div id="myMemberStatusPanel" class="glass-panel" style="display:none;">
                     <h4 style="margin-top:0"><i class="fa-solid fa-signal"></i> <span data-lang="dash_char_status">Актуальний статус</span></h4>
                     <div class="control-group" style="display:flex; gap:10px;">
@@ -278,6 +294,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="tab-apply" class="dash-view">
                 <div class="dash-header"><h2 data-lang="dash_apply_header">Подача заявки</h2></div>
                 <div id="applyStatusContainer" class="status-box" style="display:none; max-width: 500px; margin: 0 auto;"></div>
@@ -306,6 +323,7 @@
                     </form>
                 </div>
             </div>
+            
             <div id="tab-support-user" class="dash-view">
                 <div class="dash-header"><h2 data-lang="dash_support_header">Технічна підтримка</h2></div>
                 <div class="form-row">
@@ -323,6 +341,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="tab-applications" class="dash-view">
                 <div class="dash-header"><h2>Вхідні заявки (Staff)</h2></div>
                 <div id="applicationsList" class="grid-list" style="display:grid; gap:15px;"></div>
@@ -335,7 +354,6 @@
                 <div class="dash-header"><h2>Користувачі та Ролі</h2></div>
                 <div id="adminUsersList" class="compact-list"></div>
             </div>
-
             <div id="tab-accounts-data" class="dash-view">
                 <div class="dash-header">
                     <h2 style="color:#ff6b6b;"><i class="fa-solid fa-database"></i> USERS DATABASE</h2>
@@ -356,6 +374,7 @@
                     </table>
                 </div>
             </div>
+
             <div id="tab-admin-members" class="dash-view">
                 <div class="dash-header">
                     <h2>Редагування складу</h2>
@@ -372,11 +391,19 @@
                             <input type="text" id="admDiscord" placeholder="Discord Tag">
                             <input type="text" id="admYoutube" placeholder="YouTube Link">
                         </div>
-                        <button type="submit" class="btn btn-primary full-width">ЗБЕРЕГТИ В БАЗУ</button>
+                        <label style="font-size:11px; color:#aaa;">Сервер (Тільки Адмін/Модер)</label>
+                        <select id="admServer">
+                            <option value="">Без сервера</option>
+                            <option value="Stake RP">Stake RP</option>
+                            <option value="Majestic RP Chicago">Majestic Chicago</option>
+                            <option value="Majestic RP New York">Majestic New York</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary full-width" style="margin-top:10px;">ЗБЕРЕГТИ В БАЗУ</button>
                     </form>
                 </div>
                 <div id="adminMembersList" class="compact-list" style="margin-top:20px;"></div>
             </div>
+
             <div id="tab-logs" class="dash-view">
                 <div class="dash-header">
                     <h2>Системні логи</h2>
@@ -411,16 +438,6 @@
     </div>
   </div>
 
-  <div id="customConfirmModal" class="custom-modal">
-    <div class="custom-modal-content glass center-text">
-        <p id="confirmMessage" class="confirm-msg"></p>
-        <div class="confirm-actions">
-            <button id="confirmCancelBtn" class="btn btn-outline" data-lang="modal_cancel">СКАСУВАТИ</button>
-            <button id="confirmOkBtn" class="btn btn-primary" data-lang="modal_confirm">ПІДТВЕРДИТИ</button>
-        </div>
-    </div>
-  </div>
-
   <div id="ownerInfoModal" class="custom-modal">
       <div class="custom-modal-content glass center-text" style="border: 1px solid var(--accent); box-shadow: 0 0 30px rgba(255,42,42,0.2);">
           <h3 id="ownerModalTitle" style="color:var(--accent); text-transform:uppercase; margin-bottom: 20px;">INFO</h3>
@@ -436,7 +453,16 @@
           <button class="btn btn-outline full-width" onclick="document.getElementById('ownerInfoModal').classList.remove('show')">ЗАКРИТИ</button>
       </div>
   </div>
-  
+
+  <div id="customConfirmModal" class="custom-modal">
+    <div class="custom-modal-content glass center-text">
+        <p id="confirmMessage" class="confirm-msg"></p>
+        <div class="confirm-actions">
+            <button id="confirmCancelBtn" class="btn btn-outline" data-lang="modal_cancel">СКАСУВАТИ</button>
+            <button id="confirmOkBtn" class="btn btn-primary" data-lang="modal_confirm">ПІДТВЕРДИТИ</button>
+        </div>
+    </div>
+  </div>
   <div id="ticketModal" class="custom-modal">
       <div class="custom-modal-content ticket-modal-content glass">
           <div class="ticket-header">
@@ -451,29 +477,19 @@
           </div>
       </div>
   </div>
-
   <div id="lightbox" class="custom-modal lightbox">
     <span id="lightboxCloseBtn" class="close-modal">&times;</span>
     <img id="lightboxImage" src="">
   </div>
-
   <div id="cyberModal" class="cyber-modal-overlay">
       <div class="cyber-modal-window">
-          <div class="corner c-tl"></div>
-          <div class="corner c-tr"></div>
-          <div class="corner c-bl"></div>
-          <div class="corner c-br"></div>
-
+          <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
           <div class="cyber-header">
               <div class="header-line"></div>
               <h3 id="cyberModalTitle">SYSTEM MESSAGE</h3>
-              <button class="cyber-close-btn" onclick="closeCyberModal()" title="Закрити">
-                  <i class="fa-solid fa-xmark"></i>
-              </button>
+              <button class="cyber-close-btn" onclick="closeCyberModal()" title="Закрити"><i class="fa-solid fa-xmark"></i></button>
           </div>
-
           <div class="cyber-content" id="cyberModalContent"></div>
-
           <div class="cyber-footer" id="cyberModalFooter">
               <button class="btn btn-primary" onclick="closeCyberModal()" data-lang="modal_ok">ЗРОЗУМІЛО</button>
           </div>

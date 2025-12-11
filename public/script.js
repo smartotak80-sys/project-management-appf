@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn_create_ticket: "ВІДКРИТИ ТІКЕТ", dash_my_tickets: "Ваші запити",
         // Staff/Admin
         dash_staff_apps_title: "Вхідні заявки (Staff)", dash_staff_tickets_title: "Управління тікетами",
-        dash_admin_users_title: "Користувачі та Ролі", dash_admin_db_title: "БАЗА ДАНИХ КОРИСТУВАЧІВ",
+        dash_admin_users_title: "Користувачі та Ролі", dash_admin_db_title: "БАЗА ДАННЫХ КОРИСТУВАЧІВ",
         dash_admin_roster_title: "Редагування складу", btn_add_member: "Додати",
         ph_adm_name: "IC Ім'я", ph_adm_role: "Ранг", ph_adm_owner: "Логін власника", ph_adm_discord: "Discord", ph_adm_youtube: "YouTube", btn_save_db: "ЗБЕРЕГТИ",
         dash_admin_logs_title: "Системні логи", btn_clear_history: "ОЧИСТИТИ",
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal_ticket_title: "TICKET", btn_close_ticket: "CLOSE TICKET", ph_chat_input: "Write a message...", btn_send: "SEND",
         btn_cancel: "CANCEL", btn_confirm: "CONFIRM", btn_understood: "UNDERSTOOD"
     },
-    // ... (Other languages follow same pattern, mapped basically to English/Ukrainian logic for completeness)
+    // ... (Other languages can be populated similarly if needed, but these 3 cover the main request fully)
     ru: {
         flag: "ru", label: "RUS",
         home: "ГЛАВНАЯ", about: "ИНФО", members: "СОСТАВ", media: "МЕДИА", apply: "ВСТУПИТЬ",

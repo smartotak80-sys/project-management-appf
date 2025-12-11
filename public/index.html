@@ -305,31 +305,31 @@
                 </div>
             </div>
             <div id="tab-applications" class="dash-view">
-                <div class="dash-header"><h2>Вхідні заявки (Staff)</h2></div>
+                <div class="dash-header"><h2 data-lang="dash_header_apps">Вхідні заявки (Staff)</h2></div>
                 <div id="applicationsList" class="grid-list" style="display:grid; gap:15px;"></div>
             </div>
             <div id="tab-support-staff" class="dash-view">
-                <div class="dash-header"><h2>Управління тікетами</h2></div>
+                <div class="dash-header"><h2 data-lang="dash_header_tickets">Управління тікетами</h2></div>
                 <div id="allTicketsList" class="grid-list" style="display:grid; gap:10px;"></div>
             </div>
             <div id="tab-users" class="dash-view">
-                <div class="dash-header"><h2>Користувачі та Ролі</h2></div>
+                <div class="dash-header"><h2 data-lang="dash_header_users">Користувачі та Ролі</h2></div>
                 <div id="adminUsersList" class="compact-list"></div>
             </div>
             <div id="tab-accounts-data" class="dash-view">
                 <div class="dash-header">
-                    <h2 style="color:#ff6b6b;"><i class="fa-solid fa-database"></i> USERS DATABASE</h2>
+                    <h2 style="color:#ff6b6b;"><i class="fa-solid fa-database"></i> <span data-lang="dash_header_db">USERS DATABASE</span></h2>
                     <button onclick="loadAccountsData()" class="btn btn-outline btn-icon"><i class="fa-solid fa-rotate"></i></button>
                 </div>
                 <div class="glass-panel" style="overflow-x: auto; padding:0;">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>USERNAME</th>
-                                <th>EMAIL ADDRESS</th>
-                                <th>HASH</th>
-                                <th>ACCESS LEVEL</th>
-                                <th>REGISTERED</th>
+                                <th data-lang="tbl_username">USERNAME</th>
+                                <th data-lang="tbl_email">EMAIL ADDRESS</th>
+                                <th data-lang="tbl_hash">HASH</th>
+                                <th data-lang="tbl_access">ACCESS LEVEL</th>
+                                <th data-lang="tbl_reg">REGISTERED</th>
                             </tr>
                         </thead>
                         <tbody id="accountsDataTableBody"></tbody>
@@ -338,8 +338,8 @@
             </div>
             <div id="tab-admin-members" class="dash-view">
                 <div class="dash-header">
-                    <h2>Редагування складу</h2>
-                    <button id="openAdminAddMember" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Додати</button>
+                    <h2 data-lang="dash_header_roster">Редагування складу</h2>
+                    <button id="openAdminAddMember" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> <span data-lang="btn_add_member">Додати</span></button>
                 </div>
                 <div id="adminAddMemberContainer" class="glass-panel" style="display:none; border-left:3px solid var(--accent);">
                     <form id="adminAddMemberForm" class="modern-form">
@@ -352,15 +352,15 @@
                             <input type="text" id="admDiscord" placeholder="Discord Tag">
                             <input type="text" id="admYoutube" placeholder="YouTube Link">
                         </div>
-                        <button type="submit" class="btn btn-primary full-width">ЗБЕРЕГТИ В БАЗУ</button>
+                        <button type="submit" class="btn btn-primary full-width" data-lang="btn_save_db">ЗБЕРЕГТИ В БАЗУ</button>
                     </form>
                 </div>
                 <div id="adminMembersList" class="compact-list" style="margin-top:20px;"></div>
             </div>
             <div id="tab-logs" class="dash-view">
                 <div class="dash-header">
-                    <h2>Системні логи</h2>
-                    <button onclick="window.clearLogs()" class="btn btn-outline btn-small">CLEAR HISTORY</button>
+                    <h2 data-lang="dash_header_logs">Системні логи</h2>
+                    <button onclick="window.clearLogs()" class="btn btn-outline btn-small" data-lang="btn_clear_history">CLEAR HISTORY</button>
                 </div>
                 <div id="systemLogsList" class="terminal-view"></div>
             </div>

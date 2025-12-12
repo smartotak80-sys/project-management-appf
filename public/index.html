@@ -79,11 +79,9 @@
       <section id="home" class="hero">
         <div class="container hero-content">
             <div class="hero-text">
-                <div class="glitch-wrapper">
-                    <h1 class="glitch-text" data-text="BARRACUDA">BARRACUDA</h1>
+                <div>
+                    <h1 class="hero-title">BARRACUDA</h1>
                 </div>
-                <p class="lead" data-lang="hero_lead">ДОМІНУВАННЯ. СТИЛЬ. ДИСЦИПЛІНА.</p>
-                
                 <p class="owner-lead">
                     ВЛАСНИК СІМ'Ї: <span class="highlight-neon">TRITON BARRACUDA</span>
                 </p>
@@ -111,7 +109,7 @@
           </div>
 
           <div class="cards">
-            <article class="card glass server-card" onclick="showOwnerInfo('stake')">
+            <article class="card server-card" onclick="showOwnerInfo('stake')">
                 <div class="card-icon"><i class="fa-solid fa-server"></i></div>
                 <h3 data-lang="server_stake">Stake RP</h3>
                 <p>
@@ -120,7 +118,7 @@
                 </p>
             </article>
 
-            <article class="card glass server-card" onclick="showOwnerInfo('chicago')">
+            <article class="card server-card" onclick="showOwnerInfo('chicago')">
                 <div class="card-icon"><i class="fa-solid fa-city"></i></div>
                 <h3 data-lang="server_chicago">Majestic RP Chicago</h3>
                 <p>
@@ -129,7 +127,7 @@
                 </p>
             </article>
 
-            <article class="card glass server-card" onclick="showOwnerInfo('ny')">
+            <article class="card server-card" onclick="showOwnerInfo('ny')">
                 <div class="card-icon"><i class="fa-solid fa-building"></i></div>
                 <h3 data-lang="server_ny">Majestic RP New York</h3>
                 <p>
@@ -448,16 +446,13 @@
   <div id="ownerInfoModal" class="custom-modal">
       <div class="custom-modal-content">
           <h3 id="ownerModalTitle">SERVER NAME</h3>
-          
           <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
               <span class="promo-label">PROMO CODE</span>
               <div id="ownerPromo">/promo CODE</div>
           </div>
-          
           <a id="ownerDiscordBtn" href="#" target="_blank" class="btn-discord">
               <i class="fa-brands fa-discord"></i> DISCORD
           </a>
-          
           <button class="btn-close-modal" onclick="document.getElementById('ownerInfoModal').classList.remove('show')">ЗАКРИТИ</button>
       </div>
   </div>

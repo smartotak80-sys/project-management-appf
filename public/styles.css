@@ -107,34 +107,12 @@ h1, h2, h3, .brand-text {
     text-shadow: none; 
 }
 
-/* ОНОВЛЕНИЙ GLITCH-TEXT: Сильне неонове світіння як на фото */
-.glitch-text {
-    position: relative; font-size: 4rem; font-weight: 900;
-    color: #fff;
-    /* Багатошарова тінь для ефекту яскравого неону */
-    text-shadow: 
-        0 0 5px #fff,
-        0 0 10px #fff,
-        0 0 20px var(--accent),
-        0 0 40px var(--accent),
-        0 0 80px var(--accent),
-        0 0 90px var(--accent);
-    animation: glitchSkew 3s infinite;
+/* ОНОВЛЕНИЙ ЗАГОЛОВОК: Чіткий, без розмитого "глітчу" */
+.hero-title {
+    font-size: 4rem; font-weight: 900; color: #fff;
+    text-shadow: 0 0 10px var(--accent); /* Легкий чіткий контур */
+    margin: 0 0 30px 0;
 }
-.glitch-text::before, .glitch-text::after {
-    content: attr(data-text); position: absolute; left: 0;
-    /* Тіні для псевдоелементів теж посилені */
-    text-shadow: -1px 0 #0ff, 0 0 20px var(--accent); 
-    clip: rect(44px, 450px, 56px, 0);
-    animation: glitchAnim 5s infinite linear alternate-reverse;
-}
-.glitch-text::after {
-    text-shadow: -1px 0 var(--accent), 0 0 20px var(--accent); 
-    clip: rect(44px, 450px, 56px, 0);
-    animation: glitchAnim 2s infinite linear alternate-reverse;
-}
-@keyframes glitchSkew { 0% { transform: skew(0deg); } 20% { transform: skew(-2deg); } 22% { transform: skew(2deg); } 24% { transform: skew(0deg); } }
-@keyframes glitchAnim { 0% { clip: rect(12px, 9999px, 5px, 0); } 100% { clip: rect(85px, 9999px, 140px, 0); } }
 
 /* --- TOASTS --- */
 #toastContainer {
@@ -237,12 +215,8 @@ h1, h2, h3, .brand-text {
 .hero-text { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
 
 .hero h1 { margin: 0 0 20px; color: #fff; }
-.lead { 
-    color: var(--text-muted); font-size: 18px; margin-bottom: 25px; 
-    max-width: 700px; font-family: var(--font-body); text-transform: uppercase; letter-spacing: 2px;
-} 
 
-/* НОВИЙ СТИЛЬ: ВЛАСНИК СІМ'Ї */
+/* ВЛАСНИК СІМ'Ї - Чіткий стиль */
 .owner-lead {
     font-family: var(--font-main);
     font-size: 22px;
@@ -253,13 +227,10 @@ h1, h2, h3, .brand-text {
     font-weight: 800;
 }
 
-/* Виділення імені власника червоним неоном */
+/* Виділення імені власника - Чіткий червоний, без розмиття */
 .highlight-neon {
     color: var(--accent);
-    text-shadow: 
-        0 0 10px var(--accent),
-        0 0 20px var(--accent),
-        0 0 40px var(--accent);
+    text-shadow: 0 0 10px var(--accent);
 }
 
 .hero-buttons { display: flex; gap: 20px; justify-content: center; width: 100%; }
@@ -282,34 +253,42 @@ h1, h2, h3, .brand-text {
 /* --- CARDS --- */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
 
+/* Звичайні картки (члени, новини і т.д.) */
 .card, .member {
     background: var(--bg-panel); padding: 30px; border-radius: 16px; 
     border: 1px solid var(--glass-border); position: relative; overflow: hidden;
     backdrop-filter: blur(10px); z-index: 1;
-    transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s;
+    transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s, background-color 0.3s;
 }
 .card:hover, .member:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
 
-/* Додано клас для клікабельності карток серверів */
+/* КАРТКИ СЕРВЕРІВ - Дизайн як на фото (Чорні, червона рамка, без скла) */
 .server-card {
+    background: #000 !important; /* Суцільний чорний */
+    border: 1px solid var(--accent) !important; /* Чітка червона рамка */
+    backdrop-filter: none !important; /* Прибираємо ефект скла */
     cursor: pointer;
+    border-radius: 20px;
 }
-.server-card:active {
-    transform: scale(0.98);
+/* При наведенні на картку сервера - трохи світліший чорний */
+.server-card:hover {
+     background: #050505 !important;
+     box-shadow: 0 5px 15px rgba(255, 42, 42, 0.2);
 }
+.server-card:active { transform: scale(0.98); }
 
 .card-icon { font-size: 30px; color: var(--accent); margin-bottom: 15px; }
 
-/* === СВІТІННЯ ТІЛЬКИ ДЛЯ ЗАГОЛОВКІВ СЕРВЕРІВ === */
-.card h3 {
+/* Заголовки серверів - чітке світіння */
+.server-card h3 {
     color: #fff;
     margin: 0 0 10px;
     font-size: 20px;
     text-transform: uppercase;
-    text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent-glow);
+    text-shadow: 0 0 5px var(--accent); /* Менше розмиття */
 }
 
-/* --- OWNER HIGHLIGHT (Вже не посилання, а просто текст) --- */
+/* Ім'я власника - просто текст, без посилання */
 .owner-name-highlight {
     font-size: 18px; 
     font-weight: bold; 

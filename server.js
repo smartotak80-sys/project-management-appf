@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGODB_URI;
 
 console.log("------------------------------------------------");
-console.log("🦈 BARRACUDA FAMILY SYSTEM - FINAL VERSION");
+console.log("🦈 BARRACUDA FAMILY SYSTEM - FINAL");
 console.log("------------------------------------------------");
 
 if (!MONGO_URI) {
@@ -53,12 +53,7 @@ const News = mongoose.model('News', NewsSchema);
 const GallerySchema = new mongoose.Schema({ url: String, createdAt: { type: Date, default: Date.now } });
 const Gallery = mongoose.model('Gallery', GallerySchema);
 
-const VideoSchema = new mongoose.Schema({ 
-    title: String, 
-    url: String, 
-    author: String,
-    createdAt: { type: Date, default: Date.now } 
-});
+const VideoSchema = new mongoose.Schema({ title: String, url: String, author: String, createdAt: { type: Date, default: Date.now } });
 const Video = mongoose.model('Video', VideoSchema);
 
 const ApplicationSchema = new mongoose.Schema({
@@ -113,11 +108,13 @@ app.put('/api/users/:username/role', async (req, res) => {
 // MEMBERS (З перевіркою ліміту)
 app.post('/api/members', async (req, res) => { 
     try { 
-        // Якщо створює не адмін, перевіряємо ліміт
-        // (Але тут ми просто перевіряємо наявність для owner, адмін може створити з іншим owner через адмінку)
+        // Якщо користувач вже має персонажа (і це не адмін панель, яка може додавати будь-кого)
+        // Для спрощення: перевірка на стороні клієнта блокує кнопку, а тут базовий захист
         const existing = await Member.findOne({ owner: req.body.owner });
         if (existing) {
-            return res.status(400).json({ success: false, message: 'У цього користувача вже є персонаж!' });
+            // Можна додати логіку: якщо адмін додає - дозволити, якщо юзер собі - заборонити.
+            // Поки що просто повертаємо помилку, якщо на цей логін вже є персонаж.
+            return res.status(400).json({ success: false, message: 'На цей акаунт вже зареєстровано персонажа!' });
         }
         await new Member(req.body).save(); 
         res.json({ success: true }); 
@@ -141,7 +138,7 @@ app.get('/api/videos', async (req, res) => { const v = await Video.find().sort({
 app.post('/api/videos', async (req, res) => { await new Video(req.body).save(); res.json({ success: true }); });
 app.delete('/api/videos/:id', async (req, res) => { await Video.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
-// USERS
+// USERS API
 app.get('/api/users', async (req, res) => { 
     try {
         const usersFromDb = await User.find().sort({ regDate: -1 });

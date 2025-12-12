@@ -257,6 +257,14 @@ h1, h2, h3, .brand-text {
 }
 .card:hover, .member:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
 
+/* Додано клас для клікабельності карток серверів */
+.server-card {
+    cursor: pointer;
+}
+.server-card:active {
+    transform: scale(0.98);
+}
+
 .card-icon { font-size: 30px; color: var(--accent); margin-bottom: 15px; }
 
 /* === СВІТІННЯ ТІЛЬКИ ДЛЯ ЗАГОЛОВКІВ СЕРВЕРІВ === */
@@ -268,19 +276,12 @@ h1, h2, h3, .brand-text {
     text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent-glow);
 }
 
-/* --- OWNER LINKS --- */
-.owner-link {
+/* --- OWNER HIGHLIGHT (Вже не посилання, а просто текст) --- */
+.owner-name-highlight {
     font-size: 18px; 
     font-weight: bold; 
     color: var(--accent);
-    cursor: pointer;
-    transition: all 0.3s ease;
     display: inline-block;
-    border-bottom: 1px dashed rgba(255, 42, 42, 0.4);
-}
-.owner-link:hover {
-    color: #fff;
-    border-bottom-color: #fff;
 }
 
 /* --- INPUTS --- */

@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGODB_URI;
 
 console.log("------------------------------------------------");
-console.log("🦈 BARRACUDA FAMILY SYSTEM - STABLE");
+console.log("🦈 BARRACUDA FAMILY SYSTEM - FINAL VERSION");
 console.log("------------------------------------------------");
 
 if (!MONGO_URI) {
@@ -113,9 +113,11 @@ app.put('/api/users/:username/role', async (req, res) => {
 // MEMBERS (З перевіркою ліміту)
 app.post('/api/members', async (req, res) => { 
     try { 
+        // Якщо створює не адмін, перевіряємо ліміт
+        // (Але тут ми просто перевіряємо наявність для owner, адмін може створити з іншим owner через адмінку)
         const existing = await Member.findOne({ owner: req.body.owner });
         if (existing) {
-            return res.status(400).json({ success: false, message: 'Ви можете створити тільки 1 персонажа!' });
+            return res.status(400).json({ success: false, message: 'У цього користувача вже є персонаж!' });
         }
         await new Member(req.body).save(); 
         res.json({ success: true }); 
@@ -139,7 +141,7 @@ app.get('/api/videos', async (req, res) => { const v = await Video.find().sort({
 app.post('/api/videos', async (req, res) => { await new Video(req.body).save(); res.json({ success: true }); });
 app.delete('/api/videos/:id', async (req, res) => { await Video.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
-// USERS & OTHER
+// USERS
 app.get('/api/users', async (req, res) => { 
     try {
         const usersFromDb = await User.find().sort({ regDate: -1 });
@@ -149,6 +151,7 @@ app.get('/api/users', async (req, res) => {
 });
 app.delete('/api/users/:username', async (req, res) => { try { await User.findOneAndDelete({ username: req.params.username }); await Member.deleteMany({ owner: req.params.username }); res.json({ success: true }); } catch (e) { res.status(500).json({ success: false }); } });
 
+// APPS & TICKETS
 app.post('/api/applications', async (req, res) => { try { await new Application(req.body).save(); res.json({ success: true }); } catch(e) { res.status(500).json({ success: false }); } });
 app.get('/api/applications', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });
 app.get('/api/applications/my', async (req, res) => { const apps = await Application.find().sort({ createdAt: -1 }); res.json(apps.map(a => ({ ...a._doc, id: a._id }))); });

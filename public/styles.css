@@ -107,18 +107,30 @@ h1, h2, h3, .brand-text {
     text-shadow: none; 
 }
 
+/* ОНОВЛЕНИЙ GLITCH-TEXT: Сильне неонове світіння як на фото */
 .glitch-text {
     position: relative; font-size: 4rem; font-weight: 900;
-    text-shadow: 1px 1px var(--accent);
+    color: #fff;
+    /* Багатошарова тінь для ефекту яскравого неону */
+    text-shadow: 
+        0 0 5px #fff,
+        0 0 10px #fff,
+        0 0 20px var(--accent),
+        0 0 40px var(--accent),
+        0 0 80px var(--accent),
+        0 0 90px var(--accent);
     animation: glitchSkew 3s infinite;
 }
 .glitch-text::before, .glitch-text::after {
     content: attr(data-text); position: absolute; left: 0;
-    text-shadow: -1px 0 #0ff; clip: rect(44px, 450px, 56px, 0);
+    /* Тіні для псевдоелементів теж посилені */
+    text-shadow: -1px 0 #0ff, 0 0 20px var(--accent); 
+    clip: rect(44px, 450px, 56px, 0);
     animation: glitchAnim 5s infinite linear alternate-reverse;
 }
 .glitch-text::after {
-    text-shadow: -1px 0 var(--accent); clip: rect(44px, 450px, 56px, 0);
+    text-shadow: -1px 0 var(--accent), 0 0 20px var(--accent); 
+    clip: rect(44px, 450px, 56px, 0);
     animation: glitchAnim 2s infinite linear alternate-reverse;
 }
 @keyframes glitchSkew { 0% { transform: skew(0deg); } 20% { transform: skew(-2deg); } 22% { transform: skew(2deg); } 24% { transform: skew(0deg); } }
@@ -226,9 +238,30 @@ h1, h2, h3, .brand-text {
 
 .hero h1 { margin: 0 0 20px; color: #fff; }
 .lead { 
-    color: var(--text-muted); font-size: 18px; margin-bottom: 40px; 
+    color: var(--text-muted); font-size: 18px; margin-bottom: 25px; 
     max-width: 700px; font-family: var(--font-body); text-transform: uppercase; letter-spacing: 2px;
 } 
+
+/* НОВИЙ СТИЛЬ: ВЛАСНИК СІМ'Ї */
+.owner-lead {
+    font-family: var(--font-main);
+    font-size: 22px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 50px; /* Великий відступ до кнопок */
+    font-weight: 800;
+}
+
+/* Виділення імені власника червоним неоном */
+.highlight-neon {
+    color: var(--accent);
+    text-shadow: 
+        0 0 10px var(--accent),
+        0 0 20px var(--accent),
+        0 0 40px var(--accent);
+}
+
 .hero-buttons { display: flex; gap: 20px; justify-content: center; width: 100%; }
 
 .section { padding: 80px 0; position: relative; }
@@ -666,6 +699,7 @@ footer p { margin: 0; }
     
     /* Modals */
     .auth-content, .cyber-modal-window { width: 95%; padding: 25px 20px; margin: 0 auto; max-height: 90vh; overflow-y: auto; }
+    .custom-modal-content { width: 95%; max-width: 320px; }
     
     /* Hide specific text labels to fit screen */
     .header-actions { gap: 5px; }

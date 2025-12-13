@@ -6,16 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const CURRENT_USER_KEY = 'barakuda_current_user';
   let members = [];
-  let systemLogs = [];
-  try { systemLogs = JSON.parse(localStorage.getItem('barakuda_logs')) || []; } catch(e) { systemLogs = []; }
 
   // ПОВНИЙ СЛОВНИК ПЕРЕКЛАДІВ
   const translations = {
     ua: {
         flag: "ua", label: "UKR",
-        home: "ГОЛОВНА", about: "ІНФО", members: "СКЛАД", gallery: "ГАЛЕРЕЯ", videos: "МЕДІЙКИ", apply: "ВСТУП",
+        home: "ГОЛОВНА", about: "ІНФО", members: "СКЛАД", gallery: "ГАЛЕРЕЯ", videos: "МЕДІЙКИ", redux: "REDUX",
         login: "ВХІД", account: "АКАУНТ", 
-        hero_btn: "ПРИЄДНАТИСЬ", hero_members: "СКЛАД",
+        hero_members: "СКЛАД",
         owner_label: "ВЛАСНИК СІМ'Ї:",
         about_title_span: "ХТО", about_title: "МИ Є", 
         about_main_desc: "BARRACUDA — це елітна сім'я та організація...",
@@ -27,18 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
         access_terminal: "ДОСТУП ДО ТЕРМІНАЛУ", footer: "BARRACUDA FAMILY. RP.",
         modal_promo_label: "PROMO CODE", modal_close: "ЗАКРИТИ",
         dash_profile_title: "Особистий кабінет", dash_stat_login: "ВАШ ЛОГІН", dash_stat_role: "РІВЕНЬ ДОСТУПУ",
-        dash_sys_status: "Статус системи", dash_sys_ok: "Всі системи працюють нормально.",
-        dash_char_settings: "Налаштування персонажа", dash_char_status: "Актуальний статус", dash_char_update: "ОНОВИТИ СТАТУС",
-        dash_apply_header: "Подача заявки", dash_form_title: "АНКЕТА", dash_form_submit: "ВІДПРАВИТИ",
-        dash_support_header: "Технічна підтримка", dash_create_ticket: "Створити запит", dash_my_tickets: "Ваші запити", dash_ticket_btn: "ВІДКРИТИ ТІКЕТ",
-        auth_title: "СИСТЕМНИЙ ВХІД", auth_btn_login: "ВХІД", auth_btn_reg: "СТВОРИТИ АКАУНТ",
+        dash_char_settings: "Налаштування персонажа", 
+        dash_apply_header: "Подача заявки",
+        dash_support_header: "Технічна підтримка",
+        auth_title: "СИСТЕМНИЙ ВХІД", 
         msg_welcome: "ВІТАЄМО", msg_error: "Помилка", msg_access_denied: "ДОСТУП ЗАБОРОНЕНО"
     },
     en: {
         flag: "gb", label: "ENG",
-        home: "HOME", about: "INFO", members: "ROSTER", gallery: "GALLERY", videos: "MEDIA", apply: "APPLY",
+        home: "HOME", about: "INFO", members: "ROSTER", gallery: "GALLERY", videos: "MEDIA", redux: "REDUX",
         login: "LOGIN", account: "ACCOUNT", 
-        hero_btn: "JOIN US", hero_members: "ROSTER",
+        hero_members: "ROSTER",
         owner_label: "FAMILY OWNER:",
         about_title_span: "WHO", about_title: "WE ARE",
         about_main_desc: "BARRACUDA is an elite family and organization...",
@@ -50,128 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
         access_terminal: "ACCESS TERMINAL", footer: "BARRACUDA FAMILY. RP.",
         modal_promo_label: "PROMO CODE", modal_close: "CLOSE",
         dash_profile_title: "Personal Cabinet", dash_stat_login: "YOUR LOGIN", dash_stat_role: "ACCESS LEVEL",
-        dash_sys_status: "System Status", dash_sys_ok: "All systems operational.",
-        dash_char_settings: "Character Settings", dash_char_status: "Current Status", dash_char_update: "UPDATE STATUS",
-        dash_apply_header: "Application", dash_form_title: "FORM", dash_form_submit: "SUBMIT",
-        dash_support_header: "Tech Support", dash_create_ticket: "Create Ticket", dash_my_tickets: "Your Tickets", dash_ticket_btn: "OPEN TICKET",
-        auth_title: "SYSTEM LOGIN", auth_btn_login: "ENTER", auth_btn_reg: "CREATE ACCOUNT",
+        dash_char_settings: "Character Settings",
+        dash_apply_header: "Application",
+        dash_support_header: "Tech Support",
+        auth_title: "SYSTEM LOGIN", 
         msg_welcome: "WELCOME", msg_error: "Error", msg_access_denied: "ACCESS DENIED"
-    },
-    ru: {
-        flag: "ru", label: "RUS",
-        home: "ГЛАВНАЯ", about: "ИНФО", members: "СОСТАВ", gallery: "ГАЛЕРЕЯ", videos: "МЕДИА", apply: "ВСТУПИТЬ",
-        login: "ВХОД", account: "АККАУНТ",
-        hero_btn: "ПРИСОЕДИНИТЬСЯ", hero_members: "СОСТАВ",
-        owner_label: "ВЛАДЕЛЕЦ СЕМЬИ:",
-        about_title_span: "КТО", about_title: "МЫ ЕСТЬ",
-        about_main_desc: "BARRACUDA — это элитная семья и организация...",
-        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "ВЛАДЕЛЕЦ",
-        members_title_span: "НАШ", members_title: "СОСТАВ",
-        news_title: "ЛЕНТА", news_title_span: "НОВОСТЕЙ",
-        gallery_title: "ГАЛЕРЕЯ", videos_title: "МЕДИА",
-        join_system_title: "ПРИСОЕДИНЯЙСЯ К СИСТЕМЕ", join_system_desc: "Авторизуйтесь для доступа...",
-        access_terminal: "ДОСТУП К ТЕРМИНАЛУ", footer: "BARRACUDA FAMILY. RP.",
-        modal_promo_label: "PROMO CODE", modal_close: "ЗАКРЫТЬ",
-        dash_profile_title: "Личный кабинет", dash_stat_login: "ВАШ ЛОГИН", dash_stat_role: "УРОВЕНЬ ДОСТУПА",
-        dash_sys_status: "Статус системы", dash_sys_ok: "Все системы работают штатно.",
-        dash_char_settings: "Настройки персонажа", dash_char_status: "Текущий статус", dash_char_update: "ОБНОВИТЬ СТАТУС",
-        dash_apply_header: "Подача заявки", dash_form_title: "АНКЕТА", dash_form_submit: "ОТПРАВИТЬ",
-        dash_support_header: "Техподдержка", dash_create_ticket: "Создать запрос", dash_my_tickets: "Ваши запросы", dash_ticket_btn: "ОТКРЫТЬ ТИКЕТ",
-        auth_title: "СИСТЕМНЫЙ ВХОД", auth_btn_login: "ВОЙТИ", auth_btn_reg: "СОЗДАТЬ АККАУНТ",
-        msg_welcome: "ДОБРО ПОЖАЛОВАТЬ", msg_error: "Ошибка", msg_access_denied: "ДОСТУП ЗАПРЕЩЕН"
-    },
-    pl: {
-        flag: "pl", label: "POL",
-        home: "GŁÓWNA", about: "INFO", members: "SKŁAD", gallery: "GALERIA", videos: "MEDIA", apply: "REKRUTACJA",
-        login: "LOGOWANIE", account: "KONTO",
-        hero_btn: "DOŁĄCZ", hero_members: "SKŁAD",
-        owner_label: "WŁAŚCICIEL RODZINY:",
-        about_title_span: "KIM", about_title: "JESTEŚMY",
-        about_main_desc: "BARRACUDA to elitarna rodzina i organizacja...",
-        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "WŁAŚCICIEL",
-        members_title_span: "NASZ", members_title: "SKŁAD",
-        news_title: "AKTUALNOŚCI", news_title_span: "FEED",
-        gallery_title: "GALERIA", videos_title: "MEDIA",
-        join_system_title: "DOŁĄCZ DO SYSTEMU", join_system_desc: "Zaloguj się aby uzyskać dostęp...",
-        access_terminal: "DOSTĘP DO TERMINALA", footer: "BARRACUDA FAMILY. RP.",
-        modal_promo_label: "KOD PROMOCYJNY", modal_close: "ZAMKNIJ",
-        dash_profile_title: "Gabinet Osobisty", dash_stat_login: "TWÓJ LOGIN", dash_stat_role: "POZIOM DOSTĘPU",
-        dash_sys_status: "Status Systemu", dash_sys_ok: "Wszystkie systemy działają poprawnie.",
-        dash_char_settings: "Ustawienia Postaci", dash_char_status: "Aktualny Status", dash_char_update: "AKTUALIZUJ STATUS",
-        dash_apply_header: "Podanie", dash_form_title: "FORMULARZ", dash_form_submit: "WYŚLIJ",
-        dash_support_header: "Wsparcie Techniczne", dash_create_ticket: "Utwórz Zgłoszenie", dash_my_tickets: "Twoje Zgłoszenia", dash_ticket_btn: "OTWÓRZ TICKET",
-        auth_title: "LOGOWANIE SYSTEMOWE", auth_btn_login: "ZALOGUJ", auth_btn_reg: "UTWÓRZ KONTO",
-        msg_welcome: "WITAJ", msg_error: "Błąd", msg_access_denied: "ODMOWA DOSTĘPU"
-    },
-    de: {
-        flag: "de", label: "DEU",
-        home: "STARTSEITE", about: "INFO", members: "TEAM", gallery: "GALERIE", videos: "MEDIEN", apply: "BEWERBEN",
-        login: "ANMELDEN", account: "KONTO",
-        hero_btn: "BEITRETEN", hero_members: "TEAM",
-        owner_label: "FAMILIENBESITZER:",
-        about_title_span: "WER", about_title: "WIR SIND",
-        about_main_desc: "BARRACUDA ist eine Elite-Familie...",
-        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "BESITZER",
-        members_title_span: "UNSER", members_title: "TEAM",
-        news_title: "NEWS", news_title_span: "FEED",
-        gallery_title: "GALERIE", videos_title: "MEDIEN",
-        join_system_title: "TRITT DEM SYSTEM BEI", join_system_desc: "Anmelden für Zugriff...",
-        access_terminal: "ZUGRIFF AUF TERMINAL", footer: "BARRACUDA FAMILY. RP.",
-        modal_promo_label: "PROMO-CODE", modal_close: "SCHLIESSEN",
-        dash_profile_title: "Persönliches Kabinett", dash_stat_login: "DEIN LOGIN", dash_stat_role: "ZUGRIFFSEBENE",
-        dash_sys_status: "Systemstatus", dash_sys_ok: "Alle Systeme normal.",
-        dash_char_settings: "Charaktereinstellungen", dash_char_status: "Aktueller Status", dash_char_update: "STATUS AKTUALISIEREN",
-        dash_apply_header: "Bewerbung", dash_form_title: "FORMULAR", dash_form_submit: "ABSENDEN",
-        dash_support_header: "Support", dash_create_ticket: "Ticket erstellen", dash_my_tickets: "Ihre Tickets", dash_ticket_btn: "TICKET ÖFFNEN",
-        auth_title: "SYSTEM LOGIN", auth_btn_login: "EINTRETEN", auth_btn_reg: "KONTO ERSTELLEN",
-        msg_welcome: "WILLKOMMEN", msg_error: "Fehler", msg_access_denied: "ZUGRIFF VERWEIGERT"
-    },
-    es: {
-        flag: "es", label: "ESP",
-        home: "INICIO", about: "INFO", members: "EQUIPO", gallery: "GALERÍA", videos: "MEDIOS", apply: "APLICAR",
-        login: "ACCESO", account: "CUENTA",
-        hero_btn: "ÚNETE", hero_members: "MIEMBROS",
-        owner_label: "DUEÑO DE FAMILIA:",
-        about_title_span: "QUIÉNES", about_title: "SOMOS",
-        about_main_desc: "BARRACUDA es una familia de élite...",
-        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "DUEÑO",
-        members_title_span: "NUESTRO", members_title: "EQUIPO",
-        news_title: "NOTICIAS", news_title_span: "FEED",
-        gallery_title: "GALERÍA", videos_title: "MEDIOS",
-        join_system_title: "ÚNETE AL SISTEMA", join_system_desc: "Autorízate para acceder...",
-        access_terminal: "ACCESO A LA TERMINAL", footer: "BARRACUDA FAMILY. RP.",
-        modal_promo_label: "CÓDIGO PROMO", modal_close: "CERRAR",
-        dash_profile_title: "Gabinete Personal", dash_stat_login: "TU LOGIN", dash_stat_role: "NIVEL DE ACCESO",
-        dash_sys_status: "Estado del Sistema", dash_sys_ok: "Sistemas operativos.",
-        dash_char_settings: "Ajustes de Personaje", dash_char_status: "Estado Actual", dash_char_update: "ACTUALIZAR ESTADO",
-        dash_apply_header: "Aplicación", dash_form_title: "FORMULARIO", dash_form_submit: "ENVIAR",
-        dash_support_header: "Soporte", dash_create_ticket: "Crear Ticket", dash_my_tickets: "Tus Tickets", dash_ticket_btn: "ABRIR TICKET",
-        auth_title: "LOGIN SISTEMA", auth_btn_login: "ENTRAR", auth_btn_reg: "CREAR CUENTA",
-        msg_welcome: "BIENVENIDO", msg_error: "Error", msg_access_denied: "ACCESO DENEGADO"
-    },
-    pt: {
-        flag: "br", label: "POR",
-        home: "INÍCIO", about: "INFO", members: "MEMBROS", gallery: "GALERIA", videos: "MÍDIA", apply: "APLICAR",
-        login: "LOGIN", account: "CONTA",
-        hero_btn: "JUNTAR-SE", hero_members: "MEMBROS",
-        owner_label: "DONO DA FAMÍLIA:",
-        about_title_span: "QUEM", about_title: "SOMOS",
-        about_main_desc: "BARRACUDA é uma família de elite...",
-        server_stake: "Stake RP", server_chicago: "Majestic RP Chicago", server_ny: "Majestic RP New York", lbl_owner: "DONO",
-        members_title_span: "NOSSO", members_title: "TIME",
-        news_title: "NOTÍCIAS", news_title_span: "FEED",
-        gallery_title: "GALERIA", videos_title: "MÍDIA",
-        join_system_title: "JUNTE-SE AO SISTEMA", join_system_desc: "Autorize-se para acessar...",
-        access_terminal: "ACESSO AO TERMINAL", footer: "BARRACUDA FAMILY. RP.",
-        modal_promo_label: "CÓDIGO PROMOCIONAL", modal_close: "FECHAR",
-        dash_profile_title: "Gabinete Pessoal", dash_stat_login: "SEU LOGIN", dash_stat_role: "NÍVEL DE ACESSO",
-        dash_sys_status: "Status do Sistema", dash_sys_ok: "Sistemas operacionais.",
-        dash_char_settings: "Configurações", dash_char_status: "Status Atual", dash_char_update: "ATUALIZAR STATUS",
-        dash_apply_header: "Aplicação", dash_form_title: "FORMULÁRIO", dash_form_submit: "ENVIAR",
-        dash_support_header: "Suporte", dash_create_ticket: "Criar Ticket", dash_my_tickets: "Seus Tickets", dash_ticket_btn: "ABRIR TICKET",
-        auth_title: "LOGIN DO SISTEMA", auth_btn_login: "ENTRAR", auth_btn_reg: "CRIAR CONTA",
-        msg_welcome: "BEM-VINDO", msg_error: "Erro", msg_access_denied: "ACESSO NEGADO"
     }
+    // Інші мови можна додати аналогічно
   };
 
   function getTrans(key) {
@@ -255,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const n = await apiFetch('/api/news'); if(n) renderNews(n);
       const g = await apiFetch('/api/gallery'); if(g) renderGallery(g);
       const v = await apiFetch('/api/videos'); if(v) renderVideos(v);
+      const r = await apiFetch('/api/redux'); if(r) renderRedux(r);
       updateAuthUI();
       if(langTrigger) {
           langTrigger.onclick = (e) => { e.stopPropagation(); langDropdown.classList.toggle('show'); };
@@ -290,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(overlay) overlay.onclick = () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); };
 
   window.switchDashTab = (tab) => {
-      if(['users', 'admin-members', 'logs', 'accounts-data'].includes(tab)) {
+      if(['users', 'admin-members', 'accounts-data', 'redux-admin'].includes(tab)) {
           if(!currentUser || currentUser.role !== 'admin') { showToast(getTrans('msg_access_denied'), 'error'); return; }
       }
       document.querySelectorAll('.dash-view').forEach(e => e.classList.remove('active'));
@@ -305,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(tab === 'support-staff') loadAllTickets();
       if(tab === 'users') loadUsersAdmin();
       if(tab === 'admin-members') loadAdminMembers();
+      if(tab === 'redux-admin') loadReduxAdmin();
       if(tab === 'my-member') loadMyMemberTab();
       if(tab === 'accounts-data') loadAccountsData();
   };
@@ -402,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if(authBtnText) authBtnText.textContent = btnLabel.account; 
           document.getElementById('openAuthBtn').onclick = window.openDashboard; 
           if(applyText) applyText.style.display = 'none'; 
-          if(applyBtn) { applyBtn.innerHTML = btnLabel.apply; applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); }; }
+          if(applyBtn) { applyBtn.innerHTML = btnLabel.access_terminal; applyBtn.onclick = () => { window.openDashboard(); window.switchDashTab('apply'); }; }
           if(videosSection) videosSection.style.display = 'block';
           if(navVideos) navVideos.style.display = 'block';
       } else { 
@@ -427,14 +311,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('registerForm')?.addEventListener('submit', async (e)=>{ e.preventDefault(); const pass = document.getElementById('regPass').value; if(pass !== document.getElementById('regPassConfirm').value) return showToast(getTrans('msg_pass_mismatch'), 'error'); const res = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username: document.getElementById('regUser').value, email: document.getElementById('regEmail').value, password: pass }) }); if(res && res.success) { showToast(getTrans('msg_created_login')); document.getElementById('tabLogin').click(); } });
   
   document.getElementById('openAdminAddMember')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block'); 
+  
+  // Виправлена логіка додавання учасника (правильні ID)
   document.getElementById('adminAddMemberForm')?.addEventListener('submit', async (e)=>{ 
       e.preventDefault(); 
-      const body = { name: document.getElementById('admName').value, role: document.getElementById('admRole').value, owner: document.getElementById('admOwner').value, server: document.getElementById('admServer').value, links: {discord:document.getElementById('admDiscord').value, youtube:document.getElementById('admYoutube').value} }; 
+      const body = { 
+          name: document.getElementById('admName').value, 
+          role: document.getElementById('admRole').value, 
+          owner: document.getElementById('admOwner').value, 
+          server: document.getElementById('admServer').value, 
+          links: {
+              discord: document.getElementById('admDiscord').value, 
+              youtube: document.getElementById('admYoutube').value
+          } 
+      }; 
       await apiFetch('/api/members', {method:'POST', body:JSON.stringify(body)}); 
       showToast(getTrans('msg_member_added')); loadAdminMembers(); 
   });
-  
-  document.getElementById('openAdminAddMemberUser')?.addEventListener('click', ()=>document.getElementById('adminAddMemberContainer').style.display='block'); 
   
   async function loadAdminMembers() { const list = document.getElementById('adminMembersList'); const m = await apiFetch('/api/members'); list.innerHTML = m.map(x => `<div class="u-row animate-hidden"><div>${x.name} <small>(${x.role})</small> <span style="font-size:10px; color:#ff2a2a; border:1px solid #ff2a2a; padding:2px 4px; border-radius:3px;">${x.server || 'No Server'}</span></div><button class="btn btn-outline" onclick="window.deleteMember('${x.id}')">DEL</button></div>`).join(''); } 
   window.deleteMember = async (id) => { if(confirm("Видалити?")) { await apiFetch(`/api/members/${id}`, {method:'DELETE'}); showToast('Deleted'); loadAdminMembers(); loadInitialData(); } };
@@ -443,13 +336,40 @@ document.addEventListener('DOMContentLoaded', () => {
       const container = document.getElementById('myMemberContainer'); 
       const createBlock = document.getElementById('createMemberBlock');
       const myMember = members.find(m => m.owner === currentUser.username); 
-      const statusPanel = document.getElementById('myMemberStatusPanel'); 
+      
       if(myMember) { 
-          statusPanel.style.display='block'; createBlock.style.display='none'; container.style.display = 'block';
-          container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0 0 5px 0;">${myMember.name}</h3><div style="font-size:12px; color:#888;">РАНГ: <span style="color:#fff">${myMember.role}</span></div><div style="font-size:12px; color:#888;">SERVER: <span style="color:var(--accent)">${myMember.server || 'Pending...'}</span></div></div><div class="dash-avatar"><i class="fa-solid fa-user-shield"></i></div></div>`; 
-          document.getElementById('saveStatusBtn').onclick=async()=>{ let role = myMember.role.split(' | ')[0] + ' | ' + document.getElementById('memberStatusSelect').value; await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})}); showToast('Updated'); loadInitialData(); loadMyMemberTab(); }; 
+          createBlock.style.display='none'; container.style.display = 'block';
+          // Вставляємо HTML з інпутом для статусу, який був пропущений у попередній версії
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <div>
+                    <h3 style="margin:0 0 5px 0; color:#fff;">${myMember.name}</h3>
+                    <div style="font-size:14px; color:#888;">РАНГ: <span style="color:#fff">${myMember.role}</span></div>
+                    <div style="font-size:12px; color:#888;">SERVER: <span style="color:var(--accent)">${myMember.server || 'Pending...'}</span></div>
+                </div>
+                <div class="dash-avatar" style="width:60px; height:60px; font-size:24px;"><i class="fa-solid fa-user-shield"></i></div>
+            </div>
+            <hr style="border-color:rgba(255,255,255,0.05); margin-bottom:20px;">
+            <label style="font-size:12px; color:#666; font-weight:700;">ЗМІНИТИ СТАТУС (AFK / ON DUTY)</label>
+            <div style="display:flex; gap:10px; margin-top:5px;">
+                <select id="memberStatusSelect">
+                    <option value="Active">В мережі</option>
+                    <option value="AFK">AFK</option>
+                    <option value="Busy">Зайнятий</option>
+                </select>
+                <button id="saveStatusBtn" class="btn btn-primary">ЗБЕРЕГТИ</button>
+            </div>
+          `; 
+          
+          document.getElementById('saveStatusBtn').onclick=async()=>{ 
+              let baseRole = myMember.role.split('|')[0].trim();
+              let newStatus = document.getElementById('memberStatusSelect').value;
+              let role = `${baseRole} | ${newStatus}`; 
+              await apiFetch(`/api/members/${myMember.id}`, {method:'PUT', body:JSON.stringify({role})}); 
+              showToast('Статус оновлено'); loadInitialData(); loadMyMemberTab(); 
+          }; 
       } else { 
-          createBlock.style.display='block'; container.style.display='none'; statusPanel.style.display='none'; 
+          createBlock.style.display='block'; container.style.display='none'; 
       } 
   }
   
@@ -461,6 +381,62 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderVideos(l) {
       const g = document.getElementById('videosGrid');
       g.innerHTML = l.map(v => `<div class="card glass animate-hidden"><div class="card-icon"><i class="fa-solid fa-play"></i></div><h3>${v.title}</h3><a href="${v.url}" target="_blank" class="btn btn-primary full-width">ДИВИТИСЬ</a>${currentUser && currentUser.role === 'admin' ? `<button class="btn btn-outline full-width" style="margin-top:5px;" onclick="window.deleteVideo('${v.id}')">ВИДАЛИТИ</button>` : ''}</div>`).join('');
+      activateScrollAnimations();
+  }
+  
+  // --- REDUX LOGIC ---
+  async function loadReduxAdmin() {
+       const list = document.getElementById('adminReduxList');
+       const r = await apiFetch('/api/redux');
+       list.innerHTML = r.map(x => `
+           <div class="u-row animate-hidden">
+               <div style="display:flex; flex-direction:column;">
+                   <b>${x.title}</b>
+                   <a href="${x.url}" target="_blank" style="font-size:11px; color:var(--accent-blue);">${x.url.substring(0,30)}...</a>
+               </div>
+               <button class="btn btn-outline" onclick="window.deleteRedux('${x.id}')">DEL</button>
+           </div>
+       `).join('');
+  }
+  
+  document.getElementById('addReduxBtn')?.addEventListener('click', async () => {
+      const title = document.getElementById('reduxTitle').value;
+      const url = document.getElementById('reduxUrl').value;
+      if(!title || !url) return showToast("Заповніть всі поля", "error");
+      await apiFetch('/api/redux', {method:'POST', body:JSON.stringify({title, url})});
+      showToast("Redux додано");
+      document.getElementById('reduxTitle').value = '';
+      document.getElementById('reduxUrl').value = '';
+      loadReduxAdmin();
+      loadInitialData(); // Оновити головну сторінку
+  });
+  
+  window.deleteRedux = async (id) => {
+      if(confirm("Видалити цей Redux?")) {
+          await apiFetch(`/api/redux/${id}`, {method:'DELETE'});
+          showToast("Видалено");
+          loadReduxAdmin();
+          loadInitialData();
+      }
+  };
+  
+  function renderRedux(list) {
+      const grid = document.getElementById('reduxGrid');
+      if(!grid) return;
+      if(list.length === 0) {
+          grid.innerHTML = '<div style="color:#666; width:100%; text-align:center;">Redux ще не додано.</div>';
+          return;
+      }
+      grid.innerHTML = list.map(item => `
+          <div class="card glass animate-hidden redux-card">
+              <div class="card-icon" style="color:#00e5ff"><i class="fa-solid fa-microchip"></i></div>
+              <h3>${item.title}</h3>
+              <p style="font-size:12px; color:#888;">ОПТИМІЗОВАНО</p>
+              <a href="${item.url}" target="_blank" class="btn btn-primary full-width" style="border-color:#00e5ff; color:#00e5ff;">
+                 <i class="fa-solid fa-download"></i> СКАЧАТИ
+              </a>
+          </div>
+      `).join('');
       activateScrollAnimations();
   }
   

@@ -41,7 +41,7 @@
             <li><a href="#members" data-lang="members">СКЛАД</a></li>
             <li><a href="#gallery" data-lang="gallery">ГАЛЕРЕЯ</a></li>
             <li><a href="#videos" id="navVideos" style="display:none;" data-lang="videos">МЕДІЙКИ</a></li>
-            <li><a href="#apply" class="primary-link" data-lang="apply">ВСТУП</a></li>
+            <li><a href="#redux" class="primary-link" data-lang="redux">REDUX</a></li>
           </ul>
         </nav>
 
@@ -60,13 +60,9 @@
                 </button>
 
                 <div id="langDropdown" class="lang-dropdown-grid">
-                    <div class="lang-option" data-lang="en"><img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon"><span>ENGLISH</span></div>
-                    <div class="lang-option" data-lang="de"><img src="https://flagcdn.com/w40/de.png" class="lang-flag-icon"><span>DEUTSCH</span></div>
-                    <div class="lang-option" data-lang="es"><img src="https://flagcdn.com/w40/es.png" class="lang-flag-icon"><span>ESPAÑOL</span></div>
-                    <div class="lang-option" data-lang="pt"><img src="https://flagcdn.com/w40/br.png" class="lang-flag-icon"><span>PORTUGUÊS</span></div>
-                    <div class="lang-option" data-lang="pl"><img src="https://flagcdn.com/w40/pl.png" class="lang-flag-icon"><span>POLSKI</span></div>
-                    <div class="lang-option" data-lang="ru"><img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon"><span>РУССКИЙ</span></div>
                     <div class="lang-option active" data-lang="ua"><img src="https://flagcdn.com/w40/ua.png" class="lang-flag-icon"><span>УКРАЇНСЬКА</span></div>
+                    <div class="lang-option" data-lang="en"><img src="https://flagcdn.com/w40/gb.png" class="lang-flag-icon"><span>ENGLISH</span></div>
+                    <div class="lang-option" data-lang="ru"><img src="https://flagcdn.com/w40/ru.png" class="lang-flag-icon"><span>РУССКИЙ</span></div>
                 </div>
             </div>
             
@@ -88,7 +84,7 @@
                 </p>
                 
                 <div class="hero-buttons">
-                    <a href="#apply" class="btn btn-primary btn-large glow-effect" data-lang="hero_btn">ПРИЄДНАТИСЬ</a>
+                    <a href="#redux" class="btn btn-primary btn-large glow-effect" data-lang="redux">REDUX</a>
                     <a href="#members" class="btn btn-outline btn-large" data-lang="hero_members">СКЛАД</a>
                 </div>
             </div>
@@ -149,6 +145,17 @@
           </div>
           <div id="membersGrid" class="members-grid"></div>
         </div>
+      </section>
+
+      <section id="redux" class="section">
+          <div class="container">
+              <div class="section-header"><h2><span class="highlight">BARRACUDA</span> REDUX</h2></div>
+              <div class="redux-intro center-text">
+                  <p>Ексклюзивні модифікації для покращення графіки та геймплею. Оптимізовано для сімейних каптів та бизварів.</p>
+              </div>
+              <div id="reduxGrid" class="cards">
+                  </div>
+          </div>
       </section>
 
       <section id="events" class="section">
@@ -241,10 +248,10 @@
                 
                 <div class="admin-only-nav" style="display:none;">
                     <div class="nav-section-label" data-lang="dash_label_admin">Адміністратор</div>
+                    <button onclick="switchDashTab('redux-admin')" style="color: #00e5ff;"><i class="fa-solid fa-download"></i> Керування Redux</button>
                     <button onclick="switchDashTab('users')"><i class="fa-solid fa-users-gear"></i> <span data-lang="dash_nav_users">Керування ролями</span></button>
                     <button onclick="switchDashTab('admin-members')"><i class="fa-solid fa-sitemap"></i> <span data-lang="dash_nav_roster">Редактор складу</span></button>
                     <button onclick="switchDashTab('accounts-data')" style="color: #ff6b6b;"><i class="fa-solid fa-database"></i> <span data-lang="dash_nav_db">База даних</span></button>
-                    <button onclick="switchDashTab('logs')"><i class="fa-solid fa-terminal"></i> <span data-lang="dash_nav_logs">Системні логи</span></button>
                 </div>
             </nav>
             <button id="logoutBtn" class="btn btn-logout"><i class="fa-solid fa-power-off"></i> <span data-lang="dash_nav_logout">ЗАВЕРШИТИ СЕАНС</span></button>
@@ -264,15 +271,53 @@
                     </div>
                 </div>
             </div>
-            <div id="tab-my-member" class="dash-view"><div class="dash-header"><h2 data-lang="dash_char_settings">Налаштування</h2></div><div id="createMemberBlock" style="text-align:center;"><button id="openAdminAddMemberUser" class="btn btn-primary">СТВОРИТИ ПЕРСОНАЖА</button></div><div id="myMemberContainer" style="display:none;"></div></div>
+            <div id="tab-my-member" class="dash-view">
+                <div class="dash-header"><h2 data-lang="dash_char_settings">Налаштування</h2></div>
+                <div id="createMemberBlock" style="text-align:center;">
+                    <p style="color:#888; margin-bottom:15px;">Персонаж ще не створений або не прив'язаний.</p>
+                </div>
+                <div id="myMemberContainer" style="display:none;" class="glass-panel"></div>
+            </div>
+            
             <div id="tab-apply" class="dash-view"><div class="dash-header"><h2 data-lang="dash_apply_header">Подача заявки</h2></div><div id="applyStatusContainer" class="status-box"></div><div class="compact-square-container"><form id="dashAppForm" class="modern-form glass-panel" style="padding:30px;"><div class="form-row"><input id="appRlName" placeholder="Ім'я"><input id="appAge" placeholder="Вік"></div><input id="appOnline" placeholder="Онлайн"><input id="appFamilies" placeholder="Сім'ї"><textarea id="appHistory" placeholder="Історія"></textarea><input id="appNote" placeholder="Відео/Примітка"><button type="submit" class="btn btn-primary full-width">ВІДПРАВИТИ</button></form></div></div>
             <div id="tab-support-user" class="dash-view"><div class="dash-header"><h2 data-lang="dash_support_header">Технічна підтримка</h2></div><div class="form-row"><form id="createTicketForm" class="glass-panel"><input id="ticketTitle" placeholder="Тема"><textarea id="ticketMessage" placeholder="Повідомлення"></textarea><button type="submit" class="btn btn-primary full-width">ВІДКРИТИ ТІКЕТ</button></form><div id="myTicketsList" class="scroll-list glass-panel"></div></div></div>
             <div id="tab-applications" class="dash-view"><div id="applicationsList" class="grid-list"></div></div>
             <div id="tab-support-staff" class="dash-view"><div id="allTicketsList" class="grid-list"></div></div>
             <div id="tab-users" class="dash-view"><div id="adminUsersList" class="compact-list"></div></div>
             <div id="tab-accounts-data" class="dash-view"><button onclick="loadAccountsData()" class="btn btn-primary">ОНОВИТИ</button><table class="data-table"><tbody id="accountsDataTableBody"></tbody></table></div>
-            <div id="tab-admin-members" class="dash-view"><button id="openAdminAddMember" class="btn btn-primary">Додати</button><div id="adminAddMemberContainer" style="display:none;"><form id="adminAddMemberForm"><input id="admName"><input id="admRole"><input id="admOwner"><input id="admServer"><button class="btn btn-primary">Зберегти</button></form></div><div id="adminMembersList"></div></div>
-            <div id="tab-logs" class="dash-view"><div id="systemLogsList" class="terminal-view"></div></div>
+            
+            <div id="tab-admin-members" class="dash-view">
+                <button id="openAdminAddMember" class="btn btn-primary" style="margin-bottom:15px;">Додати Учасника</button>
+                <div id="adminAddMemberContainer" style="display:none;" class="glass-panel">
+                    <form id="adminAddMemberForm">
+                        <div class="form-row">
+                            <input id="admName" placeholder="Ім'я в грі">
+                            <input id="admRole" placeholder="Ранг">
+                        </div>
+                        <div class="form-row">
+                            <input id="admOwner" placeholder="Логін власника (User)">
+                            <input id="admServer" placeholder="Сервер (Stake, Chicago...)">
+                        </div>
+                        <div class="form-row">
+                             <input id="admDiscord" placeholder="Discord Link">
+                             <input id="admYoutube" placeholder="YouTube Link">
+                        </div>
+                        <button type="submit" class="btn btn-primary full-width">Зберегти</button>
+                    </form>
+                </div>
+                <div id="adminMembersList"></div>
+            </div>
+
+            <div id="tab-redux-admin" class="dash-view">
+                <div class="dash-header"><h2>Керування Redux</h2></div>
+                <div class="glass-panel">
+                    <input id="reduxTitle" placeholder="Назва Redux / Опис">
+                    <input id="reduxUrl" placeholder="Посилання на завантаження (Google Drive/Mega)">
+                    <button id="addReduxBtn" class="btn btn-primary full-width">ДОДАТИ REDUX</button>
+                </div>
+                <div id="adminReduxList" class="compact-list"></div>
+            </div>
+
         </div>
     </div>
   </div>
@@ -301,11 +346,9 @@
       </div>
   </div>
 
-  <div id="customConfirmModal" class="custom-modal"><div class="custom-modal-content glass center-text"><p id="confirmMessage"></p><button id="confirmOkBtn" class="btn btn-primary">ОК</button><button id="confirmCancelBtn" class="btn btn-outline">Відміна</button></div></div>
   <div id="ticketModal" class="custom-modal"><div class="custom-modal-content ticket-modal-content glass"><h3 id="tmTitle">ТІКЕТ</h3><span id="tmCloseTicketBtn" class="btn btn-outline">ЗАКРИТИ ТІКЕТ</span><div id="tmMessages" class="chat-area"></div><input id="tmInput"><button id="tmSendBtn">Send</button></div></div>
   <div id="lightbox" class="custom-modal lightbox"><span id="lightboxCloseBtn" class="close-modal">&times;</span><img id="lightboxImage" src=""></div>
-  <div id="cyberModal" class="cyber-modal-overlay"><div class="cyber-modal-window"><h3 id="cyberModalTitle">SYSTEM</h3><div id="cyberModalContent"></div><button onclick="closeCyberModal()" class="btn btn-primary">ОК</button></div></div>
-
+  
   <script src="script.js"></script>
 </body>
 </html>

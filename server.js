@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGODB_URI;
 
 console.log("------------------------------------------------");
-console.log("🦈 BARRACUDA FAMILY SYSTEM - FINAL");
+console.log("🦈 BARRACUDA FAMILY SYSTEM - UPDATED");
 console.log("------------------------------------------------");
 
 if (!MONGO_URI) {
@@ -55,6 +55,15 @@ const Gallery = mongoose.model('Gallery', GallerySchema);
 
 const VideoSchema = new mongoose.Schema({ title: String, url: String, author: String, createdAt: { type: Date, default: Date.now } });
 const Video = mongoose.model('Video', VideoSchema);
+
+// --- НОВА СХЕМА ДЛЯ REDUX ---
+const ReduxSchema = new mongoose.Schema({ 
+    title: String, 
+    url: String, 
+    author: String, 
+    createdAt: { type: Date, default: Date.now } 
+});
+const Redux = mongoose.model('Redux', ReduxSchema);
 
 const ApplicationSchema = new mongoose.Schema({
     rlName: String, age: String, onlineTime: String, prevFamilies: String, history: String, note: String,
@@ -105,17 +114,12 @@ app.put('/api/users/:username/role', async (req, res) => {
     catch(e) { res.status(500).json({ success: false }); }
 });
 
-// MEMBERS (З перевіркою ліміту)
+// MEMBERS
 app.post('/api/members', async (req, res) => { 
     try { 
-        // Якщо користувач вже має персонажа (і це не адмін панель, яка може додавати будь-кого)
-        // Для спрощення: перевірка на стороні клієнта блокує кнопку, а тут базовий захист
         const existing = await Member.findOne({ owner: req.body.owner });
-        if (existing) {
-            // Можна додати логіку: якщо адмін додає - дозволити, якщо юзер собі - заборонити.
-            // Поки що просто повертаємо помилку, якщо на цей логін вже є персонаж.
-            return res.status(400).json({ success: false, message: 'На цей акаунт вже зареєстровано персонажа!' });
-        }
+        // Якщо це не системний додаток (адмін), можна розблокувати перевірку
+        // if (existing) return res.status(400).json({ success: false, message: 'Персонаж вже існує!' });
         await new Member(req.body).save(); 
         res.json({ success: true }); 
     } catch(e) { res.status(500).json({ success: false }); } 
@@ -125,7 +129,7 @@ app.get('/api/members', async (req, res) => { const m = await Member.find().sort
 app.put('/api/members/:id', async (req, res) => { await Member.findByIdAndUpdate(req.params.id, req.body); res.json({ success: true }); });
 app.delete('/api/members/:id', async (req, res) => { await Member.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
-// NEWS, GALLERY, VIDEOS
+// NEWS, GALLERY, VIDEOS, REDUX
 app.get('/api/news', async (req, res) => { const n = await News.find().sort({ createdAt: -1 }); res.json(n.map(x => ({ ...x._doc, id: x._id }))); });
 app.post('/api/news', async (req, res) => { await new News(req.body).save(); res.json({ success: true }); });
 app.delete('/api/news/:id', async (req, res) => { await News.findByIdAndDelete(req.params.id); res.json({ success: true }); });
@@ -137,6 +141,11 @@ app.delete('/api/gallery/:id', async (req, res) => { await Gallery.findByIdAndDe
 app.get('/api/videos', async (req, res) => { const v = await Video.find().sort({ createdAt: -1 }); res.json(v.map(x => ({ ...x._doc, id: x._id }))); });
 app.post('/api/videos', async (req, res) => { await new Video(req.body).save(); res.json({ success: true }); });
 app.delete('/api/videos/:id', async (req, res) => { await Video.findByIdAndDelete(req.params.id); res.json({ success: true }); });
+
+// API REDUX
+app.get('/api/redux', async (req, res) => { const r = await Redux.find().sort({ createdAt: -1 }); res.json(r.map(x => ({ ...x._doc, id: x._id }))); });
+app.post('/api/redux', async (req, res) => { await new Redux(req.body).save(); res.json({ success: true }); });
+app.delete('/api/redux/:id', async (req, res) => { await Redux.findByIdAndDelete(req.params.id); res.json({ success: true }); });
 
 // USERS API
 app.get('/api/users', async (req, res) => { 

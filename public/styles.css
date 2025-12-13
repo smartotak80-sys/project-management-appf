@@ -718,3 +718,23 @@ footer p { margin: 0; }
     .section h2 { font-size: 24px; }
     .cards { grid-template-columns: 1fr; }
 }
+/* Покращуємо читабельність основного тексту */
+body {
+    -webkit-font-smoothing: antialiased; /* Робить шрифти тоншими і чіткішими на Mac/iOS */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Вирівнювання карток серверів */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Трохи ширші картки */
+    gap: 25px;
+    justify-content: center; /* Центруємо сітку */
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Рівномірний розподіл контенту всередині */
+    height: 100%;
+}
